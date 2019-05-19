@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "core-js": "^2.6.5",
+    "rxjs": "^6.5.2",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
     "vue-property-decorator": "^8.1.0",
+    "vue-rx": "^6.2.0",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
@@ -25,8 +27,10 @@
     "@vue/test-utils": "1.0.0-beta.29",
     "chai": "^4.1.2",
     "node-sass": "^4.9.0",
+    "pug": "^2.0.3",
     "sass-loader": "^7.1.0",
     "typescript": "^3.4.3",
+    "vue-cli-plugin-pug": "^1.0.7",
     "vue-template-compiler": "^2.5.21"
   },
   "postcss": {
