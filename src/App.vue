@@ -1,21 +1,16 @@
 <template lang="pug">
   v-app
-    v-btn(color="success") Success
-    // hello-world(msg="Welcome to Your Vue.js + TypeScript App")
+    Windows
 </template>
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
-  // import HelloWorld from './components/HelloWorld.vue';
+  import Windows from '@/components/editor/Windows.vue';
 
   @Component({
     components: {
-      // HelloWorld,
+      Windows,
     },
   })
   export default class App extends Vue {}
 </script>
-
-<style lang="scss">
-
-</style>
