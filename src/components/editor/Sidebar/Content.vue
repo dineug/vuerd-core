@@ -1,13 +1,17 @@
 <template lang="pug">
   .content
-    v-treeview(:open="open" :items="items" activatable dark item-key="name" open-on-click)
+    v-treeview(:open="open" :items="items"
+      activatable dark open-on-click
+      item-key="name")
       template(v-slot:prepend="{ item, open }")
-        v-icon(v-if="!item.file" color="grey lighten-1") {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
-        v-icon(v-else color="grey lighten-1") {{ files[item.file] }}
+        v-icon(v-if="!item.file" small
+          color="grey lighten-1") {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+        v-icon(v-else small
+          color="grey lighten-1") {{ files[item.file] }}
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+  import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 
   @Component
   export default class Content extends Vue {
@@ -22,7 +26,7 @@
       txt: 'mdi-file-document-outline',
       xls: 'mdi-file-excel',
     };
-    private items: object[] = [
+    private items: Array<{}> = [
       {
         name: '.git',
       },
