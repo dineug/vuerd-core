@@ -1,7 +1,7 @@
 <template lang="pug">
   ul.actions-container
     li
-      v-icon(color="grey lighten-1" medium) insert_drive_file
+      v-icon(color="grey lighten-1") mdi-file-multiple
 </template>
 
 <script lang="ts">
