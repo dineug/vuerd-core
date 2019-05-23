@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
+  import { Component, Prop, Vue } from 'vue-property-decorator';
 
   @Component
   export default class Content extends Vue {
@@ -50,7 +50,7 @@
             file: 'png',
           },
           {
-            name: 'index.html',
+            name: 'index.ts.js.html',
             file: 'html',
           },
         ],

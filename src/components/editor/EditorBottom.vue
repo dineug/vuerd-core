@@ -1,5 +1,5 @@
 <template lang="pug">
-  .editor-bottom
+  .editor-bottom(:style="{ height: `${height}px` }")
     Title
 </template>
 
@@ -13,6 +13,8 @@
     },
   })
   export default class EditorBottom extends Vue {
+    @Prop({type: Number, default: 200})
+    private readonly height!: number;
   }
 </script>
 
@@ -22,7 +24,5 @@
     position: absolute;
     bottom: 0;
     background-color: $color-editor;
-
-    height: 200px;
   }
 </style>

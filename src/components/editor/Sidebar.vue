@@ -1,11 +1,11 @@
 <template lang="pug">
-  .sidebar
+  .sidebar(:style="{ width: `${width}px` }")
     Title
     Content
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+  import {Component, Prop, Vue} from 'vue-property-decorator';
   import Title from './Sidebar/Title.vue';
   import Content from './Sidebar/Content.vue';
 
@@ -16,6 +16,8 @@
     },
   })
   export default class Sidebar extends Vue {
+    @Prop({type: Number, default: 200})
+    private readonly width!: number;
   }
 </script>
 
@@ -24,7 +26,5 @@
     height: 100%;
     position: absolute;
     background-color: $color-sidebar;
-
-    width: 200px;
   }
 </style>
