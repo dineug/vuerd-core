@@ -20,15 +20,12 @@
 
 <style scoped lang="scss">
   .activitybar {
-    background-color: $color-activity;
-    top: 30px;
-    bottom: 0;
-    left: 0;
-    position: absolute;
+    width: 50px;
     height: 100%;
+    position: absolute;
+    background-color: $color-activity;
 
     .content {
-      width: 50px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;

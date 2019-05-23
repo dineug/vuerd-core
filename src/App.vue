@@ -1,6 +1,5 @@
 <template lang="pug">
-  v-app
-    Windows
+  Windows
 </template>
 
 <script lang="ts">

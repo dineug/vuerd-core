@@ -21,12 +21,10 @@
 
 <style scoped lang="scss">
   .sidebar {
-    background-color: $color-sidebar;
-    top: 30px;
-    bottom: 22px;
-    left: 50px;
-    position: absolute;
     height: 100%;
+    position: absolute;
+    background-color: $color-sidebar;
+
     width: 200px;
   }
 </style>
