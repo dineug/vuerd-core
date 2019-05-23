@@ -1,14 +1,14 @@
 <template lang="pug">
-  Windows
+  VuerdCore
 </template>
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
-  import Windows from '@/components/editor/Windows.vue';
+  import VuerdCore from '@/components/editor/VuerdCore.vue';
 
   @Component({
     components: {
-      Windows,
+      VuerdCore,
     },
   })
   export default class App extends Vue {}

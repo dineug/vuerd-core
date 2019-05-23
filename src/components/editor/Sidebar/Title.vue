@@ -15,14 +15,14 @@
 <style scoped lang="scss">
   .title {
     display: flex;
-    height: 35px;
+    height: $size-title-height;
     box-sizing: border-box;
     overflow: hidden;
     padding-left: 8px;
     padding-right: 8px;
 
     .title-label {
-      line-height: 35px;
+      line-height: $size-title-height;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -30,14 +30,8 @@
 
       h2 {
         color: $color-title;
-        font-size: 11px;
-        cursor: default;
-        font-weight: 400;
-        -webkit-margin-before: 0;
-        -webkit-margin-after: 0;
+        font-size: $size-font;
         overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
       }
     }
   }

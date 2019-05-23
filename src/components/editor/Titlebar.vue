@@ -13,7 +13,7 @@
 <style scoped lang="scss">
   .titlebar {
     width: 100%;
-    height: 30px;
+    height: $size-titlebar-height;
     background-color: $color-titlebar;
     color: $color-font;
   }

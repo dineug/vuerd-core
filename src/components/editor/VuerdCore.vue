@@ -1,6 +1,6 @@
 <template lang="pug">
   v-app
-    .windows
+    .vuerd-core
       Titlebar
       Activitybar
       .workspace
@@ -27,20 +27,20 @@
       EditorBottom,
     },
   })
-  export default class Windows extends Vue {
+  export default class VuerdCore extends Vue {
 
   }
 </script>
 
 <style lang="scss">
-  @import '../../scss/reset';
-  @import '../../scss/vuetify';
+  @import '../../scss/reset.scss';
+  @import '../../scss/vuetify.scss';
 
   html {
     overflow-y: auto !important;
   }
 
-  .windows {
+  .vuerd-core {
     height: 100%;
     position: relative;
     overflow: hidden;
@@ -49,7 +49,7 @@
     .workspace {
       height: 100%;
       position: relative;
-      left: 50px;
+      left: $size-activitybar-width;
       overflow: hidden;
     }
 
@@ -58,6 +58,7 @@
       position: relative;
 
       left: 200px;
+      width: 1000px;
     }
   }
 </style>

@@ -20,7 +20,7 @@
 
 <style scoped lang="scss">
   .activitybar {
-    width: 50px;
+    width: $size-activitybar-width;
     height: 100%;
     position: absolute;
     background-color: $color-activity;

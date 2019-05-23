@@ -1,12 +1,17 @@
 <template lang="pug">
   .editor-bottom
-    p test
+    Title
 </template>
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
+  import Title from './EditorBottom/Title.vue';
 
-  @Component
+  @Component({
+    components: {
+      Title,
+    },
+  })
   export default class EditorBottom extends Vue {
   }
 </script>

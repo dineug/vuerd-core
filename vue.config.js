@@ -4,6 +4,7 @@ module.exports = {
       sass: {
         data: `
           @import "@/scss/color.scss";
+          @import "@/scss/size.scss";
         `
       }
     }

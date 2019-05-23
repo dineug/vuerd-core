@@ -16,7 +16,6 @@
     height: 100%;
     position: absolute;
     overflow: hidden;
-    right: 0;
     background-color: $color-editor;
   }
 </style>
