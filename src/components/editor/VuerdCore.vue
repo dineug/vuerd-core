@@ -8,8 +8,10 @@
         .main(ref="main" :style="{ left: `${sidebarWidth}px`, width: `${mainWidth}px` }")
           Editor
           EditorBottom(:height="editorBottomHeight")
-          Sash(horizontal :top="editorBottomTop - 2")
-        Sash(vertical :left="sidebarWidth - 2")
+          Sash(horizontal :top="editorBottomTop - 2"
+            @mousemove="onMousemoveSash($event, 'horizontal')")
+        Sash(vertical :left="sidebarWidth - 2"
+          @mousemove="onMousemoveSash($event, 'vertical')")
 </template>
 
 <script lang="ts">
@@ -24,10 +26,11 @@
   import EditorBottom from './EditorBottom.vue';
   import Sash from './Sash.vue';
 
-  import {fromEvent, Observable} from 'rxjs';
-  import {debounceTime} from 'rxjs/operators';
+  import {fromEvent, Observable, Subscription} from 'rxjs';
 
   const SIZE_ACTIVITYBAR_WIDTH = 50;
+  const SIZE_TITLEBAR_HEIGHT = 30;
+  const SIZE_MAIN_WIDTH_MIN = 200;
 
   @Component({
     components: {
@@ -45,22 +48,60 @@
     private editorBottomTop: number = 200;
     private editorBottomHeight: number = 200;
 
-    // window resize event observable create
-    private resize$: Observable<Event> = fromEvent(window, 'resize').pipe(
-      debounceTime(10),
-    );
+    // event observable
+    private resize$: Observable<Event> = fromEvent(window, 'resize');
+    private subscriptionResize!: Subscription;
 
-    // window resize event
+    // event handler
     private onResize() {
       const main = this.$refs.main as HTMLElement;
       const workspace = this.$refs.workspace as HTMLElement;
       this.editorBottomTop = main.clientHeight - this.editorBottomHeight;
       this.mainWidth = workspace.clientWidth - this.sidebarWidth - SIZE_ACTIVITYBAR_WIDTH;
     }
+    private onMousemoveSash(e: MouseEvent, type: string) {
+      switch (type) {
+        case 'vertical':
+          const workspace = this.$refs.workspace as HTMLElement;
+          const sidebarWidth = this.sidebarWidth + e.movementX;
+          const mainWidth = workspace.clientWidth - sidebarWidth - SIZE_ACTIVITYBAR_WIDTH;
+          const mouseX = e.clientX - SIZE_ACTIVITYBAR_WIDTH;
+          if (0 < sidebarWidth && SIZE_MAIN_WIDTH_MIN < mainWidth) {
+            // mouse 뱡향 분기 처리
+            if (e.movementX < 0 && mouseX < sidebarWidth) {
+              this.sidebarWidth = sidebarWidth;
+              this.onResize();
+            } else if (e.movementX > 0 && mouseX > sidebarWidth) {
+              this.sidebarWidth = sidebarWidth;
+              this.onResize();
+            }
+          }
+          break;
+        case 'horizontal':
+          const main = this.$refs.main as HTMLElement;
+          const editorBottomHeight = this.editorBottomHeight - e.movementY;
+          const editorBottomTop = main.clientHeight - editorBottomHeight;
+          const mouseY = e.clientY - SIZE_TITLEBAR_HEIGHT;
+          if (0 < editorBottomTop && SIZE_TITLEBAR_HEIGHT < editorBottomHeight) {
+            // mouse 뱡향 분기 처리
+            if (e.movementY < 0 && mouseY < editorBottomTop) {
+              this.editorBottomHeight = editorBottomHeight;
+              this.onResize();
+            } else if (e.movementY > 0 && mouseY > editorBottomTop) {
+              this.editorBottomHeight = editorBottomHeight;
+              this.onResize();
+            }
+          }
+          break;
+      }
+    }
 
     private mounted() {
       this.onResize();
-      this.resize$.subscribe(this.onResize);
+      this.subscriptionResize = this.resize$.subscribe(this.onResize);
+    }
+    private destroyed() {
+      this.subscriptionResize.unsubscribe();
     }
   }
 </script>
@@ -90,6 +131,7 @@
       width: 100%;
       height: 100%;
       position: relative;
+      overflow: hidden;
     }
   }
 </style>

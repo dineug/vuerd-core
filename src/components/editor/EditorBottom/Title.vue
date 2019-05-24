@@ -7,7 +7,7 @@
     .title-action
       ul
         li
-          v-icon(color="grey lighten-1") mdi-close
+          v-icon(color="grey lighten-1" small) mdi-close
 </template>
 
 <script lang="ts">
@@ -61,6 +61,8 @@
           display: flex;
           align-items: center;
           justify-content: center;
+          padding: 5px;
+          cursor: pointer;
         }
       }
     }
