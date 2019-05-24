@@ -49,14 +49,14 @@
     z-index: 35;
 
     &.vertical {
-      width: 4px;
+      width: $size-sash-width;
       height: 100%;
       cursor: ew-resize;
     }
 
     &.horizontal {
       width: 100%;
-      height: 4px;
+      height: $size-sash-width;
       cursor: ns-resize;
     }
   }
