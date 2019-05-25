@@ -6,9 +6,9 @@
       .workspace(ref="workspace")
         Sidebar(:width="sidebarWidth")
         .main(ref="main" :style="{ left: `${sidebarWidth}px`, width: `${mainWidth}px` }")
-          Editor
+          Editor(:width="mainWidth" :height="editorHeight")
           EditorBottom(:height="editorBottomHeight")
-          Sash(horizontal :top="editorBottomTop - 2.5"
+          Sash(horizontal :top="editorHeight - 2.5"
             @mousemove="onMousemoveSash($event, 'horizontal')")
         Sash(vertical :left="sidebarWidth - 2.5"
           @mousemove="onMousemoveSash($event, 'vertical')")
@@ -50,8 +50,8 @@
   })
   export default class VuerdCore extends Vue {
     private sidebarWidth: number = 200;
-    private mainWidth: number = 1000;
-    private editorBottomTop: number = 200;
+    private mainWidth: number = 2000;
+    private editorHeight: number = 1000;
     private editorBottomHeight: number = 200;
 
     private resizeMovement: any = {
@@ -86,7 +86,7 @@
     private onResize() {
       const main = this.$refs.main as HTMLElement;
       const workspace = this.$refs.workspace as HTMLElement;
-      this.editorBottomTop = main.clientHeight - this.editorBottomHeight;
+      this.editorHeight = main.clientHeight - this.editorBottomHeight;
       this.mainWidth = workspace.clientWidth - this.sidebarWidth - SIZE_ACTIVITYBAR_WIDTH;
     }
 
@@ -114,19 +114,19 @@
         case 'horizontal':
           const main = this.$refs.main as HTMLElement;
           const editorBottomHeight = this.editorBottomHeight - e.movementY;
-          const editorBottomTop = main.clientHeight - editorBottomHeight;
+          const editorHeight = main.clientHeight - editorBottomHeight;
           const padding = SIZE_TITLEBAR_HEIGHT + SIZE_STATUSBAR_HEIGHT;
           const mouseY = e.clientY - padding;
-          if (SIZE_EDITOR_BOTTOM_TOP_MIN < editorBottomTop
+          if (SIZE_EDITOR_BOTTOM_TOP_MIN < editorHeight
             && padding + SIZE_SASH_WIDTH < editorBottomHeight) {
             // mouse 뱡향 분기 처리
             if (mouseY < 0) {
               this.editorBottomHeight = main.clientHeight - SIZE_EDITOR_BOTTOM_TOP_MIN;
             } else if (mouseY + padding > main.clientHeight) {
               this.editorBottomHeight = padding + SIZE_SASH_WIDTH;
-            } else if (e.movementY < 0 && mouseY < editorBottomTop) {
+            } else if (e.movementY < 0 && mouseY < editorHeight) {
               this.editorBottomHeight = editorBottomHeight;
-            } else if (e.movementY > 0 && mouseY > editorBottomTop) {
+            } else if (e.movementY > 0 && mouseY > editorHeight) {
               this.editorBottomHeight = editorBottomHeight;
             }
             this.onResize();
@@ -170,7 +170,6 @@
     }
 
     .main {
-      width: 100%;
       height: 100%;
       position: relative;
       overflow: hidden;
