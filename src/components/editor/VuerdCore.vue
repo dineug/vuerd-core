@@ -99,13 +99,16 @@
           const mouseX = e.clientX - SIZE_ACTIVITYBAR_WIDTH;
           if (0 < sidebarWidth && SIZE_MAIN_WIDTH_MIN < mainWidth) {
             // mouse 뱡향 분기 처리
-            if (e.movementX < 0 && mouseX < sidebarWidth) {
+            if (mouseX < 0) {
+              this.sidebarWidth = 0;
+            } else if (mouseX > workspace.clientWidth) {
+              this.sidebarWidth = workspace.clientWidth - SIZE_MAIN_WIDTH_MIN - SIZE_ACTIVITYBAR_WIDTH;
+            } else if (e.movementX < 0 && mouseX < sidebarWidth) {
               this.sidebarWidth = sidebarWidth;
-              this.onResize();
             } else if (e.movementX > 0 && mouseX > sidebarWidth) {
               this.sidebarWidth = sidebarWidth;
-              this.onResize();
             }
+            this.onResize();
           }
           break;
         case 'horizontal':
@@ -117,13 +120,16 @@
           if (SIZE_EDITOR_BOTTOM_TOP_MIN < editorBottomTop
             && padding + SIZE_SASH_WIDTH < editorBottomHeight) {
             // mouse 뱡향 분기 처리
-            if (e.movementY < 0 && mouseY < editorBottomTop) {
+            if (mouseY < 0) {
+              this.editorBottomHeight = main.clientHeight - SIZE_EDITOR_BOTTOM_TOP_MIN;
+            } else if (mouseY + padding > main.clientHeight) {
+              this.editorBottomHeight = padding + SIZE_SASH_WIDTH;
+            } else if (e.movementY < 0 && mouseY < editorBottomTop) {
               this.editorBottomHeight = editorBottomHeight;
-              this.onResize();
             } else if (e.movementY > 0 && mouseY > editorBottomTop) {
               this.editorBottomHeight = editorBottomHeight;
-              this.onResize();
             }
+            this.onResize();
           }
           break;
       }
