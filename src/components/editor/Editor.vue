@@ -22,48 +22,48 @@
     private container: any = {
       vertical: true,
       horizontal: false,
-      view: [
+      views: [
         {
           vertical: false,
           horizontal: true,
-          view: [
+          views: [
             {
               vertical: true,
               horizontal: false,
-              view: [],
+              views: [],
             },
             {
               vertical: true,
               horizontal: false,
-              view: [
+              views: [
                 {
                   vertical: true,
                   horizontal: false,
-                  view: [],
+                  views: [],
                 },
                 {
                   vertical: false,
                   horizontal: true,
-                  view: [],
+                  views: [],
                 },
                 {
                   vertical: true,
                   horizontal: false,
-                  view: [],
+                  views: [],
                 },
               ],
             },
             {
               vertical: true,
               horizontal: false,
-              view: [],
+              views: [],
             },
           ],
         },
         {
           vertical: false,
           horizontal: true,
-          view: [],
+          views: [],
         },
       ],
     };

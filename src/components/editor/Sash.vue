@@ -6,7 +6,7 @@
 
 <script lang="ts">
   import {log} from '@/ts/util';
-  import {SIZE_SASH_WIDTH} from '@/ts/layout';
+  import {SIZE_SASH} from '@/ts/layout';
   import {Component, Prop, Vue} from 'vue-property-decorator';
 
   import {fromEvent, Observable, Subscription} from 'rxjs';
@@ -31,12 +31,12 @@
     get centerTop() {
       return this.top === 0 && !this.horizontal
         ? this.top
-        : this.top - (SIZE_SASH_WIDTH / 2);
+        : this.top - (SIZE_SASH / 2);
     }
     get centerLeft() {
       return this.left === 0 && !this.vertical
         ? this.left
-        : this.left - (SIZE_SASH_WIDTH / 2);
+        : this.left - (SIZE_SASH / 2);
     }
 
     // event handler
@@ -62,14 +62,14 @@
     z-index: 35;
 
     &.vertical {
-      width: $size-sash-width;
+      width: $size-sash;
       height: 100%;
       cursor: ew-resize;
     }
 
     &.horizontal {
       width: 100%;
-      height: $size-sash-width;
+      height: $size-sash;
       cursor: ns-resize;
     }
   }

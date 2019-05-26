@@ -68,11 +68,11 @@
       const padding = layout.SIZE_TITLEBAR_HEIGHT + layout.SIZE_STATUSBAR_HEIGHT;
       const editorBottomHeightMin = this.editorBottomHeight + padding + layout.SIZE_EDITOR_BOTTOM_TOP_MIN;
       if (window.innerHeight < editorBottomHeightMin
-        && padding + layout.SIZE_SASH_WIDTH < this.editorBottomHeight) {
+        && padding + layout.SIZE_SASH < this.editorBottomHeight) {
         this.editorBottomHeight += this.resizeMovement.y;
       }
-      if (this.editorBottomHeight < padding + layout.SIZE_SASH_WIDTH) {
-        this.editorBottomHeight = padding + layout.SIZE_SASH_WIDTH;
+      if (this.editorBottomHeight < padding + layout.SIZE_SASH) {
+        this.editorBottomHeight = padding + layout.SIZE_SASH;
       }
     }
 
@@ -111,12 +111,12 @@
           const padding = layout.SIZE_TITLEBAR_HEIGHT + layout.SIZE_STATUSBAR_HEIGHT;
           const mouseY = e.clientY - padding;
           if (layout.SIZE_EDITOR_BOTTOM_TOP_MIN < editorHeight
-            && padding + layout.SIZE_SASH_WIDTH < editorBottomHeight) {
+            && padding + layout.SIZE_SASH < editorBottomHeight) {
             // mouse 뱡향 분기 처리
             if (mouseY < 0) {
               this.editorBottomHeight = main.clientHeight - layout.SIZE_EDITOR_BOTTOM_TOP_MIN;
             } else if (mouseY + padding > main.clientHeight) {
-              this.editorBottomHeight = padding + layout.SIZE_SASH_WIDTH;
+              this.editorBottomHeight = padding + layout.SIZE_SASH;
             } else if (e.movementY < 0 && mouseY < editorHeight) {
               this.editorBottomHeight = editorBottomHeight;
             } else if (e.movementY > 0 && mouseY > editorHeight) {
@@ -147,6 +147,27 @@
 
   html {
     overflow-y: auto !important;
+  }
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: $size-scrollbar;
+    height: $size-scrollbar;
+  }
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: $color-opacity;
+  }
+  ::-webkit-scrollbar-corner {
+    background: $color-opacity;
+  }
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: $color-scrollbar-thumb;
+  }
+  /* Handle : hover*/
+  ::-webkit-scrollbar-thumb:hover {
+    background: $color-editorBottom-top;
   }
 
   .vuerd-core {
