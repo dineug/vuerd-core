@@ -1,10 +1,12 @@
 <template lang="pug">
   .sash(:class="{ vertical: vertical, horizontal: horizontal }"
-    :style="{ top: `${top}px`, left: `${left}px`}"
+    :style="{ top: `${centerTop}px`, left: `${centerLeft}px`}"
     @mousedown="onMousedown")
 </template>
 
 <script lang="ts">
+  import {log} from '@/ts/util';
+  import {SIZE_SASH_WIDTH} from '@/ts/layout';
   import {Component, Prop, Vue} from 'vue-property-decorator';
 
   import {fromEvent, Observable, Subscription} from 'rxjs';
@@ -25,6 +27,17 @@
     private mousemove$: Observable<Event> = fromEvent(window, 'mousemove');
     private subscriptionMouseup!: Subscription;
     private subscriptionMousemove!: Subscription;
+
+    get centerTop() {
+      return this.top === 0 && !this.horizontal
+        ? this.top
+        : this.top - (SIZE_SASH_WIDTH / 2);
+    }
+    get centerLeft() {
+      return this.left === 0 && !this.vertical
+        ? this.left
+        : this.left - (SIZE_SASH_WIDTH / 2);
+    }
 
     // event handler
     private onMousedown() {

@@ -2,17 +2,26 @@
   .split-view-container(:style="{ width: `${width}px`, height: `${height}px` }"
     :class="{ vertical: container.vertical, horizontal: container.horizontal }")
 
-    .split-view-view(v-for="node in container.view"
-      :style="{ width: `${viewWidth}px`, height: `${viewHeight}px` }")
+    .split-view-view(v-for="(node, i) in container.view"
+      :style="{ width: `${viewWidth}px`, height: `${viewHeight}px` }"
+      :class="{ vertical: container.vertical && i !== 0, horizontal: container.horizontal && i !== 0 }")
+      Sash(v-if="i !== 0" :vertical="container.vertical" :horizontal="container.horizontal"
+        @mousemove="onMousemoveSash")
       SplitViewContainer(v-if="node.view && node.view.length"
         :container="node" :width="viewWidth" :height="viewHeight")
       div(v-else) test
 </template>
 
 <script lang="ts">
+  import {log} from '@/ts/util';
   import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
+  import Sash from '..//Sash.vue';
 
-  @Component
+  @Component({
+    components: {
+      Sash,
+    },
+  })
   export default class SplitViewContainer extends Vue {
     @Prop({type: Number, default: 2000})
     private readonly width!: number;
@@ -37,6 +46,10 @@
         : this.height;
     }
 
+    private onMousemoveSash(e: MouseEvent) {
+      log.debug(e.movementX, e.movementY);
+    }
+
     private created() {
       this.watchWidth();
       this.watchHeight();
@@ -58,6 +71,14 @@
 
     .split-view-view {
       position: relative;
+
+      &.vertical {
+        border-left: solid 1px $color-editorBottom-top;
+      }
+
+      &.horizontal {
+        border-top: solid 1px $color-editorBottom-top;
+      }
     }
   }
 </style>

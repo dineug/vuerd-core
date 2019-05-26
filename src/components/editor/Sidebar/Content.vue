@@ -11,6 +11,7 @@
 </template>
 
 <script lang="ts">
+  import {log} from '@/ts/util';
   import { Component, Prop, Vue } from 'vue-property-decorator';
 
   @Component

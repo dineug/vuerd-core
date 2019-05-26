@@ -8,10 +8,8 @@
         .main(ref="main" :style="{ left: `${sidebarWidth}px`, width: `${mainWidth}px` }")
           Editor(:width="mainWidth" :height="editorHeight")
           EditorBottom(:height="editorBottomHeight")
-          Sash(horizontal :top="editorHeight - 2.5"
-            @mousemove="onMousemoveSash($event, 'horizontal')")
-        Sash(vertical :left="sidebarWidth - 2.5"
-          @mousemove="onMousemoveSash($event, 'vertical')")
+            Sash(horizontal @mousemove="onMousemoveSash($event, 'horizontal')")
+          Sash(vertical @mousemove="onMousemoveSash($event, 'vertical')")
       Statusbar
 </template>
 
@@ -19,6 +17,8 @@
   import '@/plugins/rxjs';
   import '@/plugins/vuetify';
 
+  import {log} from '@/ts/util';
+  import * as layout from '@/ts/layout';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Titlebar from './Titlebar.vue';
   import Activitybar from './Activitybar.vue';
@@ -29,13 +29,6 @@
   import Statusbar from './Statusbar.vue';
 
   import {fromEvent, Observable, Subscription} from 'rxjs';
-
-  const SIZE_ACTIVITYBAR_WIDTH = 50;
-  const SIZE_TITLEBAR_HEIGHT = 30;
-  const SIZE_STATUSBAR_HEIGHT = 22;
-  const SIZE_MAIN_WIDTH_MIN = 200;
-  const SIZE_EDITOR_BOTTOM_TOP_MIN = 70;
-  const SIZE_SASH_WIDTH = 5;
 
   @Component({
     components: {
@@ -72,14 +65,14 @@
       this.resizeMovement.width = window.innerWidth;
       this.resizeMovement.height = window.innerHeight;
       // editorBottomHeight
-      const padding = SIZE_TITLEBAR_HEIGHT + SIZE_STATUSBAR_HEIGHT;
-      const editorBottomHeightMin = this.editorBottomHeight + padding + SIZE_EDITOR_BOTTOM_TOP_MIN;
+      const padding = layout.SIZE_TITLEBAR_HEIGHT + layout.SIZE_STATUSBAR_HEIGHT;
+      const editorBottomHeightMin = this.editorBottomHeight + padding + layout.SIZE_EDITOR_BOTTOM_TOP_MIN;
       if (window.innerHeight < editorBottomHeightMin
-        && padding + SIZE_SASH_WIDTH < this.editorBottomHeight) {
+        && padding + layout.SIZE_SASH_WIDTH < this.editorBottomHeight) {
         this.editorBottomHeight += this.resizeMovement.y;
       }
-      if (this.editorBottomHeight < padding + SIZE_SASH_WIDTH) {
-        this.editorBottomHeight = padding + SIZE_SASH_WIDTH;
+      if (this.editorBottomHeight < padding + layout.SIZE_SASH_WIDTH) {
+        this.editorBottomHeight = padding + layout.SIZE_SASH_WIDTH;
       }
     }
 
@@ -87,7 +80,7 @@
       const main = this.$refs.main as HTMLElement;
       const workspace = this.$refs.workspace as HTMLElement;
       this.editorHeight = main.clientHeight - this.editorBottomHeight;
-      this.mainWidth = workspace.clientWidth - this.sidebarWidth - SIZE_ACTIVITYBAR_WIDTH;
+      this.mainWidth = workspace.clientWidth - this.sidebarWidth - layout.SIZE_ACTIVITYBAR_WIDTH;
     }
 
     private onMousemoveSash(e: MouseEvent, type: string) {
@@ -95,14 +88,14 @@
         case 'vertical':
           const workspace = this.$refs.workspace as HTMLElement;
           const sidebarWidth = this.sidebarWidth + e.movementX;
-          const mainWidth = workspace.clientWidth - sidebarWidth - SIZE_ACTIVITYBAR_WIDTH;
-          const mouseX = e.clientX - SIZE_ACTIVITYBAR_WIDTH;
-          if (0 < sidebarWidth && SIZE_MAIN_WIDTH_MIN < mainWidth) {
+          const mainWidth = workspace.clientWidth - sidebarWidth - layout.SIZE_ACTIVITYBAR_WIDTH;
+          const mouseX = e.clientX - layout.SIZE_ACTIVITYBAR_WIDTH;
+          if (0 < sidebarWidth && layout.SIZE_MAIN_WIDTH_MIN < mainWidth) {
             // mouse 뱡향 분기 처리
             if (mouseX < 0) {
               this.sidebarWidth = 0;
             } else if (mouseX > workspace.clientWidth) {
-              this.sidebarWidth = workspace.clientWidth - SIZE_MAIN_WIDTH_MIN - SIZE_ACTIVITYBAR_WIDTH;
+              this.sidebarWidth = workspace.clientWidth - layout.SIZE_MAIN_WIDTH_MIN - layout.SIZE_ACTIVITYBAR_WIDTH;
             } else if (e.movementX < 0 && mouseX < sidebarWidth) {
               this.sidebarWidth = sidebarWidth;
             } else if (e.movementX > 0 && mouseX > sidebarWidth) {
@@ -115,15 +108,15 @@
           const main = this.$refs.main as HTMLElement;
           const editorBottomHeight = this.editorBottomHeight - e.movementY;
           const editorHeight = main.clientHeight - editorBottomHeight;
-          const padding = SIZE_TITLEBAR_HEIGHT + SIZE_STATUSBAR_HEIGHT;
+          const padding = layout.SIZE_TITLEBAR_HEIGHT + layout.SIZE_STATUSBAR_HEIGHT;
           const mouseY = e.clientY - padding;
-          if (SIZE_EDITOR_BOTTOM_TOP_MIN < editorHeight
-            && padding + SIZE_SASH_WIDTH < editorBottomHeight) {
+          if (layout.SIZE_EDITOR_BOTTOM_TOP_MIN < editorHeight
+            && padding + layout.SIZE_SASH_WIDTH < editorBottomHeight) {
             // mouse 뱡향 분기 처리
             if (mouseY < 0) {
-              this.editorBottomHeight = main.clientHeight - SIZE_EDITOR_BOTTOM_TOP_MIN;
+              this.editorBottomHeight = main.clientHeight - layout.SIZE_EDITOR_BOTTOM_TOP_MIN;
             } else if (mouseY + padding > main.clientHeight) {
-              this.editorBottomHeight = padding + SIZE_SASH_WIDTH;
+              this.editorBottomHeight = padding + layout.SIZE_SASH_WIDTH;
             } else if (e.movementY < 0 && mouseY < editorHeight) {
               this.editorBottomHeight = editorBottomHeight;
             } else if (e.movementY > 0 && mouseY > editorHeight) {

@@ -11,6 +11,7 @@
 </template>
 
 <script lang="ts">
+  import {log} from '@/ts/util';
   import { Component, Prop, Vue } from 'vue-property-decorator';
 
   @Component
@@ -24,9 +25,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    border-top-color: $color-editorBottom-top;
-    border-top-width: 1px;
-    border-top-style: solid;
+    border-top: solid 1px $color-editorBottom-top;
 
     .title-tab {
       height: $size-title-height;
