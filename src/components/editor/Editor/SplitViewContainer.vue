@@ -7,7 +7,7 @@
       :class="{ vertical: container.vertical && i !== 0, horizontal: container.horizontal && i !== 0 }")
       Sash(v-if="i !== 0" :vertical="container.vertical" :horizontal="container.horizontal"
         @mousemove="onMousemoveSash($event, i)")
-      SplitViewContainer(v-if="node.views && node.views.length"
+      SplitViewContainer(v-if="node.views && node.views.length" :deep="deep + 1"
         :container="node" :width="viewWidths[i]" :height="viewHeights[i]")
       div.split-view-main(v-else) test
 </template>
@@ -29,32 +29,27 @@
     private readonly height!: number;
     @Prop({type: Object, default: {}})
     private readonly container: any;
+    @Prop({type: Boolean, default: false})
+    private readonly root!: boolean;
+    @Prop({type: Number, default: 0})
+    private readonly deep!: number;
 
-    private viewWidth: number = 0;
-    private viewHeight: number = 0;
-
+    private ratioWidths: number[] = [];
+    private ratioHeights: number[] = [];
     private viewWidths: number[] = [];
     private viewHeights: number[] = [];
 
     @Watch('width')
     private watchWidth() {
-      this.viewWidth = this.container.vertical
-        ? this.width / this.container.views.length
-        : this.width;
-
       this.container.views.forEach((view: {}, i: number) => {
-        this.viewWidths[i] = this.viewWidth;
+        this.viewWidths[i] = this.width * this.ratioWidths[i];
       });
     }
 
     @Watch('height')
     private watchHeight() {
-      this.viewHeight = this.container.horizontal
-        ? this.height / this.container.views.length
-        : this.height;
-
       this.container.views.forEach((view: {}, i: number) => {
-        this.viewHeights[i] = this.viewHeight;
+        this.viewHeights[i] = this.height * this.ratioHeights[i];
       });
     }
 
@@ -67,6 +62,8 @@
         viewWidths[i - 1] += e.movementX;
         viewWidths[i] -= e.movementX;
         this.viewWidths = viewWidths;
+        this.ratioWidths[i - 1] = viewWidths[i - 1] / this.width;
+        this.ratioWidths[i] = viewWidths[i] / this.width;
       } else if (this.container.horizontal) {
         log.debug(`i: ${i}, y: ${e.movementY}`);
 
@@ -74,19 +71,27 @@
         viewHeights[i - 1] += e.movementY;
         viewHeights[i] -= e.movementY;
         this.viewHeights = viewHeights;
+        this.ratioHeights[i - 1] = viewHeights[i - 1] / this.height;
+        this.ratioHeights[i] = viewHeights[i] / this.height;
       }
     }
 
     private created() {
-      // this.watchWidth();
-      // this.watchHeight();
-      log.debug(`created: ${this.width}`);
-    }
-    private mounted() {
-      log.debug(`mounted: ${this.width}`);
-    }
-    private updated() {
-      log.debug(`updated: ${this.width}`);
+      // 비율 초기화
+      const ratioWidth = this.container.vertical
+        ? 1 / this.container.views.length
+        : 1;
+      const ratioHeight = this.container.horizontal
+        ? 1 / this.container.views.length
+        : 1;
+      this.container.views.forEach((view: {}, i: number) => {
+        this.ratioWidths[i] = ratioWidth;
+      });
+      this.container.views.forEach((view: {}, i: number) => {
+        this.ratioHeights[i] = ratioHeight;
+      });
+      this.watchWidth();
+      this.watchHeight();
     }
   }
 </script>
@@ -108,8 +113,7 @@
 
       .split-view-main {
         height: 100%;
-        overflow-x: auto;
-        overflow-y: auto;
+        overflow: auto;
       }
 
       &.vertical {

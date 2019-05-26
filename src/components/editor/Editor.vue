@@ -1,6 +1,6 @@
 <template lang="pug">
   .editor(:style="{ width: `${width}px`, height: `${height}px` }")
-    SplitViewContainer(:container="container" :width="width" :height="height")
+    SplitViewContainer(root :container="container" :width="width" :height="height")
 </template>
 
 <script lang="ts">
@@ -37,9 +37,20 @@
               horizontal: false,
               views: [
                 {
-                  vertical: true,
-                  horizontal: false,
-                  views: [],
+                  vertical: false,
+                  horizontal: true,
+                  views: [
+                    {
+                      vertical: true,
+                      horizontal: false,
+                      views: [],
+                    },
+                    {
+                      vertical: true,
+                      horizontal: false,
+                      views: [],
+                    },
+                  ],
                 },
                 {
                   vertical: false,
