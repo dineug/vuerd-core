@@ -14,6 +14,7 @@
 
 <script lang="ts">
   import {log} from '@/ts/util';
+  import {SIZE_SPLIT_MIN} from '@/ts/layout';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
   import Sash from '..//Sash.vue';
 
@@ -29,10 +30,6 @@
     private readonly height!: number;
     @Prop({type: Object, default: {}})
     private readonly container: any;
-    @Prop({type: Boolean, default: false})
-    private readonly root!: boolean;
-    @Prop({type: Number, default: 0})
-    private readonly deep!: number;
 
     private ratioWidths: number[] = [];
     private ratioHeights: number[] = [];
@@ -53,6 +50,11 @@
       });
     }
 
+    private targetSum(list: number[], index: number): number {
+      return list.filter((width: number, i: number) => i !== index)
+        .reduce((width: number, current: number) => width + current);
+    }
+
     // event handler
     private onMousemoveSash(e: MouseEvent, i: number) {
       if (this.container.vertical) {
@@ -61,18 +63,32 @@
         const viewWidths = [...this.viewWidths];
         viewWidths[i - 1] += e.movementX;
         viewWidths[i] -= e.movementX;
+        if (viewWidths[i - 1] < SIZE_SPLIT_MIN) {
+          viewWidths[i - 1] = SIZE_SPLIT_MIN;
+          viewWidths[i] = this.width - this.targetSum(viewWidths, i);
+        } else if (viewWidths[i] < SIZE_SPLIT_MIN) {
+          viewWidths[i] = SIZE_SPLIT_MIN;
+          viewWidths[i - 1] = this.width - this.targetSum(viewWidths, i - 1);
+        }
         this.viewWidths = viewWidths;
-        this.ratioWidths[i - 1] = viewWidths[i - 1] / this.width;
-        this.ratioWidths[i] = viewWidths[i] / this.width;
+        this.ratioWidths[i - 1] = this.viewWidths[i - 1] / this.width;
+        this.ratioWidths[i] = this.viewWidths[i] / this.width;
       } else if (this.container.horizontal) {
         log.debug(`i: ${i}, y: ${e.movementY}`);
 
         const viewHeights = [...this.viewHeights];
         viewHeights[i - 1] += e.movementY;
         viewHeights[i] -= e.movementY;
+        if (viewHeights[i - 1] < SIZE_SPLIT_MIN) {
+          viewHeights[i - 1] = SIZE_SPLIT_MIN;
+          viewHeights[i] = this.height - this.targetSum(viewHeights, i);
+        } else if (viewHeights[i] < SIZE_SPLIT_MIN) {
+          viewHeights[i] = SIZE_SPLIT_MIN;
+          viewHeights[i - 1] = this.height - this.targetSum(viewHeights, i - 1);
+        }
         this.viewHeights = viewHeights;
-        this.ratioHeights[i - 1] = viewHeights[i - 1] / this.height;
-        this.ratioHeights[i] = viewHeights[i] / this.height;
+        this.ratioHeights[i - 1] = this.viewHeights[i - 1] / this.height;
+        this.ratioHeights[i] = this.viewHeights[i] / this.height;
       }
     }
 

@@ -1,6 +1,6 @@
 <template lang="pug">
   .editor(:style="{ width: `${width}px`, height: `${height}px` }")
-    SplitViewContainer(root :container="container" :width="width" :height="height")
+    SplitViewContainer(:container="container" :width="width" :height="height")
 </template>
 
 <script lang="ts">
@@ -37,20 +37,9 @@
               horizontal: false,
               views: [
                 {
-                  vertical: false,
-                  horizontal: true,
-                  views: [
-                    {
-                      vertical: true,
-                      horizontal: false,
-                      views: [],
-                    },
-                    {
-                      vertical: true,
-                      horizontal: false,
-                      views: [],
-                    },
-                  ],
+                  vertical: true,
+                  horizontal: false,
+                  views: [],
                 },
                 {
                   vertical: false,
@@ -58,8 +47,8 @@
                   views: [],
                 },
                 {
-                  vertical: true,
-                  horizontal: false,
+                  vertical: false,
+                  horizontal: true,
                   views: [],
                 },
               ],
@@ -67,7 +56,28 @@
             {
               vertical: true,
               horizontal: false,
-              views: [],
+              views: [
+                {
+                  vertical: false,
+                  horizontal: true,
+                  views: [],
+                },
+                {
+                  vertical: false,
+                  horizontal: true,
+                  views: [],
+                },
+                {
+                  vertical: false,
+                  horizontal: true,
+                  views: [],
+                },
+                {
+                  vertical: false,
+                  horizontal: true,
+                  views: [],
+                },
+              ],
             },
           ],
         },
