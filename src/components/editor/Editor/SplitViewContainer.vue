@@ -7,7 +7,7 @@
       :class="{ vertical: container.vertical && i !== 0, horizontal: container.horizontal && i !== 0 }")
       Sash(v-if="i !== 0" :vertical="container.vertical" :horizontal="container.horizontal"
         @mousemove="onMousemoveSash($event, i)")
-      SplitViewContainer(v-if="node.views && node.views.length" :deep="deep + 1"
+      SplitViewContainer(v-if="node.views && node.views.length"
         :container="node" :width="viewWidths[i]" :height="viewHeights[i]")
       div.split-view-main(v-else) test
 </template>
@@ -50,6 +50,81 @@
       });
     }
 
+    private minSize(index: number): any {
+      const sum = {
+        width: {
+          left: 0,
+          right: 0,
+        },
+        height: {
+          top: 0,
+          bottom: 0,
+        },
+      };
+      this.container.views.forEach((view: any, i: number) => {
+        const min = this.minDeep(view);
+        if (i < index) {
+          if (sum.width.left < min.width) {
+            sum.width.left = min.width;
+          }
+          if (sum.height.top < min.height) {
+            sum.height.top = min.height;
+          }
+        } else {
+          if (sum.width.right < min.width) {
+            sum.width.right = min.width;
+          }
+          if (sum.height.bottom < min.height) {
+            sum.height.bottom = min.height;
+          }
+        }
+      });
+      const length = {
+        width: {
+          left: 0,
+          right: 0,
+        },
+        height: {
+          top: 0,
+          bottom: 0,
+        },
+      };
+      if (this.container.vertical) {
+        length.width.right = this.container.views.length - index;
+        length.width.left = this.container.views.length - length.width.right;
+        sum.width.left += length.width.left * SIZE_SPLIT_MIN;
+        sum.width.right += length.width.right * SIZE_SPLIT_MIN;
+      } else if (this.container.horizontal) {
+        length.height.bottom = this.container.views.length - index;
+        length.height.top = this.container.views.length - length.height.bottom;
+        sum.height.top += length.height.top * SIZE_SPLIT_MIN;
+        sum.height.bottom += length.height.bottom * SIZE_SPLIT_MIN;
+      }
+      return sum;
+    }
+
+    private minDeep(container: any): any {
+      const sum = {
+        width: 0,
+        height: 0,
+      };
+      container.views.forEach((view: any) => {
+        const min = this.minDeep(view);
+        if (sum.width < min.width) {
+          sum.width = min.width;
+        }
+        if (sum.height < min.height) {
+          sum.height = min.height;
+        }
+      });
+      const width = container.vertical ? container.views.length * SIZE_SPLIT_MIN : 0;
+      const height = container.horizontal ? container.views.length * SIZE_SPLIT_MIN : 0;
+      return {
+        width: sum.width + width,
+        height: sum.height + height,
+      };
+    }
+
     private targetSum(list: number[], index: number): number {
       return list.filter((width: number, i: number) => i !== index)
         .reduce((width: number, current: number) => width + current);
@@ -57,17 +132,18 @@
 
     // event handler
     private onMousemoveSash(e: MouseEvent, i: number) {
+      const min = this.minSize(i);
       if (this.container.vertical) {
         log.debug(`i: ${i}, x: ${e.movementX}`);
 
         const viewWidths = [...this.viewWidths];
         viewWidths[i - 1] += e.movementX;
         viewWidths[i] -= e.movementX;
-        if (viewWidths[i - 1] < SIZE_SPLIT_MIN) {
-          viewWidths[i - 1] = SIZE_SPLIT_MIN;
+        if (viewWidths[i - 1] < min.width.left) {
+          viewWidths[i - 1] = min.width.left;
           viewWidths[i] = this.width - this.targetSum(viewWidths, i);
-        } else if (viewWidths[i] < SIZE_SPLIT_MIN) {
-          viewWidths[i] = SIZE_SPLIT_MIN;
+        } else if (viewWidths[i] < min.width.right) {
+          viewWidths[i] = min.width.right;
           viewWidths[i - 1] = this.width - this.targetSum(viewWidths, i - 1);
         }
         this.viewWidths = viewWidths;
@@ -79,11 +155,11 @@
         const viewHeights = [...this.viewHeights];
         viewHeights[i - 1] += e.movementY;
         viewHeights[i] -= e.movementY;
-        if (viewHeights[i - 1] < SIZE_SPLIT_MIN) {
-          viewHeights[i - 1] = SIZE_SPLIT_MIN;
+        if (viewHeights[i - 1] < min.height.top) {
+          viewHeights[i - 1] = min.height.top;
           viewHeights[i] = this.height - this.targetSum(viewHeights, i);
-        } else if (viewHeights[i] < SIZE_SPLIT_MIN) {
-          viewHeights[i] = SIZE_SPLIT_MIN;
+        } else if (viewHeights[i] < min.height.bottom) {
+          viewHeights[i] = min.height.bottom;
           viewHeights[i - 1] = this.height - this.targetSum(viewHeights, i - 1);
         }
         this.viewHeights = viewHeights;
