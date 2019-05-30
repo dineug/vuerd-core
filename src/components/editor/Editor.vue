@@ -1,11 +1,12 @@
 <template lang="pug">
   .editor(:style="{ width: `${width}px`, height: `${height}px` }")
-    SplitViewContainer(:container="container" :width="width" :height="height")
+    SplitViewContainer(:container="container")
 </template>
 
 <script lang="ts">
   import {log} from '@/ts/util';
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+  import store from '@/store/splitView';
+  import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
   import SplitViewContainer from './Editor/SplitViewContainer.vue';
 
   @Component({
@@ -19,75 +20,27 @@
     @Prop({type: Number, default: 1000})
     private readonly height!: number;
 
-    private container: any = {
-      vertical: true,
-      horizontal: false,
-      views: [
-        {
-          vertical: false,
-          horizontal: true,
-          views: [
-            {
-              vertical: true,
-              horizontal: false,
-              views: [],
-            },
-            {
-              vertical: true,
-              horizontal: false,
-              views: [
-                {
-                  vertical: true,
-                  horizontal: false,
-                  views: [],
-                },
-                {
-                  vertical: false,
-                  horizontal: true,
-                  views: [],
-                },
-                {
-                  vertical: false,
-                  horizontal: true,
-                  views: [],
-                },
-              ],
-            },
-            {
-              vertical: true,
-              horizontal: false,
-              views: [
-                {
-                  vertical: false,
-                  horizontal: true,
-                  views: [],
-                },
-                {
-                  vertical: false,
-                  horizontal: true,
-                  views: [],
-                },
-                {
-                  vertical: false,
-                  horizontal: true,
-                  views: [],
-                },
-                {
-                  vertical: false,
-                  horizontal: true,
-                  views: [],
-                },
-              ],
-            },
-          ],
-        },
-        {
-          vertical: false,
-          horizontal: true,
-          views: [],
-        },
-      ],
-    };
+    @Watch('width')
+    private watchWidth() {
+      store.commit('setWidth', {
+        id: this.container.id,
+        width: this.width,
+      });
+      store.dispatch('resetWidth', {id: this.container.id});
+    }
+
+    @Watch('height')
+    private watchHeight() {
+      store.commit('setHeight', {
+        id: this.container.id,
+        height: this.height,
+      });
+      store.dispatch('resetHeight', {id: this.container.id});
+    }
+
+    get container() {
+      return store.getters.container;
+    }
   }
 </script>
 

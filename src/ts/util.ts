@@ -1,7 +1,7 @@
 import log from './Logger';
-import store from '../store';
+import { v4 as uuid } from 'uuid';
 
 export {
   log,
-  store,
+  uuid,
 };
