@@ -15,9 +15,10 @@
 
 <script lang="ts">
   import {log} from '@/ts/util';
+  import View from '@/model/View';
   import * as recursion from '@/ts/recursionSplitView';
   import {Component, Prop, Vue} from 'vue-property-decorator';
-  import Sash from '..//Sash.vue';
+  import Sash from '../Sash.vue';
 
   @Component({
     components: {
@@ -26,7 +27,7 @@
   })
   export default class SplitViewContainer extends Vue {
     @Prop({type: Object, default: {}})
-    private readonly container: any;
+    private readonly container!: View;
 
     private first: any = {
       left: false,
@@ -35,7 +36,7 @@
       bottom: false,
     };
 
-    private moveWidth(movementX: number, view1: any, view2: any) {
+    private moveWidth(movementX: number, view1: View, view2: View) {
       const direction = movementX < 0 ? 'left' : 'right';
       const minWidth = recursion.minVertical(view1);
       const width = direction === 'left' ? view1.width + movementX : view1.width - movementX;
@@ -61,7 +62,7 @@
       }
     }
 
-    private moveHeight(movementY: number, view1: any, view2: any) {
+    private moveHeight(movementY: number, view1: View, view2: View) {
       const direction = movementY < 0 ? 'top' : 'bottom';
       const minHeight = recursion.minVertical(view1);
       const height = direction === 'top' ? view1.height + movementY : view1.height - movementY;

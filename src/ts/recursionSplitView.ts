@@ -1,11 +1,12 @@
 import {log} from './util';
 import {SIZE_SPLIT_MIN} from './layout';
+import View from '@/model/View';
 
-export const findById = (container: any, id: string) => {
+export const findById = (container: View, id: string): View => {
   if (container.id === id) {
     return container;
   } else {
-    let target: any;
+    let target!: View;
     for (const view of container.views) {
       target = findById(view, id);
       if (target) {
@@ -16,20 +17,20 @@ export const findById = (container: any, id: string) => {
   }
 };
 
-export const resetWidth = (container: any) => {
+export const resetWidth = (container: View) => {
   const width = container.vertical ? container.width / container.views.length : container.width;
   const widthRatio = container.vertical ? 1 / container.views.length : 1;
-  container.views.forEach((view: any) => {
+  container.views.forEach((view: View) => {
     view.width = width;
     view.widthRatio = widthRatio;
     resetWidth(view);
   });
 };
 
-export const resetHeight = (container: any) => {
+export const resetHeight = (container: View) => {
   const height = container.horizontal ? container.height / container.views.length : container.height;
   const heightRatio = container.horizontal ? 1 / container.views.length : 1;
-  container.views.forEach((view: any) => {
+  container.views.forEach((view: View) => {
     view.height = height;
     view.heightRatio = heightRatio;
     resetHeight(view);
@@ -50,24 +51,24 @@ export const resetHeight = (container: any) => {
 // 2. 같은 레벨 view width 감소처리
 // 3. views로 minWidth 체크
 // 4. views중에 감소시 괜찮은녀석으로 감소처리 추가?
-export const resetWidthRatio = (container: any) => {
-  container.views.forEach((view: any) => {
+export const resetWidthRatio = (container: View) => {
+  container.views.forEach((view: View) => {
     view.width = container.width * view.widthRatio;
     resetWidthRatio(view);
   });
 };
 
-export const resetHeightRatio = (container: any) => {
-  container.views.forEach((view: any) => {
+export const resetHeightRatio = (container: View) => {
+  container.views.forEach((view: View) => {
     view.height = container.height * view.heightRatio;
     resetHeightRatio(view);
   });
 };
 
-export const minVertical = (container: any): number => {
+export const minVertical = (container: View): number => {
   let widthSum = 0;
   let widthMax = SIZE_SPLIT_MIN;
-  container.views.forEach((view: any) => {
+  container.views.forEach((view: View) => {
     const width = minVertical(view);
     if (container.vertical) {
       widthSum += width;
@@ -86,10 +87,10 @@ export const minVertical = (container: any): number => {
   return result;
 };
 
-export const minHorizontal = (container: any): number => {
+export const minHorizontal = (container: View): number => {
   let heightSum = 0;
   let heightMax = SIZE_SPLIT_MIN;
-  container.views.forEach((view: any) => {
+  container.views.forEach((view: View) => {
     const height = minHorizontal(view);
     if (container.horizontal) {
       heightSum += height;

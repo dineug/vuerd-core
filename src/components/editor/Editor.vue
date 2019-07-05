@@ -5,6 +5,7 @@
 
 <script lang="ts">
   import {log} from '@/ts/util';
+  import View from '@/model/View';
   import store from '@/store/splitView';
   import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
   import SplitViewContainer from './Editor/SplitViewContainer.vue';
@@ -20,7 +21,7 @@
     @Prop({type: Number, default: 1000})
     private readonly height!: number;
 
-    get container() {
+    get container(): View {
       return store.getters.container;
     }
 
