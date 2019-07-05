@@ -17,7 +17,6 @@
   import '@/plugins/rxjs';
   import '@/plugins/vuetify';
 
-  import {log} from '@/ts/util';
   import * as layout from '@/ts/layout';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Titlebar from './Titlebar.vue';

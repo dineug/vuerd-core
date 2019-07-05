@@ -14,7 +14,6 @@
 </template>
 
 <script lang="ts">
-  import {log} from '@/ts/util';
   import View from '@/model/View';
   import * as recursion from '@/ts/recursionSplitView';
   import {Component, Prop, Vue} from 'vue-property-decorator';

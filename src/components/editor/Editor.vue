@@ -4,7 +4,6 @@
 </template>
 
 <script lang="ts">
-  import {log} from '@/ts/util';
   import View from '@/model/View';
   import store from '@/store/splitView';
   import { Component, Prop, Watch, Vue } from 'vue-property-decorator';

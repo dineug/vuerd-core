@@ -5,7 +5,6 @@
 </template>
 
 <script lang="ts">
-  import {log} from '@/ts/util';
   import {SIZE_SASH} from '@/ts/layout';
   import {Component, Prop, Vue} from 'vue-property-decorator';
 

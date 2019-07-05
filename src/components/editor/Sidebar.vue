@@ -5,7 +5,6 @@
 </template>
 
 <script lang="ts">
-  import {log} from '@/ts/util';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Title from './Sidebar/Title.vue';
   import Content from './Sidebar/Content.vue';

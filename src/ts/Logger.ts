@@ -27,7 +27,7 @@ export default class Logger {
     });
   }
 
-  private static log(logs: Array<{}>, option: Option) {
+  private static log(logs: any[], option: Option) {
     if ('development' === process.env.NODE_ENV) {
       logs.forEach((log: any) => {
         switch (option.level) {

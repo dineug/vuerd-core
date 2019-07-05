@@ -1,6 +1,5 @@
-import {log} from './util';
-import {SIZE_SPLIT_MIN} from './layout';
 import View from '@/model/View';
+import {SIZE_SPLIT_MIN} from './layout';
 
 export const findById = (container: View, id: string): View => {
   if (container.id === id) {
