@@ -20,27 +20,28 @@
     @Prop({type: Number, default: 1000})
     private readonly height!: number;
 
+    get container() {
+      return store.getters.container;
+    }
+
     @Watch('width')
     private watchWidth() {
-      store.commit('setWidth', {
+      this.container.width = this.width;
+      store.dispatch({
+        type: 'resetWidth',
         id: this.container.id,
-        width: this.width,
       });
-      store.dispatch('resetWidth', {id: this.container.id});
     }
 
     @Watch('height')
     private watchHeight() {
-      store.commit('setHeight', {
+      this.container.height = this.height;
+      store.dispatch({
+        type: 'resetHeight',
         id: this.container.id,
-        height: this.height,
       });
-      store.dispatch('resetHeight', {id: this.container.id});
     }
 
-    get container() {
-      return store.getters.container;
-    }
   }
 </script>
 
