@@ -15,7 +15,6 @@
 <style scoped lang="scss">
   .actions-container {
     text-align: center;
-    list-style-type: none;
     padding: 0;
     cursor: pointer;
 

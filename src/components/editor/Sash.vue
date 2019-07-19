@@ -1,7 +1,9 @@
 <template lang="pug">
-  .sash(:class="{ vertical: vertical, horizontal: horizontal }"
+  .sash(
+    :class="{ vertical: vertical, horizontal: horizontal }"
     :style="{ top: `${centerTop}px`, left: `${centerLeft}px`}"
-    @mousedown="onMousedown")
+    @mousedown="onMousedown"
+  )
 </template>
 
 <script lang="ts">
@@ -32,6 +34,7 @@
         ? this.top
         : this.top - (SIZE_SASH / 2);
     }
+
     get centerLeft() {
       return this.left === 0 && !this.vertical
         ? this.left
@@ -43,10 +46,12 @@
       this.subscriptionMouseup = this.mouseup$.subscribe(this.onMouseup);
       this.subscriptionMousemove = this.mousemove$.subscribe(this.onMousemove);
     }
+
     private onMouseup() {
       this.subscriptionMouseup.unsubscribe();
       this.subscriptionMousemove.unsubscribe();
     }
+
     private onMousemove(event: Event) {
       event.preventDefault();
       const e = event as MouseEvent;

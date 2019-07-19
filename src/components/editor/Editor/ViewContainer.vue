@@ -1,30 +1,43 @@
 <template lang="pug">
-  .split-view-container(:style="{ width: `${container.width}px`, height: `${container.height}px` }"
-    :class="{ vertical: container.vertical, horizontal: container.horizontal }")
+  .split-view-container(
+    :style="{ width: `${container.width}px`, height: `${container.height}px` }"
+    :class="{ vertical: container.vertical, horizontal: container.horizontal }"
+  )
 
-    .split-view-view(v-for="(node, i) in container.views"
-      :id="node.id"
+    .split-view-view(
+      v-for="(node, i) in container.views"
+      :key="node.id"
       :style="{ width: `${node.width}px`, height: `${node.height}px` }"
-      :class="{ vertical: container.vertical && i !== 0, horizontal: container.horizontal && i !== 0 }")
-      Sash(v-if="i !== 0" :vertical="container.vertical" :horizontal="container.horizontal"
-        @mousemove="onMousemoveSash($event, i)")
-      SplitViewContainer(v-if="node.views && node.views.length"
-        :container="node")
-      .split-view-main(v-else) test
+      :class="{ vertical: container.vertical && i !== 0, horizontal: container.horizontal && i !== 0 }"
+    )
+      Sash(
+        v-if="i !== 0"
+        :vertical="container.vertical"
+        :horizontal="container.horizontal"
+        @mousemove="onMousemoveSash($event, i)"
+      )
+      ViewContainer(
+        v-if="node.views.length !== 0"
+        :container="node"
+      )
+      .split-view-main(v-else)
+        ViewTab(:tabs="node.tabs")
 </template>
 
 <script lang="ts">
-  import View from '@/model/View';
-  import * as recursion from '@/ts/recursionSplitView';
+  import View from '@/models/View';
+  import * as recursion from '@/ts/recursionView';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Sash from '../Sash.vue';
+  import ViewTab from './ViewTab.vue';
 
   @Component({
     components: {
       Sash,
+      ViewTab,
     },
   })
-  export default class SplitViewContainer extends Vue {
+  export default class ViewContainer extends Vue {
     @Prop({type: Object, default: {}})
     private readonly container!: View;
 

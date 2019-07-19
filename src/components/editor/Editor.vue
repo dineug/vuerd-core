@@ -1,17 +1,17 @@
 <template lang="pug">
   .editor(:style="{ width: `${width}px`, height: `${height}px` }")
-    SplitViewContainer(:container="container")
+    ViewContainer(:container="container")
 </template>
 
 <script lang="ts">
-  import View from '@/model/View';
-  import store from '@/store/splitView';
-  import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
-  import SplitViewContainer from './Editor/SplitViewContainer.vue';
+  import View from '@/models/View';
+  import view from '@/store/view';
+  import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
+  import ViewContainer from './Editor/ViewContainer.vue';
 
   @Component({
     components: {
-      SplitViewContainer,
+      ViewContainer,
     },
   })
   export default class Editor extends Vue {
@@ -21,25 +21,19 @@
     private readonly height!: number;
 
     get container(): View {
-      return store.getters.container;
+      return view.getters.container;
     }
 
     @Watch('width')
     private watchWidth() {
       this.container.width = this.width;
-      store.dispatch({
-        type: 'resetWidth',
-        id: this.container.id,
-      });
+      view.dispatch('resetWidth', {id: this.container.id});
     }
 
     @Watch('height')
     private watchHeight() {
       this.container.height = this.height;
-      store.dispatch({
-        type: 'resetHeight',
-        id: this.container.id,
-      });
+      view.dispatch('resetHeight', {id: this.container.id});
     }
 
   }

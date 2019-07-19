@@ -1,4 +1,9 @@
-interface View {
+import Tab from './Tab';
+
+/**
+ * Editor view
+ */
+export default interface View {
   id: string;
   vertical: boolean;
   horizontal: boolean;
@@ -7,6 +12,5 @@ interface View {
   widthRatio: number;
   heightRatio: number;
   views: View[];
+  tabs: Tab[];
 }
-
-export default View;

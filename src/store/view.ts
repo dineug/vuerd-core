@@ -1,14 +1,16 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import * as recursion from '@/ts/recursionSplitView';
+import * as recursion from '@/ts/recursionView';
 
-import dataView from '@/data/view';
+import init, {dContainer, dView, dTabs} from '@/data/view';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    container: dataView(),
+    // container: dContainer(),
+    container: dView,
+    tabs: dTabs,
   },
   getters: {
     container: (state: any) => state.container,

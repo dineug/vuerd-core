@@ -1,4 +1,4 @@
-import View from '@/model/View';
+import View from '@/models/View';
 import {SIZE_SPLIT_MIN} from './layout';
 
 export const findById = (container: View, id: string): View => {
