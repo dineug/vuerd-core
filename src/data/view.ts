@@ -54,6 +54,36 @@ export const dTabs = [
     name: 'index.js',
     path: 'public/index.js',
   },
+  {
+    id: uuid(),
+    name: 'index.jsp',
+    path: 'public/index.jsp',
+  },
+  {
+    id: uuid(),
+    name: '1.ts',
+    path: 'public/1.ts',
+  },
+  {
+    id: uuid(),
+    name: '2.ts',
+    path: 'public/2.ts',
+  },
+  {
+    id: uuid(),
+    name: '3.ts',
+    path: 'public/3.ts',
+  },
+  {
+    id: uuid(),
+    name: '4.ts',
+    path: 'public/5.ts',
+  },
+  {
+    id: uuid(),
+    name: '6.ts',
+    path: 'public/6.ts',
+  },
 ];
 
 // view
@@ -65,17 +95,38 @@ export const dView = {
   height: 2000,
   widthRatio: 1,
   heightRatio: 1,
-  views: [{
-    id: uuid(),
-    vertical: true,
-    horizontal: false,
-    width: 2000,
-    height: 2000,
-    widthRatio: 1,
-    heightRatio: 1,
-    views: [],
-    tabs: dTabs,
-  }],
+  views: [
+    {
+      id: uuid(),
+      vertical: true,
+      horizontal: false,
+      width: 2000,
+      height: 2000,
+      widthRatio: 1,
+      heightRatio: 1,
+      views: [],
+      tabs: [
+        dTabs[2],
+        dTabs[3],
+        dTabs[4],
+        dTabs[5],
+        dTabs[6],
+        dTabs[7],
+        dTabs[8],
+      ],
+    },
+    {
+      id: uuid(),
+      vertical: true,
+      horizontal: false,
+      width: 2000,
+      height: 2000,
+      widthRatio: 1,
+      heightRatio: 1,
+      views: [],
+      tabs: [dTabs[0], dTabs[1]],
+    },
+  ],
   tabs: [],
 };
 

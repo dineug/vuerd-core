@@ -21,7 +21,10 @@
         :container="node"
       )
       .split-view-main(v-else)
-        ViewTab(:tabs="node.tabs")
+        ViewTab(
+          :tabs="node.tabs"
+          :width="node.width"
+        )
 </template>
 
 <script lang="ts">

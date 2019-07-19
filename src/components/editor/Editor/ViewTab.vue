@@ -1,19 +1,29 @@
 <template lang="pug">
-  transition-group.split-view-tab(name="tab" tag="ul" ref="ul")
-    li(
-      draggable
-      v-for="(tab, i) in tabs"
-      :key="tab.id"
-      :id="tab.id"
-      :class="{active: activeId === tab.id}"
-      @click="onActive(tab.id)"
-      @dragstart="onDragstart"
+  .split-view-tab(:style="`width: ${width}px;`")
+    transition-group(
+      :style="`min-width: ${minWidth}px;`"
+      name="tab"
+      tag="ul"
+      ref="ul"
     )
-      span.icon
-        v-icon(color="grey lighten-1" small) {{tab.name | mdi}}
-      span.name {{tab.name}}
-      span.close
-        v-icon(color="grey lighten-1" size="12") mdi-close
+      li(
+        draggable
+        v-for="(tab, i) in tabs"
+        :key="tab.id"
+        :id="tab.id"
+        :class="{active: activeId === tab.id, draggable: dragTab && dragTab.id === tab.id}"
+        @click="onActive(tab.id)"
+        @dragstart="onDragstart"
+        @dragend="onDragend"
+      )
+        v-tooltip(bottom open-delay="500" :disabled="tooltipDisabled")
+          template(v-slot:activator="{ on }")
+            span.icon
+                v-icon(color="grey lighten-1" small) {{tab.name | mdi}}
+            span.name(v-on="on" :id="`tab_name_${tab.id}`") {{tab.name}}
+            span.close
+              v-icon(color="grey lighten-1" size="12") mdi-close
+          span {{tab.path}}
 </template>
 
 <script lang="ts">
@@ -29,6 +39,8 @@
     subscriptionDragover: Subscription;
   }
 
+  const TAB_PADDING = 41.5;
+
   @Component({
     filters: {
       mdi(name: string): string {
@@ -42,11 +54,26 @@
     private readonly tabs!: Tab[];
     @Prop({type: String, default: ''})
     private active!: string;
+    @Prop({type: Number, default: 0})
+    private width!: number;
 
+    private minWidth: number = 0;
+    private tooltipDisabled: boolean = false;
     private activeId: string = '';
     private dragTab: Tab | null = null;
-    // event observable
     private draggableListener: DraggableObservable[] = [];
+
+    private setMinWidth() {
+      this.minWidth = 0;
+      const uiVNode = this.$refs.ul as Vue;
+      uiVNode.$el.childNodes.forEach((child: ChildNode) => {
+        const li = child as HTMLElement;
+        const span = document.getElementById(`tab_name_${li.id}`);
+        if (span) {
+          this.minWidth += span.offsetWidth + TAB_PADDING;
+        }
+      });
+    }
 
     // tab move
     private move(targetTab: Tab | null) {
@@ -127,8 +154,17 @@
       log.debug('onDragstart');
       if (event.target) {
         const elem = event.target as HTMLElement;
+        elem.classList.add('draggable');
         this.dragTab = this.findByTab(elem.id);
+        this.tooltipDisabled = true;
       }
+    }
+
+    private onDragend(event: DragEvent) {
+      const elem = event.target as HTMLElement;
+      elem.classList.remove('draggable');
+      this.dragTab = null;
+      this.tooltipDisabled = false;
     }
 
     private onDragover(event: Event) {
@@ -152,32 +188,43 @@
 
     private mounted() {
       this.onDraggable();
+      this.setMinWidth();
     }
   }
 </script>
 
 <style scoped lang="scss">
   .split-view-tab {
-    padding: 0;
-    background-color: $color-sidebar;
+    position: absolute;
+    overflow-x: auto;
 
-    li {
-      display: inline-block;
-      padding: 5px;
-      cursor: pointer;
-      background-color: $color-tab;
+    ul {
+      padding: 0;
+      background-color: $color-sidebar;
 
-      &.active {
-        color: white;
-        background-color: $color-editor;
-      }
+      li {
+        display: inline-block;
+        padding: 5px;
+        cursor: pointer;
+        background-color: $color-tab;
 
-      .icon {
-        padding-right: 3px;
-      }
+        &.active {
+          color: white;
+          background-color: $color-editor;
+        }
 
-      .name {
-        padding-right: 7px;
+        &.draggable {
+          opacity: 0.5;
+        }
+
+        .icon {
+          padding-right: 3px;
+        }
+
+        .name {
+          width: 50px;
+          padding-right: 7px;
+        }
       }
     }
   }
