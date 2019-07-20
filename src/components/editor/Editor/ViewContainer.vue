@@ -24,6 +24,7 @@
         ViewTab(
           :tabs="node.tabs"
           :width="node.width"
+          :viewId="node.id"
         )
 </template>
 

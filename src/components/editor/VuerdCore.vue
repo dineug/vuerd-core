@@ -16,6 +16,7 @@
 <script lang="ts">
   import '@/plugins/rxjs';
   import '@/plugins/vuetify';
+  import '@/plugins/eventBus';
 
   import * as layout from '@/ts/layout';
   import {Component, Prop, Vue} from 'vue-property-decorator';

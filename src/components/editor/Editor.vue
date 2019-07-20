@@ -5,7 +5,7 @@
 
 <script lang="ts">
   import View from '@/models/View';
-  import view from '@/store/view';
+  import viewStore from '@/store/view';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
   import ViewContainer from './Editor/ViewContainer.vue';
 
@@ -21,19 +21,19 @@
     private readonly height!: number;
 
     get container(): View {
-      return view.getters.container;
+      return viewStore.getters.container;
     }
 
     @Watch('width')
     private watchWidth() {
       this.container.width = this.width;
-      view.dispatch('resetWidth', {id: this.container.id});
+      viewStore.commit('resetWidth', {id: this.container.id});
     }
 
     @Watch('height')
     private watchHeight() {
       this.container.height = this.height;
-      view.dispatch('resetHeight', {id: this.container.id});
+      viewStore.commit('resetHeight', {id: this.container.id});
     }
 
   }
