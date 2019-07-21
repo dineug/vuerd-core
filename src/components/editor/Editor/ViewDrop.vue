@@ -1,12 +1,14 @@
 <template lang="pug">
-  .split-view-drop(:style="`width: ${_width}px; height: ${_height}px; top: ${top}px; left: ${left}px;`")
+  .split-view-drop(
+    :style="`width: ${_width}px; height: ${_height}px; top: ${top}px; left: ${left}px;`"
+  )
 </template>
 
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
   import Direction from '@/models/Direction';
   import {log} from '@/ts/util';
-  import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
+  import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
 
   import {fromEvent, Subscription} from 'rxjs';
 
@@ -69,15 +71,18 @@
       log.debug('ViewDrop onDragover');
       this.$emit('dragover', event as DragEvent);
     }
+
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
     private mounted() {
       this.subscriptionDragover = fromEvent(this.$el, 'dragover').subscribe(this.onDragover);
     }
+
     private destroyed() {
       this.subscriptionDragover.unsubscribe();
     }
+
     // ==================== Life Cycle END ====================
   }
 </script>

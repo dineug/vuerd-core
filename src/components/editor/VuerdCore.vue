@@ -14,9 +14,7 @@
 </template>
 
 <script lang="ts">
-  // import '@/plugins/rxjs';
   import '@/plugins/vuetify';
-  // import '@/plugins/eventBus';
 
   import * as layout from '@/ts/layout';
   import {Component, Prop, Vue} from 'vue-property-decorator';
@@ -29,6 +27,13 @@
   import Statusbar from './Statusbar.vue';
 
   import {fromEvent, Observable, Subscription} from 'rxjs';
+
+  interface ResizeMovement {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }
 
   @Component({
     components: {
@@ -47,7 +52,7 @@
     private editorHeight: number = 1000;
     private editorBottomHeight: number = 200;
 
-    private resizeMovement: any = {
+    private resizeMovement: ResizeMovement = {
       x: 0, y: 0,
       width: window.innerWidth,
       height: window.innerHeight,
@@ -127,6 +132,7 @@
           break;
       }
     }
+
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
@@ -140,6 +146,7 @@
       this.subscriptionResize.unsubscribe();
       this.subscriptionResizeMovement.unsubscribe();
     }
+
     // ==================== Life Cycle END ====================
   }
 </script>
@@ -157,17 +164,21 @@
     width: $size-scrollbar;
     height: $size-scrollbar;
   }
+
   /* Track */
   ::-webkit-scrollbar-track {
     background: $color-opacity;
   }
+
   ::-webkit-scrollbar-corner {
     background: $color-opacity;
   }
+
   /* Handle */
   ::-webkit-scrollbar-thumb {
     background: $color-scrollbar-thumb;
   }
+
   /* Handle : hover*/
   ::-webkit-scrollbar-thumb:hover {
     background: $color-editorBottom-top;

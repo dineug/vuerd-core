@@ -22,7 +22,7 @@
         v-tooltip(bottom open-delay="500" :disabled="tooltipDisabled")
           template(v-slot:activator="{ on }")
             span.icon
-                v-icon(color="grey lighten-1" small) {{tab.name | mdi}}
+              v-icon(color="grey lighten-1" small) {{tab.name | mdi}}
             span.name(v-on="on" :id="`tab_name_${tab.id}`") {{tab.name}}
             span.close(@click="onClose($event, tab)")
               v-icon(color="grey lighten-1" size="12") mdi-close
@@ -235,6 +235,7 @@
       log.debug('ViewTab onDragenter');
       this.$emit('dragenter', event as DragEvent);
     }
+
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
@@ -271,6 +272,7 @@
         draggable.subscriptionDragover.unsubscribe();
       });
     }
+
     // ==================== Life Cycle END ====================
 
   }

@@ -15,7 +15,6 @@
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
     "vue-property-decorator": "^8.1.0",
-    "vue-rx": "^6.2.0",
     "vuedraggable": "^2.21.0",
     "vuetify": "^1.5.14",
     "vuex": "^3.0.1"

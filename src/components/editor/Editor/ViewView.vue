@@ -59,6 +59,7 @@
     private watchWidth(val: number) {
       this.width = val;
     }
+
     @Watch('view.height')
     private watchHeight(val: number) {
       this.height = val - SIZE_VIEW_TAB_HEIGHT;
@@ -69,14 +70,17 @@
       log.debug('ViewView onDragstartTab');
       eventBus.$emit('view-view-drop-start');
     }
+
     private onDragendTab() {
       log.debug('ViewView onDragendTab');
       eventBus.$emit('view-view-drop-end');
     }
+
     private onDragenterTab() {
       log.debug('ViewView onDragenterTab');
       this.dropView = false;
     }
+
     private onDragenter() {
       log.debug('ViewView onDragenter');
       eventBus.$emit('view-view-drop-view', this.view.id);
@@ -115,6 +119,7 @@
         this.direction = Direction.all;
       }
     }
+
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
@@ -126,6 +131,10 @@
       });
       eventBus.$on('view-view-drop-end', () => {
         log.debug('ViewView view-view-drop-end');
+        // drop split
+        if (this.dropView) {
+          log.debug(this.direction);
+        }
         this.dropView = false;
         this.subscriptionDragenter.unsubscribe();
         this.subscriptionDragover.unsubscribe();
@@ -141,10 +150,12 @@
       this.width = this.view.width;
       this.height = this.view.height - SIZE_VIEW_TAB_HEIGHT;
     }
+
     private mounted() {
       this.dragover$ = fromEvent(this.$refs.view as HTMLElement, 'dragover');
       this.dragenter$ = fromEvent(this.$refs.view as HTMLElement, 'dragenter');
     }
+
     // ==================== Life Cycle END ====================
   }
 </script>
