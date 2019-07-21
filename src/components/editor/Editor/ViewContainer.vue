@@ -20,25 +20,21 @@
         v-if="node.views.length !== 0"
         :container="node"
       )
-      .split-view-main(v-else)
-        ViewTab(
-          :tabs="node.tabs"
-          :width="node.width"
-          :viewId="node.id"
-        )
+      ViewView(v-else :view="node")
 </template>
 
 <script lang="ts">
   import View from '@/models/View';
-  import * as recursion from '@/ts/recursionView';
+  import Direction from '@/models/Direction';
+  import {minVertical, resetWidthRatio, resetHeightRatio} from '@/ts/recursionView';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Sash from '../Sash.vue';
-  import ViewTab from './ViewTab.vue';
+  import ViewView from './ViewView.vue';
 
   @Component({
     components: {
       Sash,
-      ViewTab,
+      ViewView,
     },
   })
   export default class ViewContainer extends Vue {
@@ -53,58 +49,58 @@
     };
 
     private moveWidth(movementX: number, view1: View, view2: View) {
-      const direction = movementX < 0 ? 'left' : 'right';
-      const minWidth = recursion.minVertical(view1);
-      const width = direction === 'left' ? view1.width + movementX : view1.width - movementX;
+      const direction: Direction = movementX < 0 ? Direction.left : Direction.right;
+      const minWidth = minVertical(view1);
+      const width = direction === Direction.left ? view1.width + movementX : view1.width - movementX;
       if (minWidth < width) {
         view1.width = width;
-        view2.width = direction === 'left' ? view2.width - movementX : view2.width + movementX;
+        view2.width = direction === Direction.left ? view2.width - movementX : view2.width + movementX;
         view1.widthRatio = view1.width / this.container.width;
         view2.widthRatio = view2.width / this.container.width;
-        recursion.resetWidthRatio(view1);
-        recursion.resetWidthRatio(view2);
+        resetWidthRatio(view1);
+        resetWidthRatio(view2);
         this.first[direction] = true;
       } else {
         const oldWidth = view1.width;
         view1.width = minWidth;
         view1.widthRatio = view1.width / this.container.width;
-        recursion.resetWidthRatio(view1);
+        resetWidthRatio(view1);
         if (this.first[direction]) {
           view2.width += oldWidth - minWidth;
           view2.widthRatio = view2.width / this.container.width;
-          recursion.resetWidthRatio(view2);
+          resetWidthRatio(view2);
           this.first[direction] = false;
         }
       }
     }
 
     private moveHeight(movementY: number, view1: View, view2: View) {
-      const direction = movementY < 0 ? 'top' : 'bottom';
-      const minHeight = recursion.minVertical(view1);
-      const height = direction === 'top' ? view1.height + movementY : view1.height - movementY;
+      const direction: Direction = movementY < 0 ? Direction.top : Direction.bottom;
+      const minHeight = minVertical(view1);
+      const height = direction === Direction.top ? view1.height + movementY : view1.height - movementY;
       if (minHeight < height) {
         view1.height = height;
-        view2.height = direction === 'top' ? view2.height - movementY : view2.height + movementY;
+        view2.height = direction === Direction.top ? view2.height - movementY : view2.height + movementY;
         view1.heightRatio = view1.height / this.container.height;
         view2.heightRatio = view2.height / this.container.height;
-        recursion.resetHeightRatio(view1);
-        recursion.resetHeightRatio(view2);
+        resetHeightRatio(view1);
+        resetHeightRatio(view2);
         this.first[direction] = true;
       } else {
         const oldHeight = view1.height;
         view1.height = minHeight;
         view1.heightRatio = view1.height / this.container.height;
-        recursion.resetHeightRatio(view1);
+        resetHeightRatio(view1);
         if (this.first[direction]) {
           view2.height += oldHeight - minHeight;
           view2.heightRatio = view2.height / this.container.height;
-          recursion.resetHeightRatio(view2);
+          resetHeightRatio(view2);
           this.first[direction] = false;
         }
       }
     }
 
-    // event handler
+    // ==================== Event Handler ===================
     private onMousemoveSash(e: MouseEvent, i: number) {
       if (this.container.vertical) {
         if (e.movementX < 0) {
@@ -124,7 +120,7 @@
         }
       }
     }
-
+    // ==================== Event Handler END ===================
   }
 </script>
 
@@ -142,11 +138,6 @@
 
     .split-view-view {
       position: relative;
-
-      .split-view-main {
-        height: 100%;
-        overflow: auto;
-      }
 
       &.vertical {
         border-left: solid 1px $color-editorBottom-top;

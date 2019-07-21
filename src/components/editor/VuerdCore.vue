@@ -14,9 +14,9 @@
 </template>
 
 <script lang="ts">
-  import '@/plugins/rxjs';
+  // import '@/plugins/rxjs';
   import '@/plugins/vuetify';
-  import '@/plugins/eventBus';
+  // import '@/plugins/eventBus';
 
   import * as layout from '@/ts/layout';
   import {Component, Prop, Vue} from 'vue-property-decorator';
@@ -58,7 +58,7 @@
     private subscriptionResize!: Subscription;
     private subscriptionResizeMovement!: Subscription;
 
-    // event handler
+    // ==================== Event Handler ===================
     private onResizeMovement() {
       this.resizeMovement.x = window.innerWidth - this.resizeMovement.width;
       this.resizeMovement.y = window.innerHeight - this.resizeMovement.height;
@@ -89,7 +89,7 @@
           const workspace = this.$refs.workspace as HTMLElement;
           const sidebarWidth = this.sidebarWidth + e.movementX;
           const mainWidth = workspace.clientWidth - sidebarWidth - layout.SIZE_ACTIVITYBAR_WIDTH;
-          const mouseX = e.clientX - layout.SIZE_ACTIVITYBAR_WIDTH;
+          const mouseX = e.x - layout.SIZE_ACTIVITYBAR_WIDTH;
           if (0 < sidebarWidth && layout.SIZE_MAIN_WIDTH_MIN < mainWidth) {
             // mouse 뱡향 분기 처리
             if (mouseX < 0) {
@@ -109,7 +109,7 @@
           const editorBottomHeight = this.editorBottomHeight - e.movementY;
           const editorHeight = main.clientHeight - editorBottomHeight;
           const padding = layout.SIZE_TITLEBAR_HEIGHT + layout.SIZE_STATUSBAR_HEIGHT;
-          const mouseY = e.clientY - padding;
+          const mouseY = e.y - padding;
           if (layout.SIZE_EDITOR_BOTTOM_TOP_MIN < editorHeight
             && padding + layout.SIZE_SASH < editorBottomHeight) {
             // mouse 뱡향 분기 처리
@@ -127,7 +127,9 @@
           break;
       }
     }
+    // ==================== Event Handler END ===================
 
+    // ==================== Life Cycle ====================
     private mounted() {
       this.subscriptionResizeMovement = this.resize$.subscribe(this.onResizeMovement);
       this.subscriptionResize = this.resize$.subscribe(this.onResize);
@@ -138,6 +140,7 @@
       this.subscriptionResize.unsubscribe();
       this.subscriptionResizeMovement.unsubscribe();
     }
+    // ==================== Life Cycle END ====================
   }
 </script>
 

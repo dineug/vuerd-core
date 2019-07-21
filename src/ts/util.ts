@@ -1,5 +1,6 @@
 import log from './Logger';
 import { v4 as uuid } from 'uuid';
+import Vue from 'vue';
 
 /**
  * 랜덤 범위 정수 반환
@@ -48,9 +49,12 @@ const icon = (ext: string): string => {
   return mdi;
 };
 
+const eventBus = new Vue();
+
 export {
   log,
   uuid,
   randomInt,
   icon,
+  eventBus,
 };

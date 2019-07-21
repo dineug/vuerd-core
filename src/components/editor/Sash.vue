@@ -41,7 +41,7 @@
         : this.left - (SIZE_SASH / 2);
     }
 
-    // event handler
+    // ==================== Event Handler ===================
     private onMousedown() {
       this.subscriptionMouseup = this.mouseup$.subscribe(this.onMouseup);
       this.subscriptionMousemove = this.mousemove$.subscribe(this.onMousemove);
@@ -54,16 +54,16 @@
 
     private onMousemove(event: Event) {
       event.preventDefault();
-      const e = event as MouseEvent;
-      this.$emit('mousemove', e);
+      this.$emit('mousemove', event as MouseEvent);
     }
+    // ==================== Event Handler END ===================
   }
 </script>
 
 <style scoped lang="scss">
   .sash {
     position: absolute;
-    z-index: 35;
+    z-index: 1000;
 
     &.vertical {
       width: $size-sash;

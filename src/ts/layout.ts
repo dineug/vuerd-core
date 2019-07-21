@@ -5,3 +5,4 @@ export const SIZE_MAIN_WIDTH_MIN = 200;
 export const SIZE_EDITOR_BOTTOM_TOP_MIN = 70;
 export const SIZE_SASH = 5;
 export const SIZE_SPLIT_MIN = 30;
+export const SIZE_VIEW_TAB_HEIGHT = 31;
