@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import View from '@/models/View';
 import Tab from '@/models/Tab';
+import TabDraggable from '@/models/TabDraggable';
 import * as recursion from '@/ts/recursionView';
 import init, {dContainer, dView, dTabs} from '@/data/view';
 
@@ -11,11 +12,6 @@ interface State {
   container: View;
   tabs: Tab[];
   tabDraggable: TabDraggable;
-}
-
-interface TabDraggable {
-  viewId: string;
-  tab: Tab | null;
 }
 
 export default new Vuex.Store({

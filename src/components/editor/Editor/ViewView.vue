@@ -24,8 +24,12 @@
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
   import View from '@/models/View';
+  import Tab from '@/models/Tab';
   import Direction from '@/models/Direction';
+  import TabDraggable from '@/models/TabDraggable';
   import {eventBus, log} from '@/ts/util';
+  import {findById, findParentById, split, resetWidth, resetHeight} from '@/ts/recursionView';
+  import viewStore from '@/store/view';
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
   import ViewTab from './ViewTab.vue';
   import ViewDrop from './ViewDrop.vue';
@@ -71,9 +75,9 @@
       eventBus.$emit('view-view-drop-start');
     }
 
-    private onDragendTab() {
+    private onDragendTab(event: DragEvent, tab: Tab) {
       log.debug('ViewView onDragendTab');
-      eventBus.$emit('view-view-drop-end');
+      eventBus.$emit('view-view-drop-end', tab);
     }
 
     private onDragenterTab() {
@@ -120,33 +124,64 @@
       }
     }
 
+    private onSplit(tabDraggable: TabDraggable) {
+      log.debug('ViewView onSplit');
+      if (tabDraggable.tab) {
+        let tabViewId!: string;
+        switch (this.direction) {
+          case Direction.all:
+            // tab 액티브
+            break;
+          default:
+            if (this.view.id === tabDraggable.viewId) {
+              tabViewId = this.view.id;
+            } else {
+              tabViewId = tabDraggable.viewId;
+            }
+            split(
+              viewStore.getters.container,
+              this.direction,
+              tabDraggable.tab,
+              tabViewId,
+              this.view.id,
+            );
+            break;
+        }
+      }
+    }
+
+    private onViewViewDropStart() {
+      log.debug('ViewView onViewViewDropStart');
+      this.subscriptionDragenter = this.dragenter$.subscribe(this.onDragenter);
+      this.subscriptionDragover = this.dragover$.subscribe(this.onDragover);
+    }
+
+    private onViewViewDropEnd(tabDraggable: TabDraggable) {
+      log.debug('ViewView onViewViewDropEnd');
+      if (this.dropView) {
+        this.onSplit(tabDraggable);
+      }
+      this.dropView = false;
+      this.subscriptionDragenter.unsubscribe();
+      this.subscriptionDragover.unsubscribe();
+    }
+
+    private onViewViewDropView(viewId: string) {
+      log.debug(`ViewView onViewViewDropView`);
+      if (this.view.id === viewId) {
+        this.dropView = true;
+      } else {
+        this.dropView = false;
+      }
+    }
+
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
     private created() {
-      eventBus.$on('view-view-drop-start', () => {
-        log.debug('ViewView view-view-drop-start');
-        this.subscriptionDragenter = this.dragenter$.subscribe(this.onDragenter);
-        this.subscriptionDragover = this.dragover$.subscribe(this.onDragover);
-      });
-      eventBus.$on('view-view-drop-end', () => {
-        log.debug('ViewView view-view-drop-end');
-        // drop split
-        if (this.dropView) {
-          log.debug(this.direction);
-        }
-        this.dropView = false;
-        this.subscriptionDragenter.unsubscribe();
-        this.subscriptionDragover.unsubscribe();
-      });
-      eventBus.$on('view-view-drop-view', (viewId: string) => {
-        log.debug(`ViewView view-view-drop-view`);
-        if (this.view.id === viewId) {
-          this.dropView = true;
-        } else {
-          this.dropView = false;
-        }
-      });
+      eventBus.$on('view-view-drop-start', this.onViewViewDropStart);
+      eventBus.$on('view-view-drop-end', this.onViewViewDropEnd);
+      eventBus.$on('view-view-drop-view', this.onViewViewDropView);
       this.width = this.view.width;
       this.height = this.view.height - SIZE_VIEW_TAB_HEIGHT;
     }
@@ -154,6 +189,12 @@
     private mounted() {
       this.dragover$ = fromEvent(this.$refs.view as HTMLElement, 'dragover');
       this.dragenter$ = fromEvent(this.$refs.view as HTMLElement, 'dragenter');
+    }
+
+    private destroyed() {
+      eventBus.$off('view-view-drop-start', this.onViewViewDropStart);
+      eventBus.$off('view-view-drop-end', this.onViewViewDropEnd);
+      eventBus.$off('view-view-drop-view', this.onViewViewDropView);
     }
 
     // ==================== Life Cycle END ====================

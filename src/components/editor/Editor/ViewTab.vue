@@ -33,7 +33,7 @@
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
   import Tab from '@/models/Tab';
   import {icon, log, eventBus} from '@/ts/util';
-  import {findById} from '@/ts/recursionView';
+  import {findById, findParentById, deleteById} from '@/ts/recursionView';
   import viewStore from '@/store/view';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
 
@@ -79,15 +79,17 @@
     }
 
     private setMinWidth() {
-      this.minWidth = 0;
-      const uiVNode = this.$refs.ul as Vue;
-      uiVNode.$el.childNodes.forEach((child: ChildNode) => {
-        const li = child as HTMLElement;
-        const span = document.getElementById(`tab_name_${li.id}`);
-        if (span) {
-          this.minWidth += span.offsetWidth + TAB_PADDING;
-        }
-      });
+      if (this.tabs.length !== 0) {
+        this.minWidth = 0;
+        const uiVNode = this.$refs.ul as Vue;
+        uiVNode.$el.childNodes.forEach((child: ChildNode) => {
+          const li = child as HTMLElement;
+          const span = document.getElementById(`tab_name_${li.id}`);
+          if (span) {
+            this.minWidth += span.offsetWidth + TAB_PADDING;
+          }
+        });
+      }
     }
 
     private move(targetTab: Tab) {
@@ -184,6 +186,7 @@
 
     private onDragend(event: DragEvent) {
       log.debug(`ViewTab onDragend`);
+      this.$emit('dragend', event, viewStore.getters.tabDraggable);
       this.dragTab = null;
       this.tooltipDisabled = false;
       const tabDraggable = viewStore.getters.tabDraggable;
@@ -193,7 +196,6 @@
         tab: null,
       });
       this.setMinWidth();
-      this.$emit('dragend', event);
     }
 
     private onDragover(event: Event) {
@@ -236,31 +238,39 @@
       this.$emit('dragenter', event as DragEvent);
     }
 
+    private onViewTabToss(viewId: string) {
+      log.debug(`ViewTab onViewTabToss`);
+      if (this.tabs.length === 0) {
+        deleteById(viewStore.getters.container, this.viewId);
+      } else if (this.viewId === viewId) {
+        if (this.dragTab && this.activeId === this.dragTab.id) {
+          this.onActive(this.tabs[0].id);
+        }
+        this.dragTab = null;
+      }
+    }
+
+    private onViewTabDraggableEnd(viewId: string) {
+      log.debug(`ViewTab onViewTabDraggableEnd`);
+      if (this.viewId === viewId) {
+        this.dragTab = null;
+        this.tooltipDisabled = false;
+      }
+    }
+
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
     private created() {
-      if (this.active === '') {
+      if (this.tabs.length === 0) {
+        deleteById(viewStore.getters.container, this.viewId);
+      } else if (this.active === '') {
         this.onActive(this.tabs[0].id);
       } else {
         this.onActive(this.active);
       }
-      eventBus.$on('view-tab-toss', (viewId: string) => {
-        log.debug(`ViewTab view-tab-toss`);
-        if (this.viewId === viewId) {
-          if (this.dragTab && this.activeId === this.dragTab.id) {
-            this.onActive(this.tabs[0].id);
-          }
-          this.dragTab = null;
-        }
-      });
-      eventBus.$on('view-tab-draggable-end', (viewId: string) => {
-        log.debug(`ViewTab view-tab-draggable-end`);
-        if (this.viewId === viewId) {
-          this.dragTab = null;
-          this.tooltipDisabled = false;
-        }
-      });
+      eventBus.$on('view-tab-toss', this.onViewTabToss);
+      eventBus.$on('view-tab-draggable-end', this.onViewTabDraggableEnd);
     }
 
     private mounted() {
@@ -271,6 +281,8 @@
       this.draggableListener.forEach((draggable: DraggableObservable) => {
         draggable.subscriptionDragover.unsubscribe();
       });
+      eventBus.$off('view-tab-toss', this.onViewTabToss);
+      eventBus.$off('view-tab-draggable-end', this.onViewTabDraggableEnd);
     }
 
     // ==================== Life Cycle END ====================
