@@ -186,7 +186,11 @@
 
     private onDragend(event: DragEvent) {
       log.debug(`ViewTab onDragend`);
-      this.$emit('dragend', event, viewStore.getters.tabDraggable);
+      if (findById(viewStore.getters.container, this.viewId)) {
+        this.$emit('dragend', event, viewStore.getters.tabDraggable);
+      } else {
+        eventBus.$emit('view-view-drop-end', viewStore.getters.tabDraggable);
+      }
       this.dragTab = null;
       this.tooltipDisabled = false;
       const tabDraggable = viewStore.getters.tabDraggable;

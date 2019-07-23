@@ -75,9 +75,9 @@
       eventBus.$emit('view-view-drop-start');
     }
 
-    private onDragendTab(event: DragEvent, tab: Tab) {
+    private onDragendTab(event: DragEvent, tabDraggable: TabDraggable) {
       log.debug('ViewView onDragendTab');
-      eventBus.$emit('view-view-drop-end', tab);
+      eventBus.$emit('view-view-drop-end', tabDraggable);
     }
 
     private onDragenterTab() {
