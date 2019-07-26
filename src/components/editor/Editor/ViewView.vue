@@ -4,6 +4,8 @@
       :tabs="view.tabs"
       :width="view.width"
       :viewId="view.id"
+      :activeId="activeId"
+      @active="onActive"
       @dragstart="onDragstartTab"
       @dragend="onDragendTab"
       @dragenter="onDragenterTab"
@@ -24,11 +26,10 @@
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
   import View from '@/models/View';
-  import Tab from '@/models/Tab';
   import Direction from '@/models/Direction';
   import TabDraggable from '@/models/TabDraggable';
-  import {eventBus, log} from '@/ts/util';
-  import {findById, findParentById, split, resetWidth, resetHeight} from '@/ts/recursionView';
+  import {eventBus, log, isData} from '@/ts/util';
+  import {findById, deleteById, split} from '@/ts/recursionView';
   import viewStore from '@/store/view';
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
   import ViewTab from './ViewTab.vue';
@@ -54,6 +55,7 @@
     private subscriptionDragover!: Subscription;
     private subscriptionDragenter!: Subscription;
 
+    private activeId: string = '';
     private dropView: boolean = false;
     private width: number = 0;
     private height: number = 0;
@@ -130,7 +132,18 @@
         let tabViewId!: string;
         switch (this.direction) {
           case Direction.all:
-            // tab 액티브
+            if (this.view.id === tabDraggable.viewId) {
+              this.onActive(tabDraggable.tab.id);
+            } else {
+              const tabView = findById(viewStore.getters.container, tabDraggable.viewId);
+              const currentIndex = tabView.tabs.indexOf(tabDraggable.tab);
+              tabView.tabs.splice(currentIndex, 1);
+              if (tabView.tabs.length === 0) {
+                deleteById(viewStore.getters.container, tabDraggable.viewId);
+              }
+              this.view.tabs.push(tabDraggable.tab);
+              this.onActive(tabDraggable.tab.id);
+            }
             break;
           default:
             if (this.view.id === tabDraggable.viewId) {
@@ -175,6 +188,14 @@
       }
     }
 
+    private onActive(id?: string) {
+      log.debug('ViewView onActive');
+      if (id) {
+        this.activeId = id;
+      } else if (this.view.tabs.length !== 0 && isData(this.view.tabs, this.activeId)) {
+        this.activeId = this.view.tabs[0].id;
+      }
+    }
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
@@ -184,6 +205,7 @@
       eventBus.$on('view-view-drop-view', this.onViewViewDropView);
       this.width = this.view.width;
       this.height = this.view.height - SIZE_VIEW_TAB_HEIGHT;
+      this.onActive();
     }
 
     private mounted() {

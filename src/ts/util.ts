@@ -1,5 +1,5 @@
 import log from './Logger';
-import { v4 as uuid } from 'uuid';
+import {v4 as uuid} from 'uuid';
 import Vue from 'vue';
 
 /**
@@ -49,6 +49,40 @@ const icon = (ext: string): string => {
   return mdi;
 };
 
+interface List {
+  id: string;
+}
+
+/**
+ * 리스트 데이터 반환
+ * @param list
+ * @param id
+ */
+const getData = <T extends List>(list: T[], id: string): T | null => {
+  for (const v of list) {
+    if (v.id === id) {
+      return v;
+    }
+  }
+  return null;
+};
+
+/**
+ * 중복 체크
+ * @param list
+ * @param id
+ * @return list.id === id ? false : true
+ */
+const isData = <T extends List>(list: T[], id: string): boolean => {
+  for (const v of list) {
+    if (v.id === id) {
+      return false;
+    }
+  }
+  return true;
+};
+
+// event bus
 const eventBus = new Vue();
 
 export {
@@ -57,4 +91,6 @@ export {
   randomInt,
   icon,
   eventBus,
+  getData,
+  isData,
 };

@@ -31,6 +31,13 @@
   import Sash from '../Sash.vue';
   import ViewView from './ViewView.vue';
 
+  interface First {
+    left: boolean;
+    right: boolean;
+    top: boolean;
+    bottom: boolean;
+  }
+
   @Component({
     components: {
       Sash,
@@ -41,7 +48,7 @@
     @Prop({type: Object, default: {}})
     private readonly container!: View;
 
-    private first: any = {
+    private first: First = {
       left: false,
       right: false,
       top: false,

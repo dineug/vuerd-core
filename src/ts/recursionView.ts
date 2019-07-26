@@ -202,8 +202,8 @@ export const split = (
           targetView.tabs = [];
           targetView.vertical = true;
           targetView.horizontal = false;
-          targetView.views.push(addView(tabs));
           targetView.views.push(addView([tab]));
+          targetView.views.push(addView(tabs));
           resetWidth(targetView);
           resetHeight(targetView);
         }
@@ -221,8 +221,8 @@ export const split = (
           targetView.tabs = [];
           targetView.vertical = true;
           targetView.horizontal = false;
-          targetView.views.push(addView([tab]));
           targetView.views.push(addView(tabs));
+          targetView.views.push(addView([tab]));
           resetWidth(targetView);
           resetHeight(targetView);
         }
