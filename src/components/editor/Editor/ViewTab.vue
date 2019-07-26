@@ -32,8 +32,8 @@
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
   import Tab from '@/models/Tab';
-  import {icon, log, eventBus, getData, isData} from '@/ts/util';
-  import {findById, findParentById, deleteById} from '@/ts/recursionView';
+  import {icon, log, eventBus, getData, isData, getTextWidth} from '@/ts/util';
+  import {findById, deleteById} from '@/ts/recursionView';
   import viewStore from '@/store/view';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
 
@@ -46,6 +46,7 @@
   }
 
   const TAB_PADDING = 41.5;
+  const TAB_PADDING_SPAN = 48.2;
 
   @Component({
     filters: {
@@ -78,16 +79,24 @@
     }
 
     private setMinWidth() {
+      log.debug('ViewTab setMinWidth');
       if (this.tabs.length !== 0) {
+        const ul = this.$el.childNodes[0];
+        log.debug(`tabs:${this.tabs.length}, li:${ul.childNodes.length}`);
         this.minWidth = 0;
-        const uiVNode = this.$refs.ul as Vue;
-        uiVNode.$el.childNodes.forEach((child: ChildNode) => {
-          const li = child as HTMLElement;
-          const span = document.getElementById(`tab_name_${li.id}`);
-          if (span) {
-            this.minWidth += span.offsetWidth + TAB_PADDING;
-          }
-        });
+        if (this.tabs.length === ul.childNodes.length) {
+          ul.childNodes.forEach((child: ChildNode) => {
+            const li = child as HTMLElement;
+            const span = document.getElementById(`tab_name_${li.id}`);
+            if (span) {
+              this.minWidth += span.offsetWidth + TAB_PADDING;
+            }
+          });
+        } else {
+          this.tabs.forEach((tab: Tab) => {
+            this.minWidth += getTextWidth(tab.name) + TAB_PADDING_SPAN;
+          });
+        }
       }
     }
 
@@ -118,7 +127,7 @@
     }
 
     private onDraggable() {
-      log.debug('onDraggable');
+      log.debug('ViewTab onDraggable');
       const uiVNode = this.$refs.ul as Vue;
       uiVNode.$el.childNodes.forEach((child: ChildNode) => {
         const li = child as HTMLElement;
@@ -139,7 +148,7 @@
           break;
         }
       }
-      this.setMinWidth();
+      this.$nextTick(this.setMinWidth);
     }
 
     private onDragstart(event: DragEvent) {
@@ -171,7 +180,6 @@
         viewId: '',
         tab: null,
       });
-      this.setMinWidth();
     }
 
     private onDragover(event: Event) {
@@ -310,6 +318,7 @@
 
         .name {
           padding-right: 7px;
+          font-size: $size-font-tab;
         }
       }
     }

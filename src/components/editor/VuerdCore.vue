@@ -17,6 +17,7 @@
   import '@/plugins/vuetify';
 
   import * as layout from '@/ts/layout';
+  import {addSpanText, removeSpanText} from '@/ts/util';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Titlebar from './Titlebar.vue';
   import Activitybar from './Activitybar.vue';
@@ -140,11 +141,13 @@
       this.subscriptionResizeMovement = this.resize$.subscribe(this.onResizeMovement);
       this.subscriptionResize = this.resize$.subscribe(this.onResize);
       window.dispatchEvent(new Event('resize'));
+      addSpanText();
     }
 
     private destroyed() {
       this.subscriptionResize.unsubscribe();
       this.subscriptionResizeMovement.unsubscribe();
+      removeSpanText();
     }
 
     // ==================== Life Cycle END ====================

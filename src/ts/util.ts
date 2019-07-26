@@ -85,6 +85,42 @@ const isData = <T extends List>(list: T[], id: string): boolean => {
 // event bus
 const eventBus = new Vue();
 
+// setup text width
+let spanText: HTMLElement | null = null;
+const addSpanText = () => {
+  spanText = document.getElementById('span-text-width');
+  if (!spanText) {
+    spanText = document.createElement('span');
+    document.body.appendChild(spanText);
+  }
+  spanText.setAttribute('id', 'span-text-width');
+  spanText.setAttribute('style', `
+    visibility: hidden;
+    position: fixed;
+    top: -10000px;
+    font-size: 13px;
+  `);
+};
+// remove text width
+const removeSpanText = () => {
+  if (spanText) {
+    spanText.remove();
+  }
+};
+
+/**
+ * text width
+ * @param text
+ */
+const getTextWidth = (text: string): number => {
+  let result = 0;
+  if (spanText) {
+    spanText.innerHTML = text;
+    result = spanText.offsetWidth;
+  }
+  return result;
+};
+
 export {
   log,
   uuid,
@@ -93,4 +129,7 @@ export {
   eventBus,
   getData,
   isData,
+  getTextWidth,
+  addSpanText,
+  removeSpanText,
 };
