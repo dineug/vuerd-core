@@ -15,6 +15,7 @@
 
 <script lang="ts">
   import '@/plugins/vuetify';
+  import 'velocity-animate/velocity.min.js';
 
   import * as layout from '@/ts/layout';
   import {addSpanText, removeSpanText} from '@/ts/util';

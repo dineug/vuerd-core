@@ -36,6 +36,7 @@
   import ViewDrop from './ViewDrop.vue';
 
   import {fromEvent, Observable, Subscription} from 'rxjs';
+  import {throttleTime} from 'rxjs/operators';
 
   @Component({
     components: {
@@ -166,7 +167,9 @@
     private onViewViewDropStart() {
       log.debug('ViewView onViewViewDropStart');
       this.subscriptionDragenter = this.dragenter$.subscribe(this.onDragenter);
-      this.subscriptionDragover = this.dragover$.subscribe(this.onDragover);
+      this.subscriptionDragover = this.dragover$.pipe(
+        throttleTime(200)
+      ).subscribe(this.onDragover);
     }
 
     private onViewViewDropEnd(tabDraggable: TabDraggable) {
@@ -180,7 +183,7 @@
     }
 
     private onViewViewDropView(viewId: string) {
-      log.debug(`ViewView onViewViewDropView`);
+      log.debug('ViewView onViewViewDropView');
       if (this.view.id === viewId) {
         this.dropView = true;
       } else {

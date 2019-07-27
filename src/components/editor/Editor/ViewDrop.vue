@@ -1,7 +1,5 @@
 <template lang="pug">
-  .split-view-drop(
-    :style="`width: ${_width}px; height: ${_height}px; top: ${top}px; left: ${left}px;`"
-  )
+  .split-view-drop
 </template>
 
 <script lang="ts">
@@ -11,6 +9,7 @@
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
 
   import {fromEvent, Subscription} from 'rxjs';
+  import {throttleTime} from 'rxjs/operators';
 
   @Component
   export default class ViewDrop extends Vue {
@@ -24,46 +23,44 @@
     // event observable
     private subscriptionDragover!: Subscription;
 
-    get _width(): number {
+    @Watch('direction')
+    private watchDirection(val: Direction) {
+      log.debug('ViewDrop watchDirection');
       let width = this.width;
-      switch (this.direction) {
+      switch (val) {
         case Direction.left:
         case Direction.right:
           width = this.width / 2;
           break;
       }
-      return width;
-    }
 
-    get _height(): number {
       let height = this.height;
-      switch (this.direction) {
+      switch (val) {
         case Direction.top:
         case Direction.bottom:
           height = this.height / 2;
           break;
       }
-      return height;
-    }
 
-    get top(): number {
       let top = SIZE_VIEW_TAB_HEIGHT;
-      switch (this.direction) {
-        case Direction.bottom:
-          top = SIZE_VIEW_TAB_HEIGHT + this.height / 2;
-          break;
+      if (val === Direction.bottom) {
+        top = SIZE_VIEW_TAB_HEIGHT + this.height / 2;
       }
-      return top;
-    }
 
-    get left(): number {
       let left = 0;
-      switch (this.direction) {
-        case Direction.right:
-          left = this.width / 2;
-          break;
+      if (val === Direction.right) {
+        left = this.width / 2;
       }
-      return left;
+      window.Velocity(
+        this.$el,
+        {
+          width,
+          height,
+          top,
+          left,
+        },
+        {duration: 100},
+      );
     }
 
     // ==================== Event Handler ===================
@@ -76,7 +73,10 @@
 
     // ==================== Life Cycle ====================
     private mounted() {
-      this.subscriptionDragover = fromEvent(this.$el, 'dragover').subscribe(this.onDragover);
+      this.subscriptionDragover = fromEvent(this.$el, 'dragover').pipe(
+        throttleTime(200)
+      ).subscribe(this.onDragover);
+      this.watchDirection(this.direction);
     }
 
     private destroyed() {

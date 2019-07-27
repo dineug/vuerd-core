@@ -7,7 +7,6 @@
       :style="`min-width: ${minWidth}px; height: ${SIZE_VIEW_TAB_HEIGHT}px;`"
       name="tab"
       tag="ul"
-      ref="ul"
     )
       li(
         draggable
@@ -110,13 +109,13 @@
       }
     }
 
-    private findByLi(elem: HTMLElement | null): HTMLElement | null {
-      if (elem === null) {
+    private findByLi(el: HTMLElement | null): HTMLElement | null {
+      if (el === null) {
         return null;
-      } else if (elem.localName === 'li') {
-        return elem;
+      } else if (el.localName === 'li') {
+        return el;
       } else {
-        return this.findByLi(elem.parentElement);
+        return this.findByLi(el.parentElement);
       }
     }
 
@@ -128,8 +127,8 @@
 
     private onDraggable() {
       log.debug('ViewTab onDraggable');
-      const uiVNode = this.$refs.ul as Vue;
-      uiVNode.$el.childNodes.forEach((child: ChildNode) => {
+      const ul = this.$el.childNodes[0];
+      ul.childNodes.forEach((child: ChildNode) => {
         const li = child as HTMLElement;
         if (isData(this.draggableListener, li.id)) {
           this.draggableListener.push({
@@ -154,8 +153,8 @@
     private onDragstart(event: DragEvent) {
       log.debug('ViewTab onDragstart');
       if (event.target) {
-        const elem = event.target as HTMLElement;
-        this.dragTab = getData(this.tabs, elem.id);
+        const el = event.target as HTMLElement;
+        this.dragTab = getData(this.tabs, el.id);
         this.tooltipDisabled = true;
         viewStore.commit('setTabDraggable', {
           viewId: this.viewId,
@@ -166,7 +165,7 @@
     }
 
     private onDragend(event: DragEvent) {
-      log.debug(`ViewTab onDragend`);
+      log.debug('ViewTab onDragend');
       if (findById(viewStore.getters.container, this.viewId)) {
         this.$emit('dragend', event, viewStore.getters.tabDraggable);
       } else {
@@ -232,7 +231,7 @@
     }
 
     private onViewTabToss(viewId: string) {
-      log.debug(`ViewTab onViewTabToss`);
+      log.debug('ViewTab onViewTabToss');
       if (this.tabs.length === 0) {
         deleteById(viewStore.getters.container, this.viewId);
       } else if (this.viewId === viewId) {
@@ -244,7 +243,7 @@
     }
 
     private onViewTabDraggableEnd(viewId: string) {
-      log.debug(`ViewTab onViewTabDraggableEnd`);
+      log.debug('ViewTab onViewTabDraggableEnd');
       if (this.viewId === viewId) {
         this.dragTab = null;
         this.tooltipDisabled = false;
