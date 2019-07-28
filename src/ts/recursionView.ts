@@ -60,7 +60,7 @@ export const resetHeight = (container: View) => {
 // #  vertical, horizontal 비율 분기
 // #  1 / current.px = current.%
 // #  1 / this.container.views.length
-// #  current.% * parent.px * = current.px
+// #  current.% * parent.px = current.px
 // #  current.px / parent.px = current.%
 
 // next step

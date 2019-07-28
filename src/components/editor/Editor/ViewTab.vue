@@ -225,8 +225,22 @@
       }
     }
 
-    private onDragenter(event: DragEvent) {
+    private onDragenter(event?: DragEvent) {
       log.debug('ViewTab onDragenter');
+      if (!this.dragTab) {
+        const tabDraggable = viewStore.getters.tabDraggable;
+        const view = findById(viewStore.getters.container, tabDraggable.viewId);
+        const currentIndex = view.tabs.indexOf(tabDraggable.tab);
+        view.tabs.splice(currentIndex, 1);
+        this.tabs.push(tabDraggable.tab);
+        this.dragTab = tabDraggable.tab;
+        this.onActive(tabDraggable.tab.id);
+        eventBus.$emit('view-tab-toss', tabDraggable.viewId);
+        viewStore.commit('setTabDraggable', {
+          viewId: this.viewId,
+          tab: this.dragTab,
+        });
+      }
       this.$emit('dragenter', event as DragEvent);
     }
 

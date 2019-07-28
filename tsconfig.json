@@ -14,8 +14,7 @@
     "types": [
       "webpack-env",
       "mocha",
-      "chai",
-      "vuetify"
+      "chai"
     ],
     "paths": {
       "@/*": [

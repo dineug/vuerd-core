@@ -26,31 +26,23 @@
     @Watch('direction')
     private watchDirection(val: Direction) {
       log.debug('ViewDrop watchDirection');
+      let top = SIZE_VIEW_TAB_HEIGHT;
+      let left = 0;
       let width = this.width;
-      switch (val) {
-        case Direction.left:
-        case Direction.right:
-          width = this.width / 2;
-          break;
-      }
-
       let height = this.height;
       switch (val) {
-        case Direction.top:
+        case Direction.right:
+          left = this.width / 2;
+        case Direction.left:
+          width = this.width / 2;
+          break;
         case Direction.bottom:
+          top = SIZE_VIEW_TAB_HEIGHT + this.height / 2;
+        case Direction.top:
           height = this.height / 2;
           break;
       }
 
-      let top = SIZE_VIEW_TAB_HEIGHT;
-      if (val === Direction.bottom) {
-        top = SIZE_VIEW_TAB_HEIGHT + this.height / 2;
-      }
-
-      let left = 0;
-      if (val === Direction.right) {
-        left = this.width / 2;
-      }
       window.Velocity(
         this.$el,
         {
@@ -74,7 +66,7 @@
     // ==================== Life Cycle ====================
     private mounted() {
       this.subscriptionDragover = fromEvent(this.$el, 'dragover').pipe(
-        throttleTime(200)
+        throttleTime(200),
       ).subscribe(this.onDragover);
       this.watchDirection(this.direction);
     }

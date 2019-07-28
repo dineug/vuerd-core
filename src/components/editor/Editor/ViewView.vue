@@ -73,6 +73,15 @@
     }
 
     // ==================== Event Handler ===================
+    private onActive(id?: string) {
+      log.debug('ViewView onActive');
+      if (id) {
+        this.activeId = id;
+      } else if (this.view.tabs.length !== 0 && isData(this.view.tabs, this.activeId)) {
+        this.activeId = this.view.tabs[0].id;
+      }
+    }
+
     private onDragstartTab() {
       log.debug('ViewView onDragstartTab');
       eventBus.$emit('view-view-drop-start');
@@ -85,7 +94,7 @@
 
     private onDragenterTab() {
       log.debug('ViewView onDragenterTab');
-      this.dropView = false;
+      eventBus.$emit('view-view-drop-view-end');
     }
 
     private onDragenter() {
@@ -168,7 +177,7 @@
       log.debug('ViewView onViewViewDropStart');
       this.subscriptionDragenter = this.dragenter$.subscribe(this.onDragenter);
       this.subscriptionDragover = this.dragover$.pipe(
-        throttleTime(200)
+        throttleTime(200),
       ).subscribe(this.onDragover);
     }
 
@@ -191,14 +200,11 @@
       }
     }
 
-    private onActive(id?: string) {
-      log.debug('ViewView onActive');
-      if (id) {
-        this.activeId = id;
-      } else if (this.view.tabs.length !== 0 && isData(this.view.tabs, this.activeId)) {
-        this.activeId = this.view.tabs[0].id;
-      }
+    private onViewViewDropViewEnd() {
+      log.debug('ViewView onViewViewDropViewEnd');
+      this.dropView = false;
     }
+
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
@@ -206,6 +212,7 @@
       eventBus.$on('view-view-drop-start', this.onViewViewDropStart);
       eventBus.$on('view-view-drop-end', this.onViewViewDropEnd);
       eventBus.$on('view-view-drop-view', this.onViewViewDropView);
+      eventBus.$on('view-view-drop-view-end', this.onViewViewDropViewEnd);
       this.width = this.view.width;
       this.height = this.view.height - SIZE_VIEW_TAB_HEIGHT;
       this.onActive();
@@ -220,6 +227,7 @@
       eventBus.$off('view-view-drop-start', this.onViewViewDropStart);
       eventBus.$off('view-view-drop-end', this.onViewViewDropEnd);
       eventBus.$off('view-view-drop-view', this.onViewViewDropView);
+      eventBus.$off('view-view-drop-view-end', this.onViewViewDropViewEnd);
     }
 
     // ==================== Life Cycle END ====================
