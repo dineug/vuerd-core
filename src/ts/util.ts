@@ -1,5 +1,6 @@
 import log from './Logger';
 import {v4 as uuid} from 'uuid';
+import {SIZE_FONT} from './layout';
 import Vue from 'vue';
 
 /**
@@ -21,8 +22,14 @@ const icon = (ext: string): string => {
     case 'html':
       mdi = 'mdi-language-html5';
       break;
+    case 'css':
+      mdi = 'mdi-language-css3';
+      break;
     case 'js':
-      mdi = 'mdi-nodejs';
+      mdi = 'mdi-language-javascript';
+      break;
+    case 'ts':
+      mdi = 'mdi-language-typescript';
       break;
     case 'json':
       mdi = 'mdi-json';
@@ -37,13 +44,15 @@ const icon = (ext: string): string => {
     case 'jpg':
     case 'jpeg':
     case 'gif':
+    case 'ico':
       mdi = 'mdi-file-image';
-      break;
-    case 'txt':
-      mdi = 'mdi-file-document-outline';
       break;
     case 'xls':
       mdi = 'mdi-file-excel';
+      break;
+    case 'txt':
+    default:
+      mdi = 'mdi-file-document-outline';
       break;
   }
   return mdi;
@@ -98,7 +107,7 @@ const addSpanText = () => {
     visibility: hidden;
     position: fixed;
     top: -10000px;
-    font-size: 13px;
+    font-size: ${SIZE_FONT + 2}px;
   `);
 };
 // remove text width

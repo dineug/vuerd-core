@@ -18,6 +18,7 @@
   import 'velocity-animate/velocity.min.js';
 
   import * as layout from '@/ts/layout';
+  import Horizon from '@/models/Horizon';
   import {addSpanText, removeSpanText} from '@/ts/util';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Titlebar from './Titlebar.vue';
@@ -60,10 +61,9 @@
       height: window.innerHeight,
     };
 
-    // event observable
     private resize$: Observable<Event> = fromEvent(window, 'resize');
-    private subscriptionResize!: Subscription;
-    private subscriptionResizeMovement!: Subscription;
+    private subResize!: Subscription;
+    private subResizeMovement!: Subscription;
 
     // ==================== Event Handler ===================
     private onResizeMovement() {
@@ -90,9 +90,9 @@
       this.mainWidth = workspace.clientWidth - this.sidebarWidth - layout.SIZE_ACTIVITYBAR_WIDTH;
     }
 
-    private onMousemoveSash(e: MouseEvent, type: string) {
-      switch (type) {
-        case 'vertical':
+    private onMousemoveSash(e: MouseEvent, horizon: Horizon) {
+      switch (horizon) {
+        case Horizon.vertical:
           const workspace = this.$refs.workspace as HTMLElement;
           const sidebarWidth = this.sidebarWidth + e.movementX;
           const mainWidth = workspace.clientWidth - sidebarWidth - layout.SIZE_ACTIVITYBAR_WIDTH;
@@ -111,7 +111,7 @@
             this.onResize();
           }
           break;
-        case 'horizontal':
+        case Horizon.horizontal:
           const main = this.$refs.main as HTMLElement;
           const editorBottomHeight = this.editorBottomHeight - e.movementY;
           const editorHeight = main.clientHeight - editorBottomHeight;
@@ -139,15 +139,15 @@
 
     // ==================== Life Cycle ====================
     private mounted() {
-      this.subscriptionResizeMovement = this.resize$.subscribe(this.onResizeMovement);
-      this.subscriptionResize = this.resize$.subscribe(this.onResize);
+      this.subResizeMovement = this.resize$.subscribe(this.onResizeMovement);
+      this.subResize = this.resize$.subscribe(this.onResize);
       window.dispatchEvent(new Event('resize'));
       addSpanText();
     }
 
     private destroyed() {
-      this.subscriptionResize.unsubscribe();
-      this.subscriptionResizeMovement.unsubscribe();
+      this.subResize.unsubscribe();
+      this.subResizeMovement.unsubscribe();
       removeSpanText();
     }
 

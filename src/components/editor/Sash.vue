@@ -15,19 +15,18 @@
   @Component
   export default class Sash extends Vue {
     @Prop({type: Boolean, default: false})
-    private readonly vertical!: boolean;
+    private vertical!: boolean;
     @Prop({type: Boolean, default: false})
-    private readonly horizontal!: boolean;
+    private horizontal!: boolean;
     @Prop({type: Number, default: 0})
-    private readonly top!: number;
+    private top!: number;
     @Prop({type: Number, default: 0})
-    private readonly left!: number;
+    private left!: number;
 
-    // event observable
     private mouseup$: Observable<Event> = fromEvent(window, 'mouseup');
     private mousemove$: Observable<Event> = fromEvent(window, 'mousemove');
-    private subscriptionMouseup!: Subscription;
-    private subscriptionMousemove!: Subscription;
+    private subMouseup!: Subscription;
+    private subMousemove!: Subscription;
 
     get centerTop() {
       return this.top === 0 && !this.horizontal
@@ -43,13 +42,13 @@
 
     // ==================== Event Handler ===================
     private onMousedown() {
-      this.subscriptionMouseup = this.mouseup$.subscribe(this.onMouseup);
-      this.subscriptionMousemove = this.mousemove$.subscribe(this.onMousemove);
+      this.subMouseup = this.mouseup$.subscribe(this.onMouseup);
+      this.subMousemove = this.mousemove$.subscribe(this.onMousemove);
     }
 
     private onMouseup() {
-      this.subscriptionMouseup.unsubscribe();
-      this.subscriptionMousemove.unsubscribe();
+      this.subMouseup.unsubscribe();
+      this.subMousemove.unsubscribe();
     }
 
     private onMousemove(event: Event) {

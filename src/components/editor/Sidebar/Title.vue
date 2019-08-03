@@ -1,7 +1,7 @@
 <template lang="pug">
   .title
     .title-label
-      h2(title="탐색기(Ctrl+<Shift>+E)") 탐색기
+      span 탐색기
 </template>
 
 <script lang="ts">
@@ -28,7 +28,7 @@
       text-overflow: ellipsis;
       padding-left: 12px;
 
-      h2 {
+      span {
         color: $color-title;
         font-size: $size-font;
         overflow: hidden;

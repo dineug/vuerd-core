@@ -15,7 +15,7 @@
   })
   export default class EditorBottom extends Vue {
     @Prop({type: Number, default: 200})
-    private readonly height!: number;
+    private height!: number;
   }
 </script>
 

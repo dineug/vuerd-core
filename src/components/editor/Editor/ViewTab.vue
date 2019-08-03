@@ -14,18 +14,16 @@
         :key="tab.id"
         :id="tab.id"
         :class="{active: activeId === tab.id, draggable: dragTab && dragTab.id === tab.id}"
+        :title="tab.path"
         @click="onActive(tab.id)"
         @dragstart="onDragstart"
         @dragend="onDragend"
       )
-        v-tooltip(bottom open-delay="500" :disabled="tooltipDisabled")
-          template(v-slot:activator="{ on }")
-            span.icon
-              v-icon(color="grey lighten-1" small) {{tab.name | mdi}}
-            span.name(v-on="on" :id="`tab_name_${tab.id}`") {{tab.name}}
-            span.close(@click="onClose($event, tab)")
-              v-icon(color="grey lighten-1" size="12") mdi-close
-          span {{tab.path}}
+        span.icon
+          v-icon(color="grey lighten-1" small) {{tab.name | mdi}}
+        span.name {{tab.name}}
+        span.close(@click="onClose($event, tab)")
+          v-icon(color="grey lighten-1" size="12") mdi-close
 </template>
 
 <script lang="ts">
@@ -41,11 +39,11 @@
 
   interface DraggableObservable {
     id: string;
-    subscriptionDragover: Subscription;
+    subDragover: Subscription;
   }
 
-  const TAB_PADDING = 41.5;
-  const TAB_PADDING_SPAN = 48.2;
+  const TAB_PADDING = 42.5;
+  const TAB_PADDING_SPAN = 49.2;
 
   @Component({
     filters: {
@@ -57,18 +55,17 @@
   })
   export default class ViewTab extends Vue {
     @Prop({type: Array, default: []})
-    private readonly tabs!: Tab[];
+    private tabs!: Tab[];
     @Prop({type: String, default: ''})
-    private readonly activeId!: string;
+    private activeId!: string;
     @Prop({type: Number, default: 0})
-    private readonly width!: number;
+    private width!: number;
     @Prop({type: String, default: ''})
-    private readonly viewId!: string;
+    private viewId!: string;
 
     private SIZE_VIEW_TAB_HEIGHT = SIZE_VIEW_TAB_HEIGHT;
 
     private minWidth: number = 0;
-    private tooltipDisabled: boolean = false;
     private dragTab: Tab | null = null;
     private draggableListener: DraggableObservable[] = [];
 
@@ -86,7 +83,7 @@
         if (this.tabs.length === ul.childNodes.length) {
           ul.childNodes.forEach((child: ChildNode) => {
             const li = child as HTMLElement;
-            const span = document.getElementById(`tab_name_${li.id}`);
+            const span = li.querySelector<HTMLElement>('.name');
             if (span) {
               this.minWidth += span.offsetWidth + TAB_PADDING;
             }
@@ -133,7 +130,7 @@
         if (isData(this.draggableListener, li.id)) {
           this.draggableListener.push({
             id: li.id,
-            subscriptionDragover: fromEvent(li, 'dragover').pipe(
+            subDragover: fromEvent(li, 'dragover').pipe(
               throttleTime(300),
             ).subscribe(this.onDragover),
           });
@@ -141,7 +138,7 @@
       });
       for (let i = 0; i < this.draggableListener.length; i++) {
         if (isData(this.tabs, this.draggableListener[i].id)) {
-          this.draggableListener[i].subscriptionDragover.unsubscribe();
+          this.draggableListener[i].subDragover.unsubscribe();
           this.draggableListener.splice(i, 1);
           i--;
           break;
@@ -155,7 +152,6 @@
       if (event.target) {
         const el = event.target as HTMLElement;
         this.dragTab = getData(this.tabs, el.id);
-        this.tooltipDisabled = true;
         viewStore.commit('setTabDraggable', {
           viewId: this.viewId,
           tab: this.dragTab,
@@ -172,7 +168,6 @@
         eventBus.$emit('view-view-drop-end', viewStore.getters.tabDraggable);
       }
       this.dragTab = null;
-      this.tooltipDisabled = false;
       const tabDraggable = viewStore.getters.tabDraggable;
       eventBus.$emit('view-tab-draggable-end', tabDraggable.viewId);
       viewStore.commit('setTabDraggable', {
@@ -260,7 +255,6 @@
       log.debug('ViewTab onViewTabDraggableEnd');
       if (this.viewId === viewId) {
         this.dragTab = null;
-        this.tooltipDisabled = false;
       }
       this.onActive();
     }
@@ -282,7 +276,7 @@
 
     private destroyed() {
       this.draggableListener.forEach((draggable: DraggableObservable) => {
-        draggable.subscriptionDragover.unsubscribe();
+        draggable.subDragover.unsubscribe();
       });
       eventBus.$off('view-tab-toss', this.onViewTabToss);
       eventBus.$off('view-tab-draggable-end', this.onViewTabDraggableEnd);
@@ -326,12 +320,12 @@
         }
 
         .icon {
-          padding-right: 3px;
+          padding-right: 4px;
         }
 
         .name {
           padding-right: 7px;
-          font-size: $size-font-tab;
+          font-size: $size-font + 2;
         }
       }
     }

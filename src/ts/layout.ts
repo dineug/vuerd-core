@@ -6,3 +6,4 @@ export const SIZE_EDITOR_BOTTOM_TOP_MIN = 70;
 export const SIZE_SASH = 5;
 export const SIZE_SPLIT_MIN = 30;
 export const SIZE_VIEW_TAB_HEIGHT = 31;
+export const SIZE_FONT = 11;

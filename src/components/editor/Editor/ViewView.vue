@@ -46,15 +46,14 @@
   })
   export default class ViewView extends Vue {
     @Prop({type: Object, default: {}})
-    private readonly view!: View;
+    private view!: View;
 
     private SIZE_VIEW_TAB_HEIGHT = SIZE_VIEW_TAB_HEIGHT;
 
-    // event observable
     private dragover$!: Observable<Event>;
     private dragenter$!: Observable<Event>;
-    private subscriptionDragover!: Subscription;
-    private subscriptionDragenter!: Subscription;
+    private subDragover!: Subscription;
+    private subDragenter!: Subscription;
 
     private activeId: string = '';
     private dropView: boolean = false;
@@ -63,13 +62,13 @@
     private direction: Direction = Direction.all;
 
     @Watch('view.width')
-    private watchWidth(val: number) {
-      this.width = val;
+    private watchWidth(width: number) {
+      this.width = width;
     }
 
     @Watch('view.height')
-    private watchHeight(val: number) {
-      this.height = val - SIZE_VIEW_TAB_HEIGHT;
+    private watchHeight(height: number) {
+      this.height = height - SIZE_VIEW_TAB_HEIGHT;
     }
 
     // ==================== Event Handler ===================
@@ -161,13 +160,15 @@
             } else {
               tabViewId = tabDraggable.viewId;
             }
-            split(
-              viewStore.getters.container,
-              this.direction,
-              tabDraggable.tab,
-              tabViewId,
-              this.view.id,
-            );
+            if (tabViewId !== this.view.id || this.view.tabs.length !== 1) {
+              split(
+                viewStore.getters.container,
+                this.direction,
+                tabDraggable.tab,
+                tabViewId,
+                this.view.id,
+              );
+            }
             break;
         }
       }
@@ -175,8 +176,8 @@
 
     private onViewViewDropStart() {
       log.debug('ViewView onViewViewDropStart');
-      this.subscriptionDragenter = this.dragenter$.subscribe(this.onDragenter);
-      this.subscriptionDragover = this.dragover$.pipe(
+      this.subDragenter = this.dragenter$.subscribe(this.onDragenter);
+      this.subDragover = this.dragover$.pipe(
         throttleTime(200),
       ).subscribe(this.onDragover);
     }
@@ -187,8 +188,8 @@
         this.onSplit(tabDraggable);
       }
       this.dropView = false;
-      this.subscriptionDragenter.unsubscribe();
-      this.subscriptionDragover.unsubscribe();
+      this.subDragenter.unsubscribe();
+      this.subDragover.unsubscribe();
     }
 
     private onViewViewDropView(viewId: string) {

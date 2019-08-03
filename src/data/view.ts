@@ -1,4 +1,5 @@
 import View from '@/models/View';
+import Tab from '@/models/Tab';
 import {uuid, randomInt} from '@/ts/util';
 
 const rVertical = (): boolean => {
@@ -38,7 +39,7 @@ export const dContainer = (): View => {
 };
 
 // tabs
-export const dTabs = [
+export const dTabs: Tab[] = [
   {
     id: uuid(),
     name: 'index.ts',

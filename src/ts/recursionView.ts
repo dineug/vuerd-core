@@ -34,6 +34,20 @@ export const findParentById = (container: View, id: string, parent?: View): View
   }
 };
 
+export const resetSize = (container: View) => {
+  const width = container.vertical ? container.width / container.views.length : container.width;
+  const widthRatio = container.vertical ? 1 / container.views.length : 1;
+  const height = container.horizontal ? container.height / container.views.length : container.height;
+  const heightRatio = container.horizontal ? 1 / container.views.length : 1;
+  container.views.forEach((view: View) => {
+    view.width = width;
+    view.widthRatio = widthRatio;
+    view.height = height;
+    view.heightRatio = heightRatio;
+    resetSize(view);
+  });
+};
+
 export const resetWidth = (container: View) => {
   const width = container.vertical ? container.width / container.views.length : container.width;
   const widthRatio = container.vertical ? 1 / container.views.length : 1;
@@ -127,11 +141,11 @@ export const minHorizontal = (container: View): number => {
 };
 
 export const deleteById = (container: View, id: string) => {
+  log.debug('recursionView deleteById');
   const parent = findParentById(container, id);
   const currentIndex = parent.views.indexOf(findById(container, id));
   parent.views.splice(currentIndex, 1);
-  resetWidth(parent);
-  resetHeight(parent);
+  resetSize(parent);
 };
 
 export const split = (
@@ -141,6 +155,7 @@ export const split = (
   tabViewId: string,
   targetViewId: string,
 ) => {
+  log.debug('recursionView split');
   if (direction !== Direction.all) {
     const tabView = findById(container, tabViewId);
     const targetView = findById(container, targetViewId);
@@ -160,14 +175,12 @@ export const split = (
           targetView.horizontal = true;
           targetView.views.push(addView([tab]));
           targetView.views.push(addView(tabs));
-          resetWidth(targetView);
-          resetHeight(targetView);
+          resetSize(targetView);
         } else if (parentView.horizontal) {
           // 부모에 view 추가
           const targetIndex = parentView.views.indexOf(targetView);
           parentView.views.splice(targetIndex, 0, addView([tab]));
-          resetWidth(parentView);
-          resetHeight(parentView);
+          resetSize(parentView);
         }
         break;
       case Direction.bottom:
@@ -179,14 +192,12 @@ export const split = (
           targetView.horizontal = true;
           targetView.views.push(addView(tabs));
           targetView.views.push(addView([tab]));
-          resetWidth(targetView);
-          resetHeight(targetView);
+          resetSize(targetView);
         } else if (parentView.horizontal) {
           // 부모에 view 추가
           const targetIndex = parentView.views.indexOf(targetView);
           parentView.views.splice(targetIndex + 1, 0, addView([tab]));
-          resetWidth(parentView);
-          resetHeight(parentView);
+          resetSize(parentView);
         }
         break;
       case Direction.left:
@@ -194,8 +205,7 @@ export const split = (
           // 부모에 view 추가
           const targetIndex = parentView.views.indexOf(targetView);
           parentView.views.splice(targetIndex, 0, addView([tab]));
-          resetWidth(parentView);
-          resetHeight(parentView);
+          resetSize(parentView);
         } else if (parentView.horizontal) {
           // 자식 스플릿
           const tabs = targetView.tabs;
@@ -204,8 +214,7 @@ export const split = (
           targetView.horizontal = false;
           targetView.views.push(addView([tab]));
           targetView.views.push(addView(tabs));
-          resetWidth(targetView);
-          resetHeight(targetView);
+          resetSize(targetView);
         }
         break;
       case Direction.right:
@@ -213,8 +222,7 @@ export const split = (
           // 부모에 view 추가
           const targetIndex = parentView.views.indexOf(targetView);
           parentView.views.splice(targetIndex + 1, 0, addView([tab]));
-          resetWidth(parentView);
-          resetHeight(parentView);
+          resetSize(parentView);
         } else if (parentView.horizontal) {
           // 자식 스플릿
           const tabs = targetView.tabs;
@@ -223,8 +231,7 @@ export const split = (
           targetView.horizontal = false;
           targetView.views.push(addView(tabs));
           targetView.views.push(addView([tab]));
-          resetWidth(targetView);
-          resetHeight(targetView);
+          resetSize(targetView);
         }
         break;
     }

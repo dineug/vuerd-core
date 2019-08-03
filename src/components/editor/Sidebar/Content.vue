@@ -1,96 +1,25 @@
 <template lang="pug">
   .content
-    v-treeview(
-      :open="open"
-      :items="items"
-      activatable
-      dark
-      open-on-click
-      item-key="name"
-    )
-      template(v-slot:prepend="{ item, open }")
-        v-icon(
-          v-if="!item.file"
-          small
-          color="grey lighten-1"
-        ) {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
-        v-icon(
-          v-else
-          small
-          color="grey lighten-1"
-        ) {{ files[item.file] }}
+    TreeView(:trees="trees")
 </template>
 
 <script lang="ts">
+  import Tree from '@/models/Tree';
+  import treeStore from '@/store/tree';
   import {Component, Prop, Vue} from 'vue-property-decorator';
+  import TreeView from './TreeView.vue';
 
-  @Component
+  @Component({
+    components: {
+      TreeView,
+    },
+  })
   export default class Content extends Vue {
-    private open: string[] = ['public'];
-    private files: {} = {
-      html: 'mdi-language-html5',
-      js: 'mdi-nodejs',
-      json: 'mdi-json',
-      md: 'mdi-markdown',
-      pdf: 'mdi-file-pdf',
-      png: 'mdi-file-image',
-      txt: 'mdi-file-document-outline',
-      xls: 'mdi-file-excel',
-    };
-    private items: Array<{}> = [
-      {
-        name: '.git',
-      },
-      {
-        name: 'node_modules',
-      },
-      {
-        name: 'public',
-        children: [
-          {
-            name: 'static',
-            children: [
-              {
-                name: 'logo.png',
-                file: 'png',
-              },
-            ],
-          },
-          {
-            name: 'favicon.ico',
-            file: 'png',
-          },
-          {
-            name: 'index.ts.js.html',
-            file: 'html',
-          },
-        ],
-      },
-      {
-        name: '.gitignore',
-        file: 'txt',
-      },
-      {
-        name: 'babel.config.js',
-        file: 'js',
-      },
-      {
-        name: 'package.json',
-        file: 'json',
-      },
-      {
-        name: 'README.md',
-        file: 'md',
-      },
-      {
-        name: 'vue.config.js',
-        file: 'js',
-      },
-      {
-        name: 'yarn.lock',
-        file: 'txt',
-      },
-    ];
+
+    get trees(): Tree[] {
+      return treeStore.getters.trees;
+    }
+
   }
 </script>
 

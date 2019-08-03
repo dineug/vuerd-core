@@ -17,7 +17,7 @@
   })
   export default class Sidebar extends Vue {
     @Prop({type: Number, default: 200})
-    private readonly width!: number;
+    private width!: number;
   }
 </script>
 

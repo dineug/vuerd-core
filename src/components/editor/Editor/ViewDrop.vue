@@ -14,23 +14,22 @@
   @Component
   export default class ViewDrop extends Vue {
     @Prop({type: Number, default: 0})
-    private readonly width!: number;
+    private width!: number;
     @Prop({type: Number, default: 0})
-    private readonly height!: number;
+    private height!: number;
     @Prop({type: String, default: 'all'})
-    private readonly direction!: Direction;
+    private direction!: Direction;
 
-    // event observable
-    private subscriptionDragover!: Subscription;
+    private subDragover!: Subscription;
 
     @Watch('direction')
-    private watchDirection(val: Direction) {
+    private watchDirection(direction: Direction) {
       log.debug('ViewDrop watchDirection');
       let top = SIZE_VIEW_TAB_HEIGHT;
       let left = 0;
       let width = this.width;
       let height = this.height;
-      switch (val) {
+      switch (direction) {
         case Direction.right:
           left = this.width / 2;
         case Direction.left:
@@ -65,14 +64,14 @@
 
     // ==================== Life Cycle ====================
     private mounted() {
-      this.subscriptionDragover = fromEvent(this.$el, 'dragover').pipe(
+      this.subDragover = fromEvent(this.$el, 'dragover').pipe(
         throttleTime(200),
       ).subscribe(this.onDragover);
       this.watchDirection(this.direction);
     }
 
     private destroyed() {
-      this.subscriptionDragover.unsubscribe();
+      this.subDragover.unsubscribe();
     }
 
     // ==================== Life Cycle END ====================

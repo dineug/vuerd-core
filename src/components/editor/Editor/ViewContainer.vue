@@ -26,7 +26,7 @@
 <script lang="ts">
   import View from '@/models/View';
   import Direction from '@/models/Direction';
-  import {minVertical, resetWidthRatio, resetHeightRatio} from '@/ts/recursionView';
+  import {minVertical, minHorizontal, resetWidthRatio, resetHeightRatio} from '@/ts/recursionView';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Sash from '../Sash.vue';
   import ViewView from './ViewView.vue';
@@ -46,7 +46,7 @@
   })
   export default class ViewContainer extends Vue {
     @Prop({type: Object, default: {}})
-    private readonly container!: View;
+    private container!: View;
 
     private first: First = {
       left: false,
@@ -83,7 +83,7 @@
 
     private moveHeight(movementY: number, view1: View, view2: View) {
       const direction: Direction = movementY < 0 ? Direction.top : Direction.bottom;
-      const minHeight = minVertical(view1);
+      const minHeight = minHorizontal(view1);
       const height = direction === Direction.top ? view1.height + movementY : view1.height - movementY;
       if (minHeight < height) {
         view1.height = height;
