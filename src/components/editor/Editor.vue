@@ -1,11 +1,14 @@
 <template lang="pug">
-  .editor(:style="{ width: `${width}px`, height: `${height}px` }")
+  .editor(
+    :style="{ width: `${width}px`, height: `${height}px` }"
+    @dragover="onDragover"
+    @drop="onDrop"
+  )
     ViewContainer(:container="container")
 </template>
 
 <script lang="ts">
-  import View from '@/models/View';
-  import viewStore from '@/store/view';
+  import viewStore, {View} from '@/store/view';
   import {resetSize, resetWidthRatio, resetHeightRatio} from '@/ts/recursionView';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
   import ViewContainer from './Editor/ViewContainer.vue';
@@ -22,7 +25,7 @@
     private height!: number;
 
     get container(): View {
-      return viewStore.getters.container;
+      return viewStore.state.container;
     }
 
     @Watch('width')
@@ -35,6 +38,18 @@
     private watchHeight(height: number) {
       this.container.height = height;
       resetHeightRatio(this.container);
+    }
+
+    private onDragover(event: DragEvent) {
+      event.preventDefault();
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'move';
+      }
+    }
+
+    // firefox
+    private onDrop(event: DragEvent) {
+      event.preventDefault();
     }
 
     private created() {

@@ -676,10 +676,10 @@
     cssnano-preset-default "^4.0.0"
     postcss "^7.0.0"
 
-"@mdi/font@^3.6.95":
-  version "3.6.95"
-  resolved "https://registry.yarnpkg.com/@mdi/font/-/font-3.6.95.tgz#0bbde766ca2d94cfa0e469f25523b23d3112bdd3"
-  integrity sha512-wUbkF/RRCIh51TPzAL9qUeRSUFla9I3x1nGq62HkfWzIebRHbDY5HPaYCQuZO7398dWaLHTu4BwnBA58YbhfEA==
+"@mdi/font@^3.8.95":
+  version "3.8.95"
+  resolved "https://registry.yarnpkg.com/@mdi/font/-/font-3.8.95.tgz#772094ed7046b126457b1f3b8c82e26b209e71e8"
+  integrity sha512-KR6TBdVYV3p1ZOM+Ge45Kk3P8yHfSGt3YOryVlkEKdO3vMiPjRaaDcQsdogGxVl8FcXsAt/Gz8MoXObbOF1Pzg==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -760,9 +760,9 @@
   integrity sha512-ce5d3q03Ex0sy4R14722Rmt6MT07Ua+k4FwDfdcToYJcMKNtRVQvJ6JCAPdAmAnbRb6CsX6aYb9m96NGod9uTw==
 
 "@types/uuid@^3.4.4":
-  version "3.4.4"
-  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-3.4.4.tgz#7af69360fa65ef0decb41fd150bf4ca5c0cefdf5"
-  integrity sha512-tPIgT0GUmdJQNSHxp0X2jnpQfBSTfGxUMc/2CXBU2mnyTFVYVa2ojpoQ74w0U2yn2vw3jnC640+77lkFFpdVDw==
+  version "3.4.5"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-3.4.5.tgz#d4dc10785b497a1474eae0ba7f0cb09c0ddfd6eb"
+  integrity sha512-MNL15wC3EKyw1VLF+RoVO4hJJdk9t/Hlv3rt1OL65Qvuadm4BYo6g9ZJQqoq7X8NBFSsQXgAujWciovh2lpVjA==
   dependencies:
     "@types/node" "*"
 
@@ -7453,11 +7453,6 @@ sort-keys@^2.0.0:
   dependencies:
     is-plain-obj "^1.0.0"
 
-sortablejs@^1.9.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/sortablejs/-/sortablejs-1.9.0.tgz#2d1e74ae6bac2cb4ad0622908f340848969eb88d"
-  integrity sha512-Ot6bYJ6PoqPmpsqQYXjn1+RKrY2NWQvQt/o4jfd/UYwVWndyO5EPO8YHbnm5HIykf8ENsm4JUrdAvolPT86yYA==
-
 source-list-map@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/source-list-map/-/source-list-map-2.0.1.tgz#3993bd873bfc48479cca9ea3a547835c7c154b34"
@@ -8422,11 +8417,6 @@ vue-cli-plugin-pug@^1.0.7:
     pug-plain-loader "^1.0.0"
     raw-loader "^0.5.1"
 
-vue-cli-plugin-vuetify@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/vue-cli-plugin-vuetify/-/vue-cli-plugin-vuetify-0.5.0.tgz#14c9a61884da58cf6aaf8ff3309044931907f184"
-  integrity sha512-TigfiZUs7SN3Z6uxKilqJUtYxte8vp0F4QxabCli6hkKPqU97JzAZc3P7AL6omkRAd2DMI26fOrIGjuALTvXww==
-
 vue-hot-reload-api@^2.3.0:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/vue-hot-reload-api/-/vue-hot-reload-api-2.3.3.tgz#2756f46cb3258054c5f4723de8ae7e87302a1ccf"
@@ -8475,20 +8465,6 @@ vue@^2.6.10:
   version "2.6.10"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.10.tgz#a72b1a42a4d82a721ea438d1b6bf55e66195c637"
   integrity sha512-ImThpeNU9HbdZL3utgMCq0oiMzAkt1mcgy3/E6zWC/G6AaQoeuFdsl9nDhTDU3X1R6FK7nsIUuRACVcjI+A2GQ==
-
-vuedraggable@^2.21.0:
-  version "2.21.0"
-  resolved "https://registry.yarnpkg.com/vuedraggable/-/vuedraggable-2.21.0.tgz#30c485ed737a9a6a73ea8f21cc8e1ed59aaddc92"
-  integrity sha512-UDp0epjaZikuInoJA9rlEIJaSTQThabq0R9x7TqBdl0qGVFKKzo6glP6ubfzWBmV4iRIfbSOs2DV06s3B5h5tA==
-  dependencies:
-    sortablejs "^1.9.0"
-
-vuetify-loader@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/vuetify-loader/-/vuetify-loader-1.2.2.tgz#7c221dcfd8482344518818d598f9cef8ddd85b6b"
-  integrity sha512-j6KWPuwQ4xTxPDksbFwbSJle7+3oSjNvJ/CViTEgbPLFPqnNsR8JUtRldURIQ0cmAmr0/CoLSZkj0B8JKqOBMA==
-  dependencies:
-    loader-utils "^1.1.0"
 
 vuetify@^1.5.14:
   version "1.5.14"

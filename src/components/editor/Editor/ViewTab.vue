@@ -1,5 +1,5 @@
 <template lang="pug">
-  .split-view-tab(
+  .split-view-tab.scrollbar(
     :style="`width: ${width}px;`"
     @dragenter="onDragenter"
   )
@@ -9,18 +9,19 @@
       tag="ul"
     )
       li(
-        draggable
-        v-for="(tab, i) in tabs"
+        draggable="true"
+        v-for="tab in tabs"
         :key="tab.id"
         :id="tab.id"
         :class="{active: activeId === tab.id, draggable: dragTab && dragTab.id === tab.id}"
         :title="tab.path"
         @click="onActive(tab.id)"
+        @mousedown="onMousedown"
         @dragstart="onDragstart"
         @dragend="onDragend"
       )
         span.icon
-          v-icon(color="grey lighten-1" small) {{tab.name | mdi}}
+          v-icon(color="grey lighten-1" small) {{tab.name | icon}}
         span.name {{tab.name}}
         span.close(@click="onClose($event, tab)")
           v-icon(color="grey lighten-1" size="12") mdi-close
@@ -28,10 +29,9 @@
 
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
-  import Tab from '@/models/Tab';
   import {icon, log, eventBus, getData, isData, getTextWidth} from '@/ts/util';
   import {findById, deleteById} from '@/ts/recursionView';
-  import viewStore from '@/store/view';
+  import viewStore, {Tab} from '@/store/view';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
 
   import {fromEvent, Subscription} from 'rxjs';
@@ -47,10 +47,7 @@
 
   @Component({
     filters: {
-      mdi(name: string): string {
-        const ext = name.substr(name.lastIndexOf('.') + 1);
-        return icon(ext.toLowerCase());
-      },
+      icon,
     },
   })
   export default class ViewTab extends Vue {
@@ -147,31 +144,41 @@
       this.$nextTick(this.setMinWidth);
     }
 
+    private onMousedown() {
+      log.debug('ViewTab onMousedown');
+      const selection = window.getSelection();
+      if (selection) {
+        selection.removeAllRanges();
+      }
+   }
+
     private onDragstart(event: DragEvent) {
       log.debug('ViewTab onDragstart');
-      if (event.target) {
-        const el = event.target as HTMLElement;
-        this.dragTab = getData(this.tabs, el.id);
-        viewStore.commit('setTabDraggable', {
-          viewId: this.viewId,
-          tab: this.dragTab,
-        });
-        this.$emit('dragstart', event);
+      const el = event.target as HTMLElement;
+      this.dragTab = getData(this.tabs, el.id);
+      viewStore.commit('setTabDraggable', {
+        viewId: this.viewId,
+        tab: this.dragTab,
+      });
+      // firefox
+      if (event.dataTransfer) {
+        event.dataTransfer.setData('text/plain', el.id);
       }
+      this.$emit('dragstart', event);
     }
 
     private onDragend(event: DragEvent) {
       log.debug('ViewTab onDragend');
-      if (findById(viewStore.getters.container, this.viewId)) {
-        this.$emit('dragend', event, viewStore.getters.tabDraggable);
+      if (findById(viewStore.state.container, this.viewId)) {
+        this.$emit('dragend', event, viewStore.state.tabDraggable);
       } else {
-        eventBus.$emit('view-view-drop-end', viewStore.getters.tabDraggable);
+        eventBus.$emit('view-view-drop-end', viewStore.state.tabDraggable);
       }
       this.dragTab = null;
-      const tabDraggable = viewStore.getters.tabDraggable;
+      const tabDraggable = viewStore.state.tabDraggable;
       eventBus.$emit('view-tab-draggable-end', tabDraggable.viewId);
       viewStore.commit('setTabDraggable', {
-        viewId: '',
+        viewId: null,
         tab: null,
       });
     }
@@ -187,9 +194,9 @@
           }
         }
       } else {
-        if (li) {
-          const tabDraggable = viewStore.getters.tabDraggable;
-          const view = findById(viewStore.getters.container, tabDraggable.viewId);
+        const tabDraggable = viewStore.state.tabDraggable;
+        if (li && tabDraggable.viewId && tabDraggable.tab) {
+          const view = findById(viewStore.state.container, tabDraggable.viewId);
           const currentIndex = view.tabs.indexOf(tabDraggable.tab);
           const tab = getData(this.tabs, li.id);
           if (tab) {
@@ -214,17 +221,17 @@
       const index = this.tabs.indexOf(tab);
       this.tabs.splice(index, 1);
       if (this.tabs.length === 0) {
-        deleteById(viewStore.getters.container, this.viewId);
+        deleteById(viewStore.state.container, this.viewId);
       } else if (this.activeId === tab.id) {
         this.onActive();
       }
     }
 
-    private onDragenter(event?: DragEvent) {
+    private onDragenter(event: DragEvent) {
       log.debug('ViewTab onDragenter');
-      if (!this.dragTab) {
-        const tabDraggable = viewStore.getters.tabDraggable;
-        const view = findById(viewStore.getters.container, tabDraggable.viewId);
+      const tabDraggable = viewStore.state.tabDraggable;
+      if (!this.dragTab && tabDraggable.viewId && tabDraggable.tab) {
+        const view = findById(viewStore.state.container, tabDraggable.viewId);
         const currentIndex = view.tabs.indexOf(tabDraggable.tab);
         view.tabs.splice(currentIndex, 1);
         this.tabs.push(tabDraggable.tab);
@@ -242,7 +249,7 @@
     private onViewTabToss(viewId: string) {
       log.debug('ViewTab onViewTabToss');
       if (this.tabs.length === 0) {
-        deleteById(viewStore.getters.container, this.viewId);
+        deleteById(viewStore.state.container, this.viewId);
       } else if (this.viewId === viewId) {
         if (this.dragTab && this.activeId === this.dragTab.id) {
           this.onActive();
@@ -264,7 +271,7 @@
     // ==================== Life Cycle ====================
     private created() {
       if (this.tabs.length === 0) {
-        deleteById(viewStore.getters.container, this.viewId);
+        deleteById(viewStore.state.container, this.viewId);
       }
       eventBus.$on('view-tab-toss', this.onViewTabToss);
       eventBus.$on('view-tab-draggable-end', this.onViewTabDraggableEnd);
@@ -326,12 +333,13 @@
         .name {
           padding-right: 7px;
           font-size: $size-font + 2;
+          line-height: 22px;
         }
       }
     }
   }
 
-  /* animation move */
+  /* animation */
   .tab-move {
     transition: transform 0.3s;
   }

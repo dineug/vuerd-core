@@ -1,29 +1,36 @@
+enum Level {
+  info = 'info',
+  debug = 'debug',
+  warn = 'warn',
+  error = 'error',
+}
+
 interface Option {
-  level: string;
+  level: Level;
 }
 
 export default class Logger {
   public static info(...logs: any) {
     Logger.log(logs, {
-      level: 'info',
+      level: Level.info,
     });
   }
 
   public static debug(...logs: any) {
     Logger.log(logs, {
-      level: 'debug',
+      level: Level.debug,
     });
   }
 
   public static warn(...logs: any) {
     Logger.log(logs, {
-      level: 'warn',
+      level: Level.warn,
     });
   }
 
   public static error(...logs: any) {
     Logger.log(logs, {
-      level: 'error',
+      level: Level.error,
     });
   }
 
@@ -31,14 +38,14 @@ export default class Logger {
     if ('development' === process.env.NODE_ENV) {
       logs.forEach((log: any) => {
         switch (option.level) {
-          case 'info':
-          case 'debug':
+          case Level.info:
+          case Level.debug:
             window.console.dir(log);
             break;
-          case 'warn':
+          case Level.warn:
             window.console.warn(log);
             break;
-          case 'error':
+          case Level.error:
             window.console.error(log);
             break;
         }

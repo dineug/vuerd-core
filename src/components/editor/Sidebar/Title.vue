@@ -1,7 +1,7 @@
 <template lang="pug">
   .title
     .title-label
-      span 탐색기
+      span {{name}}
 </template>
 
 <script lang="ts">
@@ -9,6 +9,8 @@
 
   @Component
   export default class Title extends Vue {
+    @Prop({type: String, default: ''})
+    private name!: string;
   }
 </script>
 
@@ -30,7 +32,7 @@
 
       span {
         color: $color-title;
-        font-size: $size-font;
+        font-size: $size-font + 2;
         overflow: hidden;
       }
     }

@@ -24,7 +24,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    border-top: solid 1px $color-editorBottom-top;
+    border-top: solid 1px $color-sash;
 
     .title-tab {
       height: $size-title-height;

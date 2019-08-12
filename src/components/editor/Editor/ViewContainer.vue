@@ -5,7 +5,7 @@
   )
 
     .split-view-view(
-      v-for="(node, i) in container.views"
+      v-for="(node, i) in container.children"
       :key="node.id"
       :style="{ width: `${node.width}px`, height: `${node.height}px` }"
       :class="{ vertical: container.vertical && i !== 0, horizontal: container.horizontal && i !== 0 }"
@@ -17,14 +17,14 @@
         @mousemove="onMousemoveSash($event, i)"
       )
       ViewContainer(
-        v-if="node.views.length !== 0"
+        v-if="node.children.length !== 0"
         :container="node"
       )
       ViewView(v-else :view="node")
 </template>
 
 <script lang="ts">
-  import View from '@/models/View';
+  import {View} from '@/store/view';
   import Direction from '@/models/Direction';
   import {minVertical, minHorizontal, resetWidthRatio, resetHeightRatio} from '@/ts/recursionView';
   import {Component, Prop, Vue} from 'vue-property-decorator';
@@ -112,18 +112,18 @@
       if (this.container.vertical) {
         if (e.movementX < 0) {
           // left
-          this.moveWidth(e.movementX, this.container.views[i - 1], this.container.views[i]);
+          this.moveWidth(e.movementX, this.container.children[i - 1], this.container.children[i]);
         } else {
           // right
-          this.moveWidth(e.movementX, this.container.views[i], this.container.views[i - 1]);
+          this.moveWidth(e.movementX, this.container.children[i], this.container.children[i - 1]);
         }
       } else if (this.container.horizontal) {
         if (e.movementY < 0) {
           // top
-          this.moveHeight(e.movementY, this.container.views[i - 1], this.container.views[i]);
+          this.moveHeight(e.movementY, this.container.children[i - 1], this.container.children[i]);
         } else {
           // bottom
-          this.moveHeight(e.movementY, this.container.views[i], this.container.views[i - 1]);
+          this.moveHeight(e.movementY, this.container.children[i], this.container.children[i - 1]);
         }
       }
     }
@@ -147,11 +147,11 @@
       position: relative;
 
       &.vertical {
-        border-left: solid 1px $color-editorBottom-top;
+        border-left: solid 1px $color-sash;
       }
 
       &.horizontal {
-        border-top: solid 1px $color-editorBottom-top;
+        border-top: solid 1px $color-sash;
       }
     }
   }

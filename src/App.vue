@@ -4,13 +4,8 @@
 
 <script lang="ts">
   import {Component, Vue} from 'vue-property-decorator';
-  import VuerdCore from '@/components/editor/VuerdCore.vue';
 
-  @Component({
-    components: {
-      VuerdCore,
-    },
-  })
+  @Component
   export default class App extends Vue {
   }
 </script>

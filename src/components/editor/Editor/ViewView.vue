@@ -1,5 +1,5 @@
 <template lang="pug">
-  .split-view-main
+  .split-view-main.scrollbar
     ViewTab(
       :tabs="view.tabs"
       :width="view.width"
@@ -25,12 +25,10 @@
 
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
-  import View from '@/models/View';
   import Direction from '@/models/Direction';
-  import TabDraggable from '@/models/TabDraggable';
   import {eventBus, log, isData} from '@/ts/util';
   import {findById, deleteById, split} from '@/ts/recursionView';
-  import viewStore from '@/store/view';
+  import viewStore, {View, TabDraggable} from '@/store/view';
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
   import ViewTab from './ViewTab.vue';
   import ViewDrop from './ViewDrop.vue';
@@ -137,18 +135,18 @@
 
     private onSplit(tabDraggable: TabDraggable) {
       log.debug('ViewView onSplit');
-      if (tabDraggable.tab) {
+      if (tabDraggable.tab && tabDraggable.viewId) {
         let tabViewId!: string;
         switch (this.direction) {
           case Direction.all:
             if (this.view.id === tabDraggable.viewId) {
               this.onActive(tabDraggable.tab.id);
             } else {
-              const tabView = findById(viewStore.getters.container, tabDraggable.viewId);
+              const tabView = findById(viewStore.state.container, tabDraggable.viewId);
               const currentIndex = tabView.tabs.indexOf(tabDraggable.tab);
               tabView.tabs.splice(currentIndex, 1);
               if (tabView.tabs.length === 0) {
-                deleteById(viewStore.getters.container, tabDraggable.viewId);
+                deleteById(viewStore.state.container, tabDraggable.viewId);
               }
               this.view.tabs.push(tabDraggable.tab);
               this.onActive(tabDraggable.tab.id);
@@ -162,7 +160,7 @@
             }
             if (tabViewId !== this.view.id || this.view.tabs.length !== 1) {
               split(
-                viewStore.getters.container,
+                viewStore.state.container,
                 this.direction,
                 tabDraggable.tab,
                 tabViewId,

@@ -3,21 +3,31 @@ import {v4 as uuid} from 'uuid';
 import {SIZE_FONT} from './layout';
 import Vue from 'vue';
 
+// event bus
+const eventBus = new Vue();
+
+export {
+  log,
+  uuid,
+  eventBus,
+};
+
 /**
  * 랜덤 범위 정수 반환
  * @param min 시작
  * @param max 마지막
  */
-const randomInt = (min: number, max: number): number => {
+export function randomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max + 1 - min)) + min;
-};
+}
 
 /**
- * 확장자 => mdi
- * @param ext
+ * file name => mdi
+ * @param name
  */
-const icon = (ext: string): string => {
-  let mdi = 'mdi-file-document-outline';
+export function icon(name: string): string {
+  const ext = name.substr(name.lastIndexOf('.') + 1);
+  let mdi = 'mdi-file-document';
   switch (ext) {
     case 'html':
       mdi = 'mdi-language-html5';
@@ -52,11 +62,11 @@ const icon = (ext: string): string => {
       break;
     case 'txt':
     default:
-      mdi = 'mdi-file-document-outline';
+      mdi = 'mdi-file-document';
       break;
   }
   return mdi;
-};
+}
 
 interface List {
   id: string;
@@ -67,14 +77,14 @@ interface List {
  * @param list
  * @param id
  */
-const getData = <T extends List>(list: T[], id: string): T | null => {
+export function getData<T extends List>(list: T[], id: string): T | null {
   for (const v of list) {
     if (v.id === id) {
       return v;
     }
   }
   return null;
-};
+}
 
 /**
  * 중복 체크
@@ -82,21 +92,18 @@ const getData = <T extends List>(list: T[], id: string): T | null => {
  * @param id
  * @return list.id === id ? false : true
  */
-const isData = <T extends List>(list: T[], id: string): boolean => {
+export function isData<T extends List>(list: T[], id: string): boolean {
   for (const v of list) {
     if (v.id === id) {
       return false;
     }
   }
   return true;
-};
-
-// event bus
-const eventBus = new Vue();
+}
 
 // setup text width
 let spanText: HTMLElement | null = null;
-const addSpanText = () => {
+export function addSpanText() {
   spanText = document.getElementById('span-text-width');
   if (!spanText) {
     spanText = document.createElement('span');
@@ -109,36 +116,47 @@ const addSpanText = () => {
     top: -10000px;
     font-size: ${SIZE_FONT + 2}px;
   `);
-};
+}
 // remove text width
-const removeSpanText = () => {
+export function removeSpanText() {
   if (spanText) {
     spanText.remove();
   }
-};
+}
 
 /**
  * text width
  * @param text
  */
-const getTextWidth = (text: string): number => {
+export function getTextWidth(text: string): number {
   let result = 0;
   if (spanText) {
     spanText.innerHTML = text;
     result = spanText.offsetWidth;
   }
   return result;
-};
+}
 
-export {
-  log,
-  uuid,
-  randomInt,
-  icon,
-  eventBus,
-  getData,
-  isData,
-  getTextWidth,
-  addSpanText,
-  removeSpanText,
-};
+interface Node<T> {
+  parent?: T;
+  children?: T[];
+}
+
+/**
+ * tree 부모 셋팅
+ * @param parent
+ * @param children
+ */
+export function setParent<T extends Node<T>>(parent: T, children?: T[]): T {
+  if (children) {
+    children.forEach((node: T) => {
+      if (parent) {
+        node.parent = parent;
+      }
+      if (node.children && node.children.length !== 0) {
+        setParent(node, node.children);
+      }
+    });
+  }
+  return parent;
+}

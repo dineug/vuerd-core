@@ -1,42 +1,5 @@
-import View from '@/models/View';
-import Tab from '@/models/Tab';
-import {uuid, randomInt} from '@/ts/util';
-
-const rVertical = (): boolean => {
-  return randomInt(0, 1) === 0;
-};
-
-const create = (): View => {
-  const isVertical = rVertical();
-  return {
-    id: uuid(),
-    vertical: isVertical,
-    horizontal: !isVertical,
-    width: 2000,
-    height: 2000,
-    widthRatio: 1,
-    heightRatio: 1,
-    views: [],
-    tabs: dTabs,
-  };
-};
-
-const createChild = (root: View) => {
-  const stack: View[] = [];
-  stack.push(root);
-  for (let i = 0; i < 10; i++) {
-    const view = create();
-    stack[randomInt(0, stack.length - 1)].views.push(view);
-    stack.push(view);
-  }
-};
-
-// split view
-export const dContainer = (): View => {
-  const view: View = create();
-  createChild(view);
-  return view;
-};
+import {View, Tab} from '@/store/view';
+import {uuid, setParent} from '@/ts/util';
 
 // tabs
 export const dTabs: Tab[] = [
@@ -88,7 +51,7 @@ export const dTabs: Tab[] = [
 ];
 
 // view
-export const dView = {
+const view: View = {
   id: uuid(),
   vertical: true,
   horizontal: false,
@@ -96,7 +59,7 @@ export const dView = {
   height: 2000,
   widthRatio: 1,
   heightRatio: 1,
-  views: [
+  children: [
     {
       id: uuid(),
       vertical: true,
@@ -105,7 +68,7 @@ export const dView = {
       height: 2000,
       widthRatio: 1,
       heightRatio: 1,
-      views: [],
+      children: [],
       tabs: [
         dTabs[2],
         dTabs[3],
@@ -124,12 +87,13 @@ export const dView = {
       height: 2000,
       widthRatio: 1,
       heightRatio: 1,
-      views: [],
+      children: [],
       tabs: [dTabs[0], dTabs[1]],
     },
   ],
   tabs: [],
 };
+export const dView = setParent<View>(view, view.children);
 
 /**
  * view init
@@ -142,6 +106,6 @@ export default {
   height: 2000,
   widthRatio: 1,
   heightRatio: 1,
-  views: [],
+  children: [],
   tabs: [],
 };

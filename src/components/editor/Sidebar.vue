@@ -1,23 +1,37 @@
 <template lang="pug">
-  .sidebar(:style="{ width: `${width}px` }")
-    Title
-    Content
+  .sidebar(
+    :style="{ width: `${width}px` }"
+    @dragover="onDragover"
+    @drop="onDrop"
+  )
+    Explorer
 </template>
 
 <script lang="ts">
   import {Component, Prop, Vue} from 'vue-property-decorator';
-  import Title from './Sidebar/Title.vue';
-  import Content from './Sidebar/Content.vue';
+  import Explorer from './Sidebar/Explorer.vue';
 
   @Component({
     components: {
-      Title,
-      Content,
+      Explorer,
     },
   })
   export default class Sidebar extends Vue {
     @Prop({type: Number, default: 200})
     private width!: number;
+
+    private onDragover(event: DragEvent) {
+      event.preventDefault();
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'move';
+      }
+    }
+
+    // firefox
+    private onDrop(event: DragEvent) {
+      event.preventDefault();
+    }
+
   }
 </script>
 
