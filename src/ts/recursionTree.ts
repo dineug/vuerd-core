@@ -1,5 +1,5 @@
 import {SIZE_TREE_HEIGHT} from '@/ts/layout';
-import {Tree, TreeSelect} from '@/store/tree';
+import {State, Tree, TreeSelect} from '@/store/tree';
 
 export function findById(container: Tree, id: string): Tree {
   if (container.id === id) {
@@ -28,7 +28,7 @@ export function childrenCount(tree: Tree, count: number = 0): number {
   return sum;
 }
 
-export function childrenArray(container: Tree, stack?: Tree[]): Tree[] {
+function childrenArray(container: Tree, stack?: Tree[]): Tree[] {
   if (!stack) {
     stack = [];
   } else {
@@ -42,15 +42,109 @@ export function childrenArray(container: Tree, stack?: Tree[]): Tree[] {
   return stack;
 }
 
-export function selected(container: Tree, selects: TreeSelect[]) {
-  const trees = childrenArray(container);
-  for (let i = 0; i < selects.length; i++) {
-    const index = trees.indexOf(selects[i].tree);
+export function selected(state: State, tree: Tree, event: MouseEvent) {
+  const trees = childrenArray(state.container);
+  // none display 삭제
+  for (let i = 0; i < state.selects.length; i++) {
+    const index = trees.indexOf(state.selects[i].tree);
     if (index === -1) {
-      selects.splice(i, 1);
+      state.selects.splice(i, 1);
       i--;
-    } else {
-      selects[i].top = index * SIZE_TREE_HEIGHT;
     }
   }
+  if (state.selects.length === 0) { // select
+    const index = trees.indexOf(tree);
+    state.selects.push({
+      top: index * SIZE_TREE_HEIGHT,
+      tree,
+      order: 0,
+    });
+  } else if (event.ctrlKey && event.shiftKey) { // multiple range select
+    let start = trees.indexOf(tree);
+    let end = trees.indexOf(lastSelect(state.selects));
+    if (start > end) {
+      const temp = start;
+      start = end;
+      end = temp;
+    }
+    for (let i = start; i <= end; i++) {
+      if (isSelect(state.selects, trees[i])) {
+        state.selects.push({
+          top: i * SIZE_TREE_HEIGHT,
+          tree: trees[i],
+          order: nextOrder(state.selects),
+        });
+      }
+    }
+    for (const select of state.selects) {
+      const index = trees.indexOf(select.tree);
+      select.top = index * SIZE_TREE_HEIGHT;
+    }
+  } else if (event.shiftKey) { // range select
+    let start = trees.indexOf(tree);
+    let end = trees.indexOf(lastSelect(state.selects));
+    state.selects = [];
+    if (start > end) {
+      const temp = start;
+      start = end;
+      end = temp;
+    }
+    for (let i = start; i <= end; i++) {
+      state.selects.push({
+        top: i * SIZE_TREE_HEIGHT,
+        tree: trees[i],
+        order: nextOrder(state.selects),
+      });
+    }
+  } else if (event.ctrlKey) { // multiple select
+    if (isSelect(state.selects, tree)) {
+      state.selects.push({
+        top: 0,
+        tree,
+        order: nextOrder(state.selects),
+      });
+    }
+    for (const select of state.selects) {
+      const index = trees.indexOf(select.tree);
+      select.top = index * SIZE_TREE_HEIGHT;
+    }
+  } else { // select
+    const index = trees.indexOf(tree);
+    state.selects = [{
+      top: index * SIZE_TREE_HEIGHT,
+      tree,
+      order: 0,
+    }];
+  }
+}
+
+function nextOrder(selects: TreeSelect[]): number {
+  let max = 0;
+  selects.forEach((select) => {
+    if (max < select.order) {
+      max = select.order;
+    }
+  });
+  return max + 1;
+}
+
+function lastSelect(selects: TreeSelect[]): Tree {
+  let target = selects[0];
+  selects.forEach((select) => {
+    if (target.order < select.order) {
+      target = select;
+    }
+  });
+  return target.tree;
+}
+
+function isSelect(selects: TreeSelect[], tree: Tree): boolean {
+  let result = true;
+  for (const select of selects) {
+    if (select.tree.id === tree.id) {
+      result = false;
+      break;
+    }
+  }
+  return result;
 }

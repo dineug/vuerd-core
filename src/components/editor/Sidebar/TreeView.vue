@@ -105,7 +105,7 @@
           el,
           {opacity: 1, height: childrenCount(tree) * SIZE_TREE_HEIGHT},
           {
-            duration: 300,
+            duration: 200,
             complete: () => {
               el.removeAttribute('style');
               done();
@@ -119,7 +119,7 @@
       window.Velocity(
         el,
         {opacity: 0, height: 0},
-        {duration: 300, complete: done},
+        {duration: 200, complete: done},
       );
     }
   }

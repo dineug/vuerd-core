@@ -5,7 +5,7 @@ import {dTree} from '@/data/tree';
 
 Vue.use(Vuex);
 
-interface State {
+export interface State {
   container: Tree;
   selects: TreeSelect[];
 }
@@ -24,6 +24,7 @@ export interface Tree {
 export interface TreeSelect {
   top: number;
   tree: Tree;
+  order: number;
 }
 
 export default new Vuex.Store({
@@ -34,23 +35,7 @@ export default new Vuex.Store({
   getters: {},
   mutations: {
     select(state: State, payload: { event: MouseEvent, tree: Tree }) {
-      if (!payload.event.ctrlKey) {
-        state.selects = [];
-      }
-      let result = true;
-      for (const select of state.selects) {
-        if (select.tree.id === payload.tree.id) {
-          result = false;
-          break;
-        }
-      }
-      if (result) {
-        state.selects.push({
-          top: 0,
-          tree: payload.tree,
-        });
-      }
-      selected(state.container, state.selects);
+      selected(state, payload.tree, payload.event);
     },
   },
   actions: {},

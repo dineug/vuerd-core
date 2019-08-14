@@ -59,6 +59,6 @@
 
   /* animation */
   .select-move {
-    transition: transform 0.3s;
+    transition: transform 0.2s;
   }
 </style>
