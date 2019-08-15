@@ -127,7 +127,7 @@
         if (isData(this.draggableListener, li.id)) {
           this.draggableListener.push({
             id: li.id,
-            subDragover: fromEvent(li, 'dragover').pipe(
+            subDragover: fromEvent<DragEvent>(li, 'dragover').pipe(
               throttleTime(300),
             ).subscribe(this.onDragover),
           });
@@ -165,6 +165,7 @@
         event.dataTransfer.setData('text/plain', el.id);
       }
       this.$emit('dragstart', event);
+      eventBus.$emit('editor-dragstart');
     }
 
     private onDragend(event: DragEvent) {
@@ -176,14 +177,14 @@
       }
       this.dragTab = null;
       const tabDraggable = viewStore.state.tabDraggable;
-      eventBus.$emit('view-tab-draggable-end', tabDraggable.viewId);
-      viewStore.commit('setTabDraggable', {
-        viewId: null,
-        tab: null,
-      });
+      if (tabDraggable) {
+        eventBus.$emit('view-tab-draggable-end', tabDraggable.viewId);
+      }
+      viewStore.commit('setTabDraggable', null);
+      eventBus.$emit('editor-dragend');
     }
 
-    private onDragover(event: Event) {
+    private onDragover(event: DragEvent) {
       log.debug('ViewTab onDragover');
       const li = this.findByLi(event.target as HTMLElement);
       if (this.dragTab) {
@@ -195,7 +196,7 @@
         }
       } else {
         const tabDraggable = viewStore.state.tabDraggable;
-        if (li && tabDraggable.viewId && tabDraggable.tab) {
+        if (li && tabDraggable) {
           const view = findById(viewStore.state.container, tabDraggable.viewId);
           const currentIndex = view.tabs.indexOf(tabDraggable.tab);
           const tab = getData(this.tabs, li.id);
@@ -230,7 +231,7 @@
     private onDragenter(event: DragEvent) {
       log.debug('ViewTab onDragenter');
       const tabDraggable = viewStore.state.tabDraggable;
-      if (!this.dragTab && tabDraggable.viewId && tabDraggable.tab) {
+      if (!this.dragTab && tabDraggable) {
         const view = findById(viewStore.state.container, tabDraggable.viewId);
         const currentIndex = view.tabs.indexOf(tabDraggable.tab);
         view.tabs.splice(currentIndex, 1);
@@ -243,7 +244,7 @@
           tab: this.dragTab,
         });
       }
-      this.$emit('dragenter', event as DragEvent);
+      this.$emit('dragenter', event);
     }
 
     private onViewTabToss(viewId: string) {

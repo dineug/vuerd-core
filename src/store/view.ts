@@ -7,14 +7,14 @@ Vue.use(Vuex);
 interface State {
   container: View;
   tabs: Tab[];
-  tabDraggable: TabDraggable;
+  tabDraggable: TabDraggable | null;
 }
 
 /**
  * Editor view
  */
 export interface View {
-  id: string;
+  readonly id: string;
   vertical: boolean;
   horizontal: boolean;
   width: number;
@@ -30,14 +30,14 @@ export interface View {
  * Editor tab
  */
 export interface Tab {
-  id: string;
+  readonly id: string;
+  readonly path: string;
   name: string;
-  path: string;
 }
 
 export interface TabDraggable {
-  viewId: string | null;
-  tab: Tab | null;
+  viewId: string;
+  tab: Tab;
 }
 
 
@@ -46,16 +46,12 @@ export default new Vuex.Store({
     // container: init,
     container: dView,
     tabs: dTabs,
-    tabDraggable: {
-      viewId: null,
-      tab: null,
-    },
+    tabDraggable: null,
   },
   getters: {},
   mutations: {
-    setTabDraggable(state: State, payload) {
-      state.tabDraggable.viewId = payload.viewId;
-      state.tabDraggable.tab = payload.tab;
+    setTabDraggable(state: State, tabDraggable: TabDraggable | null) {
+      state.tabDraggable = tabDraggable;
     },
   },
   actions: {},

@@ -5,7 +5,11 @@
     .workspace(ref="workspace")
       Sidebar(:width="sidebarWidth")
       .main(ref="main" :style="{ left: `${sidebarWidth}px`, width: `${mainWidth}px` }")
-        Editor(:width="mainWidth" :height="editorHeight")
+        Editor(
+          :width="mainWidth"
+          :height="editorHeight"
+          :sidebarWidth="sidebarWidth"
+        )
         EditorBottom(:height="editorBottomHeight")
           Sash(horizontal @mousemove="onMousemoveSash($event, 'horizontal')")
         Sash(vertical @mousemove="onMousemoveSash($event, 'vertical')")

@@ -14,6 +14,8 @@
       span.node(
         draggable="true"
         :id="node.id"
+        :class="{'folder-active': node.folderActive}"
+        :data-folder="node.children !== undefined"
         @mousedown="onMousedown"
         @dragstart="onDragstart"
         @dragend="onDragend"
@@ -32,9 +34,9 @@
           ) {{node.name | icon}}
         span.name {{node.name}}
       transition(
-        @before-enter="beforeEnter"
-        @enter="enter"
-        @leave="leave"
+        @before-enter="onBeforeEnter"
+        @enter="onEnter"
+        @leave="onLeave"
       )
         TreeView(
           v-if="node.folderOpen && node.children && node.children.length !== 0"
@@ -45,10 +47,19 @@
 
 <script lang="ts">
   import {SIZE_TREE_HEIGHT} from '@/ts/layout';
-  import {icon, log, eventBus} from '@/ts/util';
+  import {icon, log, eventBus, isData, getData} from '@/ts/util';
   import {findById, childrenCount} from '@/ts/recursionTree';
   import treeStore, {Tree} from '@/store/tree';
-  import {Component, Prop, Vue} from 'vue-property-decorator';
+  import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
+
+  import {fromEvent, Observable, Subscription} from 'rxjs';
+  import {throttleTime} from 'rxjs/operators';
+
+  interface FolderDraggableObservable {
+    id: string;
+    dragover$: Observable<DragEvent>;
+    subDragover: Subscription | null;
+  }
 
   @Component({
     filters: {
@@ -58,6 +69,23 @@
   export default class TreeView extends Vue {
     @Prop({type: Array, default: []})
     private trees!: Tree[];
+
+    private folderDraggableListener: FolderDraggableObservable[] = [];
+
+    @Watch('trees')
+    private watchTrees() {
+      this.onDraggableFolder();
+    }
+
+    private findByNode(el: HTMLElement | null): HTMLElement | null {
+      if (el === null) {
+        return null;
+      } else if (el.localName === 'span' && el.className === 'node') {
+        return el;
+      } else {
+        return this.findByNode(el.parentElement);
+      }
+    }
 
     // ==================== Event Handler ===================
     private onMousedown() {
@@ -71,6 +99,9 @@
     private onDragstart(event: DragEvent) {
       log.debug('TreeView onDragstart');
       const el = event.target as HTMLElement;
+      log.debug(el.id);
+      // el.id 가 selects 속에 있으면 다중 무빙 없으면 단일 무빙
+      eventBus.$emit('tree-view-draggable-folder');
       // firefox
       if (event.dataTransfer) {
         event.dataTransfer.setData('text/plain', el.id);
@@ -79,6 +110,8 @@
 
     private onDragend(event: DragEvent) {
       log.debug('TreeView onDragend');
+      eventBus.$emit('tree-view-draggable-folder-end');
+      treeStore.commit('folderActive', null);
     }
 
     private onClick(event: MouseEvent, tree: Tree, folder: boolean) {
@@ -91,14 +124,72 @@
       treeStore.commit('select', {event, tree});
     }
 
-    // ==================== Event Handler END ===================
+    private onDraggableFolder() {
+      log.debug('TreeView onDraggableFolder');
+      const ul = this.$el as HTMLElement;
+      const list = ul.querySelectorAll<HTMLElement>('.node');
+      list.forEach((el: HTMLElement) => {
+        if (el.dataset.folder === 'true' && isData(this.folderDraggableListener, el.id)) {
+          this.folderDraggableListener.push({
+            id: el.id,
+            dragover$: fromEvent<DragEvent>(el, 'dragover'),
+            subDragover: null,
+          });
+        }
+      });
+      for (let i = 0; i < this.folderDraggableListener.length; i++) {
+        if (isData(this.trees, this.folderDraggableListener[i].id)) {
+          const draggable = this.folderDraggableListener[i];
+          if (draggable.subDragover) {
+            draggable.subDragover.unsubscribe();
+          }
+          this.folderDraggableListener.splice(i, 1);
+          i--;
+        }
+      }
+    }
 
-    private beforeEnter(el: HTMLElement) {
+    private onTreeViewDraggableFolder() {
+      log.debug('TreeView onTreeViewDraggableFolder');
+      this.folderDraggableListener.forEach((draggable: FolderDraggableObservable) => {
+        draggable.subDragover = draggable.dragover$.pipe(throttleTime(200)).subscribe(this.onDragoverFolder);
+      });
+    }
+
+    private onTreeViewDraggableFolderEnd() {
+      log.debug('TreeView onTreeViewDraggableFolderEnd');
+      this.folderDraggableListener.forEach((draggable: FolderDraggableObservable) => {
+        if (draggable.subDragover) {
+          draggable.subDragover.unsubscribe();
+        }
+      });
+    }
+
+    private onDragoverFolder(event: DragEvent) {
+      log.debug('TreeView onDragoverFolder');
+      const target = this.findByNode(event.target as HTMLElement);
+      if (target) {
+        const tree = getData(this.trees, target.id);
+        if (tree) {
+          treeStore.commit('folderActive', tree);
+          this.$forceUpdate();
+        }
+      }
+    }
+
+    private onTreeViewUpdate(tree: Tree) {
+      log.debug('TreeView onTreeViewUpdate');
+      if (this.trees.indexOf(tree) !== -1) {
+        this.$forceUpdate();
+      }
+    }
+
+    private onBeforeEnter(el: HTMLElement) {
       el.style.opacity = '0';
       el.style.height = '0';
     }
 
-    private enter(el: HTMLElement, done: () => {}) {
+    private onEnter(el: HTMLElement, done: () => {}) {
       if (el.dataset.id) {
         const tree = findById(treeStore.state.container, el.dataset.id);
         window.Velocity(
@@ -115,13 +206,34 @@
       }
     }
 
-    private leave(el: HTMLElement, done: () => {}) {
+    private onLeave(el: HTMLElement, done: () => {}) {
       window.Velocity(
         el,
         {opacity: 0, height: 0},
         {duration: 200, complete: done},
       );
     }
+
+    // ==================== Event Handler END ===================
+
+    // ==================== Life Cycle ====================
+    private created() {
+      eventBus.$on('tree-view-draggable-folder', this.onTreeViewDraggableFolder);
+      eventBus.$on('tree-view-draggable-folder-end', this.onTreeViewDraggableFolderEnd);
+      eventBus.$on('tree-view-update', this.onTreeViewUpdate);
+    }
+
+    private mounted() {
+      this.onDraggableFolder();
+    }
+
+    private destroyed() {
+      eventBus.$off('tree-view-draggable-folder', this.onTreeViewDraggableFolder);
+      eventBus.$off('tree-view-draggable-folder-end', this.onTreeViewDraggableFolderEnd);
+      eventBus.$off('tree-view-update', this.onTreeViewUpdate);
+    }
+
+    // ==================== Life Cycle END ====================
   }
 </script>
 
@@ -157,6 +269,10 @@
         .name {
           font-size: $size-font + 2;
           overflow: hidden;
+        }
+
+        &.folder-active {
+          border: solid $color-active 1px;
         }
       }
     }

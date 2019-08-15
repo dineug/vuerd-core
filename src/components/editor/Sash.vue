@@ -23,8 +23,8 @@
     @Prop({type: Number, default: 0})
     private left!: number;
 
-    private mouseup$: Observable<Event> = fromEvent(window, 'mouseup');
-    private mousemove$: Observable<Event> = fromEvent(window, 'mousemove');
+    private mouseup$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mouseup');
+    private mousemove$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mousemove');
     private subMouseup!: Subscription;
     private subMousemove!: Subscription;
 
@@ -51,9 +51,9 @@
       this.subMousemove.unsubscribe();
     }
 
-    private onMousemove(event: Event) {
+    private onMousemove(event: MouseEvent) {
       event.preventDefault();
-      this.$emit('mousemove', event as MouseEvent);
+      this.$emit('mousemove', event);
     }
     // ==================== Event Handler END ===================
   }

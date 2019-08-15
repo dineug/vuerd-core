@@ -55,16 +55,16 @@
     }
 
     // ==================== Event Handler ===================
-    private onDragover(event: Event) {
+    private onDragover(event: DragEvent) {
       log.debug('ViewDrop onDragover');
-      this.$emit('dragover', event as DragEvent);
+      this.$emit('dragover', event);
     }
 
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
     private mounted() {
-      this.subDragover = fromEvent(this.$el, 'dragover').pipe(
+      this.subDragover = fromEvent<DragEvent>(this.$el, 'dragover').pipe(
         throttleTime(200),
       ).subscribe(this.onDragover);
       this.watchDirection(this.direction);

@@ -13,7 +13,6 @@
 
 <script lang="ts">
   import treeStore, {Tree, TreeSelect} from '@/store/tree';
-  import {log} from '@/ts/util';
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import Title from './Title.vue';
   import TreeView from './TreeView.vue';
@@ -26,12 +25,12 @@
   })
   export default class Explorer extends Vue {
 
-    get selects(): TreeSelect[] {
-      return treeStore.state.selects;
-    }
-
     get container(): Tree {
       return treeStore.state.container;
+    }
+
+    get selects(): TreeSelect[] {
+      return treeStore.state.selects;
     }
 
   }

@@ -28,18 +28,12 @@ export function childrenCount(tree: Tree, count: number = 0): number {
   return sum;
 }
 
-function childrenArray(container: Tree, stack?: Tree[]): Tree[] {
-  if (!stack) {
-    stack = [];
-  } else {
-    stack.push(container);
+export function path(tree: Tree, buffer: string[] = []): string[] {
+  if (tree.parent) {
+    buffer.unshift(tree.name);
+    return path(tree.parent, buffer);
   }
-  if (container.children && container.children.length !== 0 && container.folderOpen) {
-    container.children.forEach((tree: Tree) => {
-      childrenArray(tree, stack);
-    });
-  }
-  return stack;
+  return buffer;
 }
 
 export function selected(state: State, tree: Tree, event: MouseEvent) {
@@ -118,9 +112,23 @@ export function selected(state: State, tree: Tree, event: MouseEvent) {
   }
 }
 
+function childrenArray(container: Tree, stack?: Tree[]): Tree[] {
+  if (!stack) {
+    stack = [];
+  } else {
+    stack.push(container);
+  }
+  if (container.children && container.children.length !== 0 && container.folderOpen) {
+    container.children.forEach((tree: Tree) => {
+      childrenArray(tree, stack);
+    });
+  }
+  return stack;
+}
+
 function nextOrder(selects: TreeSelect[]): number {
   let max = 0;
-  selects.forEach((select) => {
+  selects.forEach((select: TreeSelect) => {
     if (max < select.order) {
       max = select.order;
     }
@@ -130,7 +138,7 @@ function nextOrder(selects: TreeSelect[]): number {
 
 function lastSelect(selects: TreeSelect[]): Tree {
   let target = selects[0];
-  selects.forEach((select) => {
+  selects.forEach((select: TreeSelect) => {
     if (target.order < select.order) {
       target = select;
     }

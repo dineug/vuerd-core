@@ -48,8 +48,8 @@
 
     private SIZE_VIEW_TAB_HEIGHT = SIZE_VIEW_TAB_HEIGHT;
 
-    private dragover$!: Observable<Event>;
-    private dragenter$!: Observable<Event>;
+    private dragover$!: Observable<DragEvent>;
+    private dragenter$!: Observable<DragEvent>;
     private subDragover!: Subscription;
     private subDragenter!: Subscription;
 
@@ -99,18 +99,17 @@
       eventBus.$emit('view-view-drop-view', this.view.id);
     }
 
-    private onDragover(event: Event, drop: boolean = false) {
+    private onDragover(event: DragEvent, drop: boolean = false) {
       log.debug('ViewView onDragover');
-      const e = event as DragEvent;
-      let x = e.offsetX;
-      let y = e.offsetY;
+      let x = event.offsetX;
+      let y = event.offsetY;
       if (drop) {
         switch (this.direction) {
           case Direction.bottom:
-            y = e.offsetY + this.height / 2;
+            y = event.offsetY + this.height / 2;
             break;
           case Direction.right:
-            x = e.offsetX + this.width / 2;
+            x = event.offsetX + this.width / 2;
             break;
         }
       }
@@ -218,8 +217,8 @@
     }
 
     private mounted() {
-      this.dragover$ = fromEvent(this.$refs.view as HTMLElement, 'dragover');
-      this.dragenter$ = fromEvent(this.$refs.view as HTMLElement, 'dragenter');
+      this.dragover$ = fromEvent<DragEvent>(this.$refs.view as HTMLElement, 'dragover');
+      this.dragenter$ = fromEvent<DragEvent>(this.$refs.view as HTMLElement, 'dragenter');
     }
 
     private destroyed() {
