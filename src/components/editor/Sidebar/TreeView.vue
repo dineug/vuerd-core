@@ -17,7 +17,7 @@
         :class="{'folder-active': node.folderActive}"
         :data-folder="node.children !== undefined"
         @mousedown="onMousedown"
-        @dragstart="onDragstart"
+        @dragstart="onDragstart($event, node)"
         @dragend="onDragend"
         @click="onClick($event, node, node.children !== undefined)"
       )
@@ -98,11 +98,10 @@
       }
     }
 
-    private onDragstart(event: DragEvent) {
+    private onDragstart(event: DragEvent, tree: Tree) {
       log.debug('TreeView onDragstart');
       const el = event.target as HTMLElement;
-      log.debug(el.id);
-      // el.id 가 selects 속에 있으면 다중 무빙 없으면 단일 무빙
+      treeStore.commit('draggableTree', tree);
       eventBus.$emit('tree-view-draggable-folder');
       // firefox
       if (event.dataTransfer) {
@@ -112,8 +111,10 @@
 
     private onDragend(event: DragEvent) {
       log.debug('TreeView onDragend');
-      eventBus.$emit('tree-view-draggable-folder-end');
+      treeStore.commit('move');
       treeStore.commit('folderActive', null);
+      treeStore.commit('draggableTree', null);
+      eventBus.$emit('tree-view-draggable-folder-end');
     }
 
     private onClick(event: MouseEvent, tree: Tree, folder: boolean) {

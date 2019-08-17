@@ -38,6 +38,7 @@
 
 <style scoped lang="scss">
   .explorer {
+    height: 100%;
 
     .content {
       position: relative;

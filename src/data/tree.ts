@@ -8,57 +8,64 @@ const tree: Tree = {
   children: [
     {
       id: uuid(),
-      name: '.git',
-      folderOpen: false,
-      children: [],
-    },
-    {
-      id: uuid(),
-      name: 'node_modules',
-      folderOpen: false,
-      children: [],
-    },
-    {
-      id: uuid(),
-      name: 'public',
+      name: 'vuerd-core',
       folderOpen: true,
       children: [
         {
           id: uuid(),
-          name: 'static',
+          name: '.git',
           folderOpen: false,
+          children: [],
+        },
+        {
+          id: uuid(),
+          name: 'node_modules',
+          folderOpen: false,
+          children: [],
+        },
+        {
+          id: uuid(),
+          name: 'public',
+          folderOpen: true,
           children: [
             {
               id: uuid(),
-              name: 'logo.png',
+              name: 'static',
+              folderOpen: false,
+              children: [
+                {
+                  id: uuid(),
+                  name: 'logo.png',
+                },
+              ],
+            },
+            {
+              id: uuid(),
+              name: 'index.html',
             },
           ],
         },
         {
           id: uuid(),
-          name: 'index.html',
+          name: '.gitignore',
+        },
+        {
+          id: uuid(),
+          name: 'vue.config.js',
+        },
+        {
+          id: uuid(),
+          name: 'package.json',
+        },
+        {
+          id: uuid(),
+          name: 'README.md',
+        },
+        {
+          id: uuid(),
+          name: 'yarn.lock',
         },
       ],
-    },
-    {
-      id: uuid(),
-      name: '.gitignore',
-    },
-    {
-      id: uuid(),
-      name: 'vue.config.js',
-    },
-    {
-      id: uuid(),
-      name: 'package.json',
-    },
-    {
-      id: uuid(),
-      name: 'README.md',
-    },
-    {
-      id: uuid(),
-      name: 'yarn.lock',
     },
   ],
 };

@@ -31,8 +31,8 @@
     @Prop({type: Number, default: 200})
     private sidebarWidth!: number;
 
-    private drag$: Observable<DragEvent> = fromEvent<DragEvent>(window, 'drag');
-    private subDrag!: Subscription;
+    private dragover$: Observable<DragEvent> = fromEvent<DragEvent>(window, 'dragover');
+    private subDragover!: Subscription;
 
     get container(): View {
       return viewStore.state.container;
@@ -65,16 +65,16 @@
 
     private onEditorDragstart() {
       log.debug('Editor onEditorDragstart');
-      this.subDrag = this.drag$.pipe(throttleTime(100)).subscribe(this.onDrag);
+      this.subDragover = this.dragover$.pipe(throttleTime(100)).subscribe(this.onDragoverTrack);
     }
 
     private onEditorDragend() {
       log.debug('Editor onEditorDragend');
-      this.subDrag.unsubscribe();
+      this.subDragover.unsubscribe();
     }
 
-    private onDrag(event: DragEvent) {
-      log.debug('Editor onDrag');
+    private onDragoverTrack(event: MouseEvent) {
+      log.debug('Editor onDragoverTrack');
       const x = event.x - this.sidebarWidth - SIZE_ACTIVITYBAR_WIDTH;
       const y = event.y - SIZE_TITLEBAR_HEIGHT;
       if (x < 0 || y < 0 || x > this.width || y > this.height) {
