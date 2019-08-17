@@ -58,7 +58,9 @@
   interface FolderDraggableObservable {
     id: string;
     dragover$: Observable<DragEvent>;
+    dragleave$: Observable<DragEvent>;
     subDragover: Subscription | null;
+    subDragleave: Subscription | null;
   }
 
   @Component({
@@ -133,7 +135,9 @@
           this.folderDraggableListener.push({
             id: el.id,
             dragover$: fromEvent<DragEvent>(el, 'dragover'),
+            dragleave$: fromEvent<DragEvent>(el, 'dragleave'),
             subDragover: null,
+            subDragleave: null,
           });
         }
       });
@@ -152,7 +156,8 @@
     private onTreeViewDraggableFolder() {
       log.debug('TreeView onTreeViewDraggableFolder');
       this.folderDraggableListener.forEach((draggable: FolderDraggableObservable) => {
-        draggable.subDragover = draggable.dragover$.pipe(throttleTime(200)).subscribe(this.onDragoverFolder);
+        draggable.subDragover = draggable.dragover$.pipe(throttleTime(100)).subscribe(this.onDragoverFolder);
+        draggable.subDragleave = draggable.dragleave$.subscribe(this.onDragleaveFolder);
       });
     }
 
@@ -161,6 +166,9 @@
       this.folderDraggableListener.forEach((draggable: FolderDraggableObservable) => {
         if (draggable.subDragover) {
           draggable.subDragover.unsubscribe();
+        }
+        if (draggable.subDragleave) {
+          draggable.subDragleave.unsubscribe();
         }
       });
     }
@@ -175,6 +183,11 @@
           this.$forceUpdate();
         }
       }
+    }
+
+    private onDragleaveFolder(event: DragEvent) {
+      log.debug('TreeView onDragleaveFolder');
+      treeStore.commit('folderActive', null);
     }
 
     private onTreeViewUpdate(tree: Tree) {

@@ -19,7 +19,7 @@ export interface Tree {
   readonly id: string;
   name: string;
   folderOpen?: boolean;
-  parent?: Tree;
+  parent?: Tree | null;
   children?: Tree[];
   folderActive?: boolean;
 }

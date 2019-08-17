@@ -29,6 +29,7 @@ const view: View = {
   height: 2000,
   widthRatio: 1,
   heightRatio: 1,
+  parent: null,
   children: [
     {
       id: uuid(),
@@ -38,6 +39,7 @@ const view: View = {
       height: 2000,
       widthRatio: 1,
       heightRatio: 1,
+      parent: null,
       children: [],
       tabs: [
         dTabs[0],

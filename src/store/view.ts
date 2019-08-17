@@ -21,7 +21,7 @@ export interface View {
   height: number;
   widthRatio: number;
   heightRatio: number;
-  parent?: View;
+  parent: View | null;
   children: View[];
   tabs: Tab[];
 }

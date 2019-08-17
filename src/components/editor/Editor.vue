@@ -16,6 +16,7 @@
   import ViewContainer from './Editor/ViewContainer.vue';
 
   import {fromEvent, Observable, Subscription} from 'rxjs';
+  import {throttleTime} from 'rxjs/operators';
 
   @Component({
     components: {
@@ -64,7 +65,7 @@
 
     private onEditorDragstart() {
       log.debug('Editor onEditorDragstart');
-      this.subDrag = this.drag$.subscribe(this.onDrag);
+      this.subDrag = this.drag$.pipe(throttleTime(100)).subscribe(this.onDrag);
     }
 
     private onEditorDragend() {
@@ -73,6 +74,7 @@
     }
 
     private onDrag(event: DragEvent) {
+      log.debug('Editor onDrag');
       const x = event.x - this.sidebarWidth - SIZE_ACTIVITYBAR_WIDTH;
       const y = event.y - SIZE_TITLEBAR_HEIGHT;
       if (x < 0 || y < 0 || x > this.width || y > this.height) {
