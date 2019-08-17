@@ -6,7 +6,7 @@
       transition-group(name="select")
         .active(
           v-for="select in selects"
-          :key="select.tree.id"
+          :key="select.id"
           :style="`top: ${select.top}px;`"
         )
 </template>

@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {selected} from '@/ts/recursionTree';
-import {eventBus, log} from '@/ts/util';
+import {eventBus, log, isData} from '@/ts/util';
 import {dTree} from '@/data/tree';
 
 Vue.use(Vuex);
@@ -25,9 +25,8 @@ export interface Tree {
   folderActive?: boolean;
 }
 
-export interface TreeSelect {
+export interface TreeSelect extends Tree {
   top: number;
-  tree: Tree;
   order: number;
 }
 

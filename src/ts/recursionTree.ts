@@ -40,7 +40,7 @@ export function selected(state: State, tree: Tree, event: MouseEvent) {
   const trees = childrenArray(state.container);
   // none display 삭제
   for (let i = 0; i < state.selects.length; i++) {
-    const index = trees.indexOf(state.selects[i].tree);
+    const index = trees.indexOf(state.selects[i]);
     if (index === -1) {
       state.selects.splice(i, 1);
       i--;
@@ -48,11 +48,10 @@ export function selected(state: State, tree: Tree, event: MouseEvent) {
   }
   if (state.selects.length === 0) { // select
     const index = trees.indexOf(tree);
-    state.selects.push({
-      top: index * SIZE_TREE_HEIGHT,
-      tree,
-      order: 0,
-    });
+    const treeSelect = tree as TreeSelect;
+    treeSelect.top = index * SIZE_TREE_HEIGHT;
+    treeSelect.order = 0;
+    state.selects.push(treeSelect);
   } else if (event.ctrlKey && event.shiftKey) { // multiple range select
     let start = trees.indexOf(tree);
     let end = trees.indexOf(lastSelect(state.selects));
@@ -63,17 +62,17 @@ export function selected(state: State, tree: Tree, event: MouseEvent) {
     }
     for (let i = start; i <= end; i++) {
       if (isSelect(state.selects, trees[i])) {
-        state.selects.push({
-          top: i * SIZE_TREE_HEIGHT,
-          tree: trees[i],
-          order: nextOrder(state.selects),
-        });
+        const treeSelect = trees[i] as TreeSelect;
+        treeSelect.top = i * SIZE_TREE_HEIGHT;
+        treeSelect.order = nextOrder(state.selects);
+        state.selects.push(treeSelect);
       }
     }
     for (const select of state.selects) {
-      const index = trees.indexOf(select.tree);
+      const index = trees.indexOf(select);
       select.top = index * SIZE_TREE_HEIGHT;
     }
+    state.selects = [...state.selects];
   } else if (event.shiftKey) { // range select
     let start = trees.indexOf(tree);
     let end = trees.indexOf(lastSelect(state.selects));
@@ -84,31 +83,29 @@ export function selected(state: State, tree: Tree, event: MouseEvent) {
       end = temp;
     }
     for (let i = start; i <= end; i++) {
-      state.selects.push({
-        top: i * SIZE_TREE_HEIGHT,
-        tree: trees[i],
-        order: nextOrder(state.selects),
-      });
+      const treeSelect = trees[i] as TreeSelect;
+      treeSelect.top = i * SIZE_TREE_HEIGHT;
+      treeSelect.order = nextOrder(state.selects);
+      state.selects.push(treeSelect);
     }
   } else if (event.ctrlKey) { // multiple select
     if (isSelect(state.selects, tree)) {
-      state.selects.push({
-        top: 0,
-        tree,
-        order: nextOrder(state.selects),
-      });
+      const treeSelect = tree as TreeSelect;
+      treeSelect.top = 0;
+      treeSelect.order = nextOrder(state.selects);
+      state.selects.push(treeSelect);
     }
     for (const select of state.selects) {
-      const index = trees.indexOf(select.tree);
+      const index = trees.indexOf(select);
       select.top = index * SIZE_TREE_HEIGHT;
     }
+    state.selects = [...state.selects];
   } else { // select
     const index = trees.indexOf(tree);
-    state.selects = [{
-      top: index * SIZE_TREE_HEIGHT,
-      tree,
-      order: 0,
-    }];
+    const treeSelect = tree as TreeSelect;
+    treeSelect.top = index * SIZE_TREE_HEIGHT;
+    treeSelect.order = 0;
+    state.selects = [treeSelect];
   }
 }
 
@@ -136,20 +133,20 @@ function nextOrder(selects: TreeSelect[]): number {
   return max + 1;
 }
 
-function lastSelect(selects: TreeSelect[]): Tree {
+function lastSelect(selects: TreeSelect[]): TreeSelect {
   let target = selects[0];
   selects.forEach((select: TreeSelect) => {
     if (target.order < select.order) {
       target = select;
     }
   });
-  return target.tree;
+  return target;
 }
 
 function isSelect(selects: TreeSelect[], tree: Tree): boolean {
   let result = true;
   for (const select of selects) {
-    if (select.tree.id === tree.id) {
+    if (select.id === tree.id) {
       result = false;
       break;
     }

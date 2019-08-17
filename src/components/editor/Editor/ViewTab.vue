@@ -31,7 +31,7 @@
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
   import {icon, log, eventBus, getData, isData, getTextWidth} from '@/ts/util';
   import {findById, deleteById} from '@/ts/recursionView';
-  import viewStore, {Tab} from '@/store/view';
+  import viewStore, {Tab, TabDraggable} from '@/store/view';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
 
   import {fromEvent, Subscription} from 'rxjs';
@@ -156,10 +156,9 @@
       log.debug('ViewTab onDragstart');
       const el = event.target as HTMLElement;
       this.dragTab = getData(this.tabs, el.id);
-      viewStore.commit('setTabDraggable', {
-        viewId: this.viewId,
-        tab: this.dragTab,
-      });
+      const tabDraggable = this.dragTab as TabDraggable;
+      tabDraggable.viewId = this.viewId;
+      viewStore.commit('setTabDraggable', tabDraggable);
       // firefox
       if (event.dataTransfer) {
         event.dataTransfer.setData('text/plain', el.id);
@@ -198,19 +197,17 @@
         const tabDraggable = viewStore.state.tabDraggable;
         if (li && tabDraggable) {
           const view = findById(viewStore.state.container, tabDraggable.viewId);
-          const currentIndex = view.tabs.indexOf(tabDraggable.tab);
+          const currentIndex = view.tabs.indexOf(tabDraggable);
           const tab = getData(this.tabs, li.id);
           if (tab) {
             const targetIndex = this.tabs.indexOf(tab);
             view.tabs.splice(currentIndex, 1);
-            this.tabs.splice(targetIndex, 0, tabDraggable.tab);
-            this.dragTab = tabDraggable.tab;
-            this.onActive(tabDraggable.tab.id);
+            this.tabs.splice(targetIndex, 0, tabDraggable);
+            this.dragTab = tabDraggable;
+            this.onActive(tabDraggable.id);
             eventBus.$emit('view-tab-toss', tabDraggable.viewId);
-            viewStore.commit('setTabDraggable', {
-              viewId: this.viewId,
-              tab: this.dragTab,
-            });
+            tabDraggable.viewId = this.viewId;
+            viewStore.commit('setTabDraggable', tabDraggable);
           }
         }
       }
@@ -233,16 +230,14 @@
       const tabDraggable = viewStore.state.tabDraggable;
       if (!this.dragTab && tabDraggable) {
         const view = findById(viewStore.state.container, tabDraggable.viewId);
-        const currentIndex = view.tabs.indexOf(tabDraggable.tab);
+        const currentIndex = view.tabs.indexOf(tabDraggable);
         view.tabs.splice(currentIndex, 1);
-        this.tabs.push(tabDraggable.tab);
-        this.dragTab = tabDraggable.tab;
-        this.onActive(tabDraggable.tab.id);
+        this.tabs.push(tabDraggable);
+        this.dragTab = tabDraggable;
+        this.onActive(tabDraggable.id);
         eventBus.$emit('view-tab-toss', tabDraggable.viewId);
-        viewStore.commit('setTabDraggable', {
-          viewId: this.viewId,
-          tab: this.dragTab,
-        });
+        tabDraggable.viewId = this.viewId;
+        viewStore.commit('setTabDraggable', tabDraggable);
       }
       this.$emit('dragenter', event);
     }

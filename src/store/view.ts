@@ -35,9 +35,8 @@ export interface Tab {
   name: string;
 }
 
-export interface TabDraggable {
+export interface TabDraggable extends Tab {
   viewId: string;
-  tab: Tab;
 }
 
 

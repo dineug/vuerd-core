@@ -134,21 +134,21 @@
 
     private onSplit(tabDraggable: TabDraggable) {
       log.debug('ViewView onSplit');
-      if (tabDraggable.tab && tabDraggable.viewId) {
+      if (tabDraggable && tabDraggable.viewId) {
         let tabViewId!: string;
         switch (this.direction) {
           case Direction.all:
             if (this.view.id === tabDraggable.viewId) {
-              this.onActive(tabDraggable.tab.id);
+              this.onActive(tabDraggable.id);
             } else {
               const tabView = findById(viewStore.state.container, tabDraggable.viewId);
-              const currentIndex = tabView.tabs.indexOf(tabDraggable.tab);
+              const currentIndex = tabView.tabs.indexOf(tabDraggable);
               tabView.tabs.splice(currentIndex, 1);
               if (tabView.tabs.length === 0) {
                 deleteById(viewStore.state.container, tabDraggable.viewId);
               }
-              this.view.tabs.push(tabDraggable.tab);
-              this.onActive(tabDraggable.tab.id);
+              this.view.tabs.push(tabDraggable);
+              this.onActive(tabDraggable.id);
             }
             break;
           default:
@@ -161,7 +161,7 @@
               split(
                 viewStore.state.container,
                 this.direction,
-                tabDraggable.tab,
+                tabDraggable,
                 tabViewId,
                 this.view.id,
               );
