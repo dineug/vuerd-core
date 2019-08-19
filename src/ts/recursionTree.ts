@@ -1,11 +1,12 @@
 import {SIZE_TREE_HEIGHT} from '@/ts/layout';
 import {State, Tree, TreeSelect} from '@/store/tree';
+import {log, isData} from '@/ts/util';
 
-export function findById(container: Tree, id: string): Tree {
+export function findById(container: Tree, id: string): Tree | null {
   if (container.id === id) {
     return container;
   } else {
-    let target!: Tree;
+    let target: Tree | null = null;
     if (container.children) {
       for (const tree of container.children) {
         target = findById(tree, id);
@@ -38,7 +39,7 @@ export function path(tree: Tree, buffer: string[] = []): string[] {
 
 export function selected(state: State, tree: Tree, event: MouseEvent) {
   const trees = childrenArray(state.container);
-  // none display 삭제
+  // none display delete
   for (let i = 0; i < state.selects.length; i++) {
     const index = trees.indexOf(state.selects[i]);
     if (index === -1) {
@@ -61,7 +62,7 @@ export function selected(state: State, tree: Tree, event: MouseEvent) {
       end = temp;
     }
     for (let i = start; i <= end; i++) {
-      if (isSelect(state.selects, trees[i])) {
+      if (isData(state.selects, trees[i].id)) {
         const treeSelect = trees[i] as TreeSelect;
         treeSelect.top = i * SIZE_TREE_HEIGHT;
         treeSelect.order = nextOrder(state.selects);
@@ -89,7 +90,7 @@ export function selected(state: State, tree: Tree, event: MouseEvent) {
       state.selects.push(treeSelect);
     }
   } else if (event.ctrlKey) { // multiple select
-    if (isSelect(state.selects, tree)) {
+    if (isData(state.selects, tree.id)) {
       const treeSelect = tree as TreeSelect;
       treeSelect.top = 0;
       treeSelect.order = nextOrder(state.selects);
@@ -109,7 +110,48 @@ export function selected(state: State, tree: Tree, event: MouseEvent) {
   }
 }
 
-function childrenArray(container: Tree, stack?: Tree[]): Tree[] {
+export function move(state: State) {
+  if (state.folder && state.folder.children && state.currentTree && state.folder.id !== state.currentTree.id) {
+    if (isData(state.selects, state.currentTree.id)) { // single
+      if (!findById(state.currentTree, state.folder.id)) {
+        deleteById(state.container, state.currentTree.id);
+        state.folder.children.push(state.currentTree);
+        state.currentTree.parent = state.folder;
+        orderByNameASC(state.folder);
+      }
+    } else { // select
+      for (let i = 0; i < state.selects.length; i++) {
+        if (findById(state.selects[i], state.folder.id)) {
+          state.selects.splice(i, 1);
+          i--;
+        }
+      }
+      state.selects.forEach((select: TreeSelect) => {
+        if (state.folder && state.folder.children) {
+          deleteById(state.container, select.id);
+          state.folder.children.push(select as Tree);
+          select.parent = state.folder;
+        }
+      });
+      orderByNameASC(state.folder);
+      state.selects = [];
+    }
+  }
+}
+
+export function deleteById(container: Tree, id: string) {
+  log.debug('recursionTree deleteById');
+  const target = findById(container, id);
+  if (target && target.parent) {
+    const parent = target.parent;
+    if (parent.children) {
+      const currentIndex = parent.children.indexOf(target);
+      parent.children.splice(currentIndex, 1);
+    }
+  }
+}
+
+export function childrenArray(container: Tree, stack?: Tree[]): Tree[] {
   if (!stack) {
     stack = [];
   } else {
@@ -143,13 +185,26 @@ function lastSelect(selects: TreeSelect[]): TreeSelect {
   return target;
 }
 
-function isSelect(selects: TreeSelect[], tree: Tree): boolean {
-  let result = true;
-  for (const select of selects) {
-    if (select.id === tree.id) {
-      result = false;
-      break;
-    }
+function nameASC(a: Tree, b: Tree): number {
+  return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+}
+
+function orderByNameASC(folder: Tree) {
+  if (folder.children) {
+    const folders: Tree[] = [];
+    const files: Tree[] = [];
+    const sortTrees: Tree[] = [];
+    folder.children.forEach((tree: Tree) => {
+      if (tree.children) {
+        folders.push(tree);
+      } else {
+        files.push(tree);
+      }
+    });
+    folders.sort(nameASC);
+    files.sort(nameASC);
+    sortTrees.push.apply(sortTrees, folders);
+    sortTrees.push.apply(sortTrees, files);
+    folder.children = sortTrees;
   }
-  return result;
 }

@@ -75,7 +75,7 @@
       log.debug('ViewTab setMinWidth');
       if (this.tabs.length !== 0) {
         const ul = this.$el.childNodes[0];
-        log.debug(`tabs:${this.tabs.length}, li:${ul.childNodes.length}`);
+        log.debug(`tabs:${this.tabs.length}, el:${ul.childNodes.length}`);
         this.minWidth = 0;
         if (this.tabs.length === ul.childNodes.length) {
           ul.childNodes.forEach((child: ChildNode) => {
@@ -197,17 +197,19 @@
         const tabDraggable = viewStore.state.tabDraggable;
         if (li && tabDraggable) {
           const view = findById(viewStore.state.container, tabDraggable.viewId);
-          const currentIndex = view.tabs.indexOf(tabDraggable);
-          const tab = getData(this.tabs, li.id);
-          if (tab) {
-            const targetIndex = this.tabs.indexOf(tab);
-            view.tabs.splice(currentIndex, 1);
-            this.tabs.splice(targetIndex, 0, tabDraggable);
-            this.dragTab = tabDraggable;
-            this.onActive(tabDraggable.id);
-            eventBus.$emit('view-tab-toss', tabDraggable.viewId);
-            tabDraggable.viewId = this.viewId;
-            viewStore.commit('setTabDraggable', tabDraggable);
+          if (view) {
+            const currentIndex = view.tabs.indexOf(tabDraggable);
+            const tab = getData(this.tabs, li.id);
+            if (tab) {
+              const targetIndex = this.tabs.indexOf(tab);
+              view.tabs.splice(currentIndex, 1);
+              this.tabs.splice(targetIndex, 0, tabDraggable);
+              this.dragTab = tabDraggable;
+              this.onActive(tabDraggable.id);
+              eventBus.$emit('view-tab-toss', tabDraggable.viewId);
+              tabDraggable.viewId = this.viewId;
+              viewStore.commit('setTabDraggable', tabDraggable);
+            }
           }
         }
       }
@@ -230,14 +232,16 @@
       const tabDraggable = viewStore.state.tabDraggable;
       if (!this.dragTab && tabDraggable) {
         const view = findById(viewStore.state.container, tabDraggable.viewId);
-        const currentIndex = view.tabs.indexOf(tabDraggable);
-        view.tabs.splice(currentIndex, 1);
-        this.tabs.push(tabDraggable);
-        this.dragTab = tabDraggable;
-        this.onActive(tabDraggable.id);
-        eventBus.$emit('view-tab-toss', tabDraggable.viewId);
-        tabDraggable.viewId = this.viewId;
-        viewStore.commit('setTabDraggable', tabDraggable);
+        if (view) {
+          const currentIndex = view.tabs.indexOf(tabDraggable);
+          view.tabs.splice(currentIndex, 1);
+          this.tabs.push(tabDraggable);
+          this.dragTab = tabDraggable;
+          this.onActive(tabDraggable.id);
+          eventBus.$emit('view-tab-toss', tabDraggable.viewId);
+          tabDraggable.viewId = this.viewId;
+          viewStore.commit('setTabDraggable', tabDraggable);
+        }
       }
       this.$emit('dragenter', event);
     }

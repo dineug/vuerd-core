@@ -76,7 +76,7 @@
 
     @Watch('trees')
     private watchTrees() {
-      this.onDraggableFolder();
+      this.$nextTick(this.onDraggableFolder);
     }
 
     private findByNode(el: HTMLElement | null): HTMLElement | null {
@@ -129,9 +129,12 @@
 
     private onDraggableFolder() {
       log.debug('TreeView onDraggableFolder');
+      const targets: ChildNode[] = [];
       const ul = this.$el as HTMLElement;
-      const list = ul.querySelectorAll<HTMLElement>('.node');
-      list.forEach((el: HTMLElement) => {
+      ul.childNodes.forEach((child: ChildNode) => targets.push(child.childNodes[1]));
+      log.debug(`trees:${this.trees.length}, el:${targets.length}`);
+      targets.forEach((child: ChildNode) => {
+        const el = child as HTMLElement;
         if (el.dataset.folder === 'true' && isData(this.folderDraggableListener, el.id)) {
           this.folderDraggableListener.push({
             id: el.id,
@@ -206,17 +209,19 @@
     private onEnter(el: HTMLElement, done: () => {}) {
       if (el.dataset.id) {
         const tree = findById(treeStore.state.container, el.dataset.id);
-        window.Velocity(
-          el,
-          {opacity: 1, height: childrenCount(tree) * SIZE_TREE_HEIGHT},
-          {
-            duration: 200,
-            complete: () => {
-              el.removeAttribute('style');
-              done();
+        if (tree) {
+          window.Velocity(
+            el,
+            {opacity: 1, height: childrenCount(tree) * SIZE_TREE_HEIGHT},
+            {
+              duration: 200,
+              complete: () => {
+                el.removeAttribute('style');
+                done();
+              },
             },
-          },
-        );
+          );
+        }
       }
     }
 

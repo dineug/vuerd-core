@@ -3,11 +3,11 @@ import {View, Tab} from '@/store/view';
 import Direction from '@/models/Direction';
 import {uuid, log} from '@/ts/util';
 
-export function findById(container: View, id: string): View {
+export function findById(container: View, id: string): View | null {
   if (container.id === id) {
     return container;
   } else {
-    let target!: View;
+    let target: View | null = null;
     for (const view of container.children) {
       target = findById(view, id);
       if (target) {
@@ -126,9 +126,10 @@ export function minHorizontal(container: View): number {
 
 export function deleteById(container: View, id: string) {
   log.debug('recursionView deleteById');
-  const parent = findById(container, id).parent;
-  if (parent) {
-    const currentIndex = parent.children.indexOf(findById(container, id));
+  const target = findById(container, id);
+  if (target && target.parent) {
+    const parent = target.parent;
+    const currentIndex = parent.children.indexOf(target);
     parent.children.splice(currentIndex, 1);
     resetSize(parent);
   }
@@ -145,8 +146,8 @@ export function split(
   if (direction !== Direction.all) {
     const tabView = findById(container, tabViewId);
     const targetView = findById(container, targetViewId);
-    const parentView = targetView.parent;
-    if (parentView) {
+    if (tabView && targetView && targetView.parent) {
+      const parentView = targetView.parent;
       const currentIndex = tabView.tabs.indexOf(tab);
       tabView.tabs.splice(currentIndex, 1);
       if (tabView.tabs.length === 0) {

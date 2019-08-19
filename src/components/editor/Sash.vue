@@ -41,20 +41,23 @@
     }
 
     // ==================== Event Handler ===================
-    private onMousedown() {
+    private onMousedown(event: MouseEvent) {
       this.subMouseup = this.mouseup$.subscribe(this.onMouseup);
       this.subMousemove = this.mousemove$.subscribe(this.onMousemove);
+      this.$emit('mousedown', event);
     }
 
-    private onMouseup() {
+    private onMouseup(event: MouseEvent) {
       this.subMouseup.unsubscribe();
       this.subMousemove.unsubscribe();
+      this.$emit('mouseup', event);
     }
 
     private onMousemove(event: MouseEvent) {
       event.preventDefault();
       this.$emit('mousemove', event);
     }
+
     // ==================== Event Handler END ===================
   }
 </script>

@@ -142,13 +142,15 @@
               this.onActive(tabDraggable.id);
             } else {
               const tabView = findById(viewStore.state.container, tabDraggable.viewId);
-              const currentIndex = tabView.tabs.indexOf(tabDraggable);
-              tabView.tabs.splice(currentIndex, 1);
-              if (tabView.tabs.length === 0) {
-                deleteById(viewStore.state.container, tabDraggable.viewId);
+              if (tabView) {
+                const currentIndex = tabView.tabs.indexOf(tabDraggable);
+                tabView.tabs.splice(currentIndex, 1);
+                if (tabView.tabs.length === 0) {
+                  deleteById(viewStore.state.container, tabDraggable.viewId);
+                }
+                this.view.tabs.push(tabDraggable);
+                this.onActive(tabDraggable.id);
               }
-              this.view.tabs.push(tabDraggable);
-              this.onActive(tabDraggable.id);
             }
             break;
           default:

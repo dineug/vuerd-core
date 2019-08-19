@@ -3,7 +3,6 @@
     :style="{ width: `${container.width}px`, height: `${container.height}px` }"
     :class="{ vertical: container.vertical, horizontal: container.horizontal }"
   )
-
     .split-view-view(
       v-for="(node, i) in container.children"
       :key="node.id"
@@ -15,6 +14,7 @@
         :vertical="container.vertical"
         :horizontal="container.horizontal"
         @mousemove="onMousemoveSash($event, i)"
+        @mousedown="onMousedownSash"
       )
       ViewContainer(
         v-if="node.children.length !== 0"
@@ -26,7 +26,8 @@
 <script lang="ts">
   import {View} from '@/store/view';
   import Direction from '@/models/Direction';
-  import {minVertical, minHorizontal, resetWidthRatio, resetHeightRatio} from '@/ts/recursionView';
+  import {log} from '@/ts/util';
+  import {minHorizontal, minVertical, resetHeightRatio, resetWidthRatio} from '@/ts/recursionView';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Sash from '../Sash.vue';
   import ViewView from './ViewView.vue';
@@ -48,6 +49,9 @@
     @Prop({type: Object, default: {}})
     private container!: View;
 
+    private x: number = 0;
+    private y: number = 0;
+
     private first: First = {
       left: false,
       right: false,
@@ -55,78 +59,97 @@
       bottom: false,
     };
 
-    private moveWidth(movementX: number, view1: View, view2: View) {
-      const direction: Direction = movementX < 0 ? Direction.left : Direction.right;
+    private moveWidth(event: MouseEvent, view1: View, view2: View) {
+      const direction: Direction = event.movementX < 0 ? Direction.left : Direction.right;
       const minWidth = minVertical(view1);
-      const width = direction === Direction.left ? view1.width + movementX : view1.width - movementX;
-      if (minWidth < width) {
-        view1.width = width;
-        view2.width = direction === Direction.left ? view2.width - movementX : view2.width + movementX;
-        view1.widthRatio = view1.width / this.container.width;
-        view2.widthRatio = view2.width / this.container.width;
-        resetWidthRatio(view1);
-        resetWidthRatio(view2);
-        this.first[direction] = true;
-      } else {
-        const oldWidth = view1.width;
-        view1.width = minWidth;
-        view1.widthRatio = view1.width / this.container.width;
-        resetWidthRatio(view1);
-        if (this.first[direction]) {
-          view2.width += oldWidth - minWidth;
-          view2.widthRatio = view2.width / this.container.width;
-          resetWidthRatio(view2);
-          this.first[direction] = false;
-        }
+      const width = direction === Direction.left ? view1.width + event.movementX : view1.width - event.movementX;
+      switch (direction) {
+        case Direction.left:
+          if (minWidth < width && event.x < this.x) {
+            view1.width = width;
+            view2.width = view2.width - event.movementX;
+            view1.widthRatio = view1.width / this.container.width;
+            view2.widthRatio = view2.width / this.container.width;
+            resetWidthRatio(view1);
+            resetWidthRatio(view2);
+            this.first[direction] = true;
+            this.x += event.movementX;
+          }
+          break;
+        case Direction.right:
+          if (minWidth < width && event.x > this.x) {
+            view1.width = width;
+            view2.width = view2.width + event.movementX;
+            view1.widthRatio = view1.width / this.container.width;
+            view2.widthRatio = view2.width / this.container.width;
+            resetWidthRatio(view1);
+            resetWidthRatio(view2);
+            this.first[direction] = true;
+            this.x += event.movementX;
+          }
+          break;
       }
     }
 
-    private moveHeight(movementY: number, view1: View, view2: View) {
-      const direction: Direction = movementY < 0 ? Direction.top : Direction.bottom;
+    private moveHeight(event: MouseEvent, view1: View, view2: View) {
+      const direction: Direction = event.movementY < 0 ? Direction.top : Direction.bottom;
       const minHeight = minHorizontal(view1);
-      const height = direction === Direction.top ? view1.height + movementY : view1.height - movementY;
-      if (minHeight < height) {
-        view1.height = height;
-        view2.height = direction === Direction.top ? view2.height - movementY : view2.height + movementY;
-        view1.heightRatio = view1.height / this.container.height;
-        view2.heightRatio = view2.height / this.container.height;
-        resetHeightRatio(view1);
-        resetHeightRatio(view2);
-        this.first[direction] = true;
-      } else {
-        const oldHeight = view1.height;
-        view1.height = minHeight;
-        view1.heightRatio = view1.height / this.container.height;
-        resetHeightRatio(view1);
-        if (this.first[direction]) {
-          view2.height += oldHeight - minHeight;
-          view2.heightRatio = view2.height / this.container.height;
-          resetHeightRatio(view2);
-          this.first[direction] = false;
-        }
+      const height = direction === Direction.top ? view1.height + event.movementY : view1.height - event.movementY;
+      switch (direction) {
+        case Direction.top:
+          if (minHeight < height && event.y < this.y) {
+            view1.height = height;
+            view2.height = view2.height - event.movementY;
+            view1.heightRatio = view1.height / this.container.height;
+            view2.heightRatio = view2.height / this.container.height;
+            resetHeightRatio(view1);
+            resetHeightRatio(view2);
+            this.first[direction] = true;
+            this.y += event.movementY;
+          }
+          break;
+        case Direction.bottom:
+          if (minHeight < height && event.y > this.y) {
+            view1.height = height;
+            view2.height = view2.height + event.movementY;
+            view1.heightRatio = view1.height / this.container.height;
+            view2.heightRatio = view2.height / this.container.height;
+            resetHeightRatio(view1);
+            resetHeightRatio(view2);
+            this.first[direction] = true;
+            this.y += event.movementY;
+          }
+          break;
       }
     }
 
     // ==================== Event Handler ===================
-    private onMousemoveSash(e: MouseEvent, i: number) {
+    private onMousemoveSash(event: MouseEvent, i: number) {
       if (this.container.vertical) {
-        if (e.movementX < 0) {
+        if (event.movementX < 0) {
           // left
-          this.moveWidth(e.movementX, this.container.children[i - 1], this.container.children[i]);
+          this.moveWidth(event, this.container.children[i - 1], this.container.children[i]);
         } else {
           // right
-          this.moveWidth(e.movementX, this.container.children[i], this.container.children[i - 1]);
+          this.moveWidth(event, this.container.children[i], this.container.children[i - 1]);
         }
       } else if (this.container.horizontal) {
-        if (e.movementY < 0) {
+        if (event.movementY < 0) {
           // top
-          this.moveHeight(e.movementY, this.container.children[i - 1], this.container.children[i]);
+          this.moveHeight(event, this.container.children[i - 1], this.container.children[i]);
         } else {
           // bottom
-          this.moveHeight(e.movementY, this.container.children[i], this.container.children[i - 1]);
+          this.moveHeight(event, this.container.children[i], this.container.children[i - 1]);
         }
       }
     }
+
+    private onMousedownSash(event: MouseEvent) {
+      log.debug('ViewContainer onMousedownSash', event.x, event.y);
+      this.x = event.x;
+      this.y = event.y;
+    }
+
     // ==================== Event Handler END ===================
   }
 </script>

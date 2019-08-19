@@ -1,7 +1,8 @@
 import {Tree} from '@/store/tree';
+import {Tab} from '@/store/view';
 import {path} from '@/ts/recursionTree';
 
-export class TreeToTab {
+export class TreeToTab implements Tab {
   private tree: Tree;
   constructor(tree: Tree) {
     this.tree = tree;
