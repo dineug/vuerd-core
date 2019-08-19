@@ -43,7 +43,7 @@
     },
   })
   export default class ViewView extends Vue {
-    @Prop({type: Object, default: {}})
+    @Prop({type: Object, default: () => ({})})
     private view!: View;
 
     private SIZE_VIEW_TAB_HEIGHT = SIZE_VIEW_TAB_HEIGHT;

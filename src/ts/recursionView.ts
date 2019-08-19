@@ -227,6 +227,16 @@ export function split(
   }
 }
 
+export function tabGroups(container: View, groups: View[] = []): View[] {
+  if (container.tabs.length !== 0) {
+    groups.push(container);
+  }
+  container.children.forEach((view: View) => {
+    tabGroups(view, groups);
+  });
+  return groups;
+}
+
 function addView(parent: View, tabs: Tab[]): View {
   return {
     id: uuid(),

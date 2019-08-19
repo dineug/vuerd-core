@@ -1,12 +1,12 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import init, {dView, dTabs} from '@/data/view';
+import {tabGroups} from '@/ts/recursionView';
+import init, {dView} from '@/data/view';
 
 Vue.use(Vuex);
 
 interface State {
   container: View;
-  tabs: Tab[];
   tabDraggable: TabDraggable | null;
 }
 
@@ -39,15 +39,15 @@ export interface TabDraggable extends Tab {
   viewId: string;
 }
 
-
 export default new Vuex.Store({
   state: {
     // container: init,
     container: dView,
-    tabs: dTabs,
     tabDraggable: null,
   },
-  getters: {},
+  getters: {
+    tabGroups: (state: State): View[] => tabGroups(state.container),
+  },
   mutations: {
     setTabDraggable(state: State, tabDraggable: TabDraggable | null) {
       state.tabDraggable = tabDraggable;

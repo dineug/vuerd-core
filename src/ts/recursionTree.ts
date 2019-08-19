@@ -1,6 +1,6 @@
 import {SIZE_TREE_HEIGHT} from '@/ts/layout';
 import {State, Tree, TreeSelect} from '@/store/tree';
-import {log, isData} from '@/ts/util';
+import {log, isData, getData} from '@/ts/util';
 
 export function findById(container: Tree, id: string): Tree | null {
   if (container.id === id) {
@@ -21,7 +21,7 @@ export function findById(container: Tree, id: string): Tree | null {
 
 export function childrenCount(tree: Tree, count: number = 0): number {
   let sum = count;
-  if (tree.children && tree.children.length !== 0 && tree.folderOpen) {
+  if (tree.children && tree.children.length !== 0 && tree.open) {
     tree.children.forEach((node: Tree) => {
       sum += childrenCount(node, 1);
     });
@@ -37,7 +37,7 @@ export function path(tree: Tree, buffer: string[] = []): string[] {
   return buffer;
 }
 
-export function selected(state: State, tree: Tree, event: MouseEvent) {
+export function select(state: State, tree: Tree, event: MouseEvent) {
   const trees = childrenArray(state.container);
   // none display delete
   for (let i = 0; i < state.selects.length; i++) {
@@ -69,14 +69,19 @@ export function selected(state: State, tree: Tree, event: MouseEvent) {
         state.selects.push(treeSelect);
       }
     }
-    for (const select of state.selects) {
-      const index = trees.indexOf(select);
-      select.top = index * SIZE_TREE_HEIGHT;
+    for (const treeSelect of state.selects) {
+      const index = trees.indexOf(treeSelect);
+      treeSelect.top = index * SIZE_TREE_HEIGHT;
+    }
+    const current = getData(state.selects, tree.id);
+    if (current) {
+      state.selects[state.selects.indexOf(current)].order = nextOrder(state.selects);
     }
     state.selects = [...state.selects];
   } else if (event.shiftKey) { // range select
     let start = trees.indexOf(tree);
     let end = trees.indexOf(lastSelect(state.selects));
+    const current = start;
     state.selects = [];
     if (start > end) {
       const temp = start;
@@ -89,6 +94,9 @@ export function selected(state: State, tree: Tree, event: MouseEvent) {
       treeSelect.order = nextOrder(state.selects);
       state.selects.push(treeSelect);
     }
+    if (current === start) {
+      state.selects[0].order = nextOrder(state.selects);
+    }
   } else if (event.ctrlKey) { // multiple select
     if (isData(state.selects, tree.id)) {
       const treeSelect = tree as TreeSelect;
@@ -96,9 +104,9 @@ export function selected(state: State, tree: Tree, event: MouseEvent) {
       treeSelect.order = nextOrder(state.selects);
       state.selects.push(treeSelect);
     }
-    for (const select of state.selects) {
-      const index = trees.indexOf(select);
-      select.top = index * SIZE_TREE_HEIGHT;
+    for (const treeSelect of state.selects) {
+      const index = trees.indexOf(treeSelect);
+      treeSelect.top = index * SIZE_TREE_HEIGHT;
     }
     state.selects = [...state.selects];
   } else { // select
@@ -108,6 +116,20 @@ export function selected(state: State, tree: Tree, event: MouseEvent) {
     treeSelect.order = 0;
     state.selects = [treeSelect];
   }
+}
+
+export function childrenArray(container: Tree, stack?: Tree[]): Tree[] {
+  if (!stack) {
+    stack = [];
+  } else {
+    stack.push(container);
+  }
+  if (container.children && container.children.length !== 0 && container.open) {
+    container.children.forEach((tree: Tree) => {
+      childrenArray(tree, stack);
+    });
+  }
+  return stack;
 }
 
 export function move(state: State) {
@@ -126,11 +148,11 @@ export function move(state: State) {
           i--;
         }
       }
-      state.selects.forEach((select: TreeSelect) => {
+      state.selects.forEach((treeSelect: TreeSelect) => {
         if (state.folder && state.folder.children) {
-          deleteById(state.container, select.id);
-          state.folder.children.push(select as Tree);
-          select.parent = state.folder;
+          deleteById(state.container, treeSelect.id);
+          state.folder.children.push(treeSelect as Tree);
+          treeSelect.parent = state.folder;
         }
       });
       orderByNameASC(state.folder);
@@ -151,45 +173,7 @@ export function deleteById(container: Tree, id: string) {
   }
 }
 
-export function childrenArray(container: Tree, stack?: Tree[]): Tree[] {
-  if (!stack) {
-    stack = [];
-  } else {
-    stack.push(container);
-  }
-  if (container.children && container.children.length !== 0 && container.folderOpen) {
-    container.children.forEach((tree: Tree) => {
-      childrenArray(tree, stack);
-    });
-  }
-  return stack;
-}
-
-function nextOrder(selects: TreeSelect[]): number {
-  let max = 0;
-  selects.forEach((select: TreeSelect) => {
-    if (max < select.order) {
-      max = select.order;
-    }
-  });
-  return max + 1;
-}
-
-function lastSelect(selects: TreeSelect[]): TreeSelect {
-  let target = selects[0];
-  selects.forEach((select: TreeSelect) => {
-    if (target.order < select.order) {
-      target = select;
-    }
-  });
-  return target;
-}
-
-function nameASC(a: Tree, b: Tree): number {
-  return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
-}
-
-function orderByNameASC(folder: Tree) {
+export function orderByNameASC(folder: Tree) {
   if (folder.children) {
     const folders: Tree[] = [];
     const files: Tree[] = [];
@@ -207,4 +191,28 @@ function orderByNameASC(folder: Tree) {
     sortTrees.push.apply(sortTrees, files);
     folder.children = sortTrees;
   }
+}
+
+function nextOrder(selects: TreeSelect[]): number {
+  let max = 0;
+  selects.forEach((treeSelect: TreeSelect) => {
+    if (max < treeSelect.order) {
+      max = treeSelect.order;
+    }
+  });
+  return max + 1;
+}
+
+function lastSelect(selects: TreeSelect[]): TreeSelect {
+  let target = selects[0];
+  selects.forEach((treeSelect: TreeSelect) => {
+    if (target.order < treeSelect.order) {
+      target = treeSelect;
+    }
+  });
+  return target;
+}
+
+function nameASC(a: Tree, b: Tree): number {
+  return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
 }

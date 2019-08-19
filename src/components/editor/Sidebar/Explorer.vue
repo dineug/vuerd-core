@@ -1,8 +1,11 @@
 <template lang="pug">
   .explorer
+    Title(name="열려 있는 편집기")
+    .content
+      OpenFile.file(:tab-groups="tabGroups")
     Title(name="탐색기")
     .content
-      TreeView.tree(:trees="container.children")
+      TreeView.file(:trees="container.children")
       transition-group(name="select")
         .active(
           v-for="select in selects"
@@ -13,14 +16,17 @@
 
 <script lang="ts">
   import treeStore, {Tree, TreeSelect} from '@/store/tree';
+  import viewStore, {View} from '@/store/view';
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import Title from './Title.vue';
   import TreeView from './TreeView.vue';
+  import OpenFile from './OpenFile.vue';
 
   @Component({
     components: {
       Title,
       TreeView,
+      OpenFile,
     },
   })
   export default class Explorer extends Vue {
@@ -33,6 +39,10 @@
       return treeStore.state.selects;
     }
 
+    get tabGroups(): View[] {
+      return viewStore.getters.tabGroups;
+    }
+
   }
 </script>
 
@@ -43,7 +53,7 @@
     .content {
       position: relative;
 
-      .tree {
+      .file {
         padding-left: 6px;
       }
 

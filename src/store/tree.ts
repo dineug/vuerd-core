@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {selected, move} from '@/ts/recursionTree';
+import {select, move} from '@/ts/recursionTree';
 import {eventBus} from '@/ts/util';
 import {dTree} from '@/data/tree';
 
@@ -19,7 +19,7 @@ export interface State {
 export interface Tree {
   readonly id: string;
   name: string;
-  folderOpen?: boolean;
+  open?: boolean;
   parent?: Tree | null;
   children?: Tree[];
   folderActive?: boolean;
@@ -40,7 +40,7 @@ export default new Vuex.Store({
   getters: {},
   mutations: {
     select(state: State, payload: { event: MouseEvent, tree: Tree }) {
-      selected(state, payload.tree, payload.event);
+      select(state, payload.tree, payload.event);
     },
     move(state: State) {
       move(state);

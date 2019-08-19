@@ -46,7 +46,7 @@
     },
   })
   export default class ViewContainer extends Vue {
-    @Prop({type: Object, default: {}})
+    @Prop({type: Object, default: () => ({})})
     private container!: View;
 
     private x: number = 0;

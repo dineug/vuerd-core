@@ -51,7 +51,7 @@
     },
   })
   export default class ViewTab extends Vue {
-    @Prop({type: Array, default: []})
+    @Prop({type: Array, default: () => []})
     private tabs!: Tab[];
     @Prop({type: String, default: ''})
     private activeId!: string;

@@ -9,7 +9,7 @@
           v-if="node.children"
           color="grey lighten-1"
           small
-        ) {{node.folderOpen ? 'mdi-chevron-down' : 'mdi-chevron-right'}}
+        ) {{node.open ? 'mdi-chevron-down' : 'mdi-chevron-right'}}
         .none-arrow(v-else)
       span.node(
         draggable="true"
@@ -26,7 +26,7 @@
             v-if="node.children"
             color="grey lighten-1"
             small
-          ) {{node.folderOpen ? 'mdi-folder-open' : 'mdi-folder'}}
+          ) {{node.open ? 'mdi-folder-open' : 'mdi-folder'}}
           v-icon(
             v-else
             color="grey lighten-1"
@@ -39,7 +39,7 @@
         @leave="onLeave"
       )
         TreeView(
-          v-if="node.folderOpen && node.children && node.children.length !== 0"
+          v-if="node.open && node.children && node.children.length !== 0"
           :trees="node.children"
           :data-id="node.id"
         )
@@ -69,7 +69,7 @@
     },
   })
   export default class TreeView extends Vue {
-    @Prop({type: Array, default: []})
+    @Prop({type: Array, default: () => []})
     private trees!: Tree[];
 
     private folderDraggableListener: FolderDraggableObservable[] = [];
@@ -120,7 +120,7 @@
     private onClick(event: MouseEvent, tree: Tree, folder: boolean) {
       log.debug('TreeView onClick');
       if (folder) {
-        tree.folderOpen = !tree.folderOpen;
+        tree.open = !tree.open;
       } else {
         log.debug('TreeView editor module loaded');
       }

@@ -4,34 +4,34 @@ import {uuid, setParent} from '@/ts/util';
 const tree: Tree = {
   id: uuid(),
   name: '',
-  folderOpen: true,
+  open: true,
   children: [
     {
       id: uuid(),
       name: 'vuerd-core',
-      folderOpen: true,
+      open: true,
       children: [
         {
           id: uuid(),
           name: '.git',
-          folderOpen: false,
+          open: false,
           children: [],
         },
         {
           id: uuid(),
           name: 'node_modules',
-          folderOpen: false,
+          open: false,
           children: [],
         },
         {
           id: uuid(),
           name: 'public',
-          folderOpen: true,
+          open: true,
           children: [
             {
               id: uuid(),
               name: 'static',
-              folderOpen: false,
+              open: false,
               children: [
                 {
                   id: uuid(),
