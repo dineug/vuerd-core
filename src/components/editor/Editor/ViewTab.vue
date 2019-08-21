@@ -6,6 +6,7 @@
       :style="`min-width: ${minWidth}px; height: ${SIZE_VIEW_TAB_HEIGHT}px;`"
       name="tab"
       tag="ul"
+      :css="false"
     )
       li(
         draggable="true"
@@ -37,11 +38,6 @@
   import {fromEvent, Observable, Subscription, Subject} from 'rxjs';
   import {throttleTime, debounceTime} from 'rxjs/operators';
 
-  interface DraggableObservable {
-    id: string;
-    subDragover: Subscription;
-  }
-
   const TAB_PADDING = 42.5;
   const TAB_PADDING_SPAN = 49.2;
 
@@ -62,7 +58,7 @@
 
     private minWidth: number = 0;
     private dragTab: Tab | null = null;
-    private draggableListener: DraggableObservable[] = [];
+    private draggableListener: Subscription[] = [];
     private dragenter$!: Observable<DragEvent>;
     private draggable$: Subject<DragEvent> = new Subject();
     private subDragenter: Subscription | null = null;
@@ -139,6 +135,7 @@
       if (selection) {
         selection.removeAllRanges();
       }
+      viewStore.commit('addTabPreview', null);
     }
 
     private onDragstart(event: DragEvent) {
@@ -179,16 +176,12 @@
       log.debug('ViewTab onViewTabDraggableStart');
       this.subDragenter = this.dragenter$.subscribe(this.onDragenter);
       const ul = this.$el.childNodes[0];
-      ul.childNodes.forEach((child: ChildNode) => {
-        const li = child as HTMLElement;
-        if (li.dataset.id && isData(this.draggableListener, li.dataset.id)) {
-          this.draggableListener.push({
-            id: li.dataset.id,
-            subDragover: fromEvent<DragEvent>(li, 'dragover').pipe(
-              throttleTime(300),
-            ).subscribe(this.onDragoverGroup),
-          });
-        }
+      ul.childNodes.forEach((li: ChildNode) => {
+        this.draggableListener.push(
+          fromEvent<DragEvent>(li as HTMLElement, 'dragover').pipe(
+            throttleTime(300),
+          ).subscribe(this.onDragoverGroup),
+        );
       });
     }
 
@@ -203,11 +196,7 @@
       if (this.subDragenter) {
         this.subDragenter.unsubscribe();
       }
-      this.draggableListener.forEach((draggable: DraggableObservable) => {
-        if (draggable.subDragover) {
-          draggable.subDragover.unsubscribe();
-        }
-      });
+      this.draggableListener.forEach((draggable: Subscription) => draggable.unsubscribe());
       this.draggableListener = [];
     }
 
@@ -230,18 +219,23 @@
         const tabDraggable = viewStore.state.tabDraggable;
         if (li && li.dataset.id && tabDraggable) {
           const view = findById(viewStore.state.container, tabDraggable.viewId);
-          if (view) {
+          const currentView = findById(viewStore.state.container, this.viewId);
+          if (view && currentView) {
             const currentIndex = view.tabs.indexOf(tabDraggable);
             const tab = getData(this.tabs, li.dataset.id);
             if (tab) {
               const targetIndex = this.tabs.indexOf(tab);
               view.tabs.splice(currentIndex, 1);
+              if (!isData(this.tabs, tabDraggable.id)) {
+                this.tabs.splice(this.tabs.indexOf(tabDraggable), 1);
+              }
               this.tabs.splice(targetIndex, 0, tabDraggable);
               this.dragTab = tabDraggable;
               this.onActive(tabDraggable.id);
               eventBus.$emit(EventBus.ViewTab.toss, tabDraggable.viewId);
               tabDraggable.viewId = this.viewId;
               viewStore.commit('setTabDraggable', tabDraggable);
+              viewStore.commit('setViewFocus', currentView);
             }
           }
         }
@@ -253,15 +247,20 @@
       const tabDraggable = viewStore.state.tabDraggable;
       if (!this.dragTab && tabDraggable) {
         const view = findById(viewStore.state.container, tabDraggable.viewId);
-        if (view) {
+        const currentView = findById(viewStore.state.container, this.viewId);
+        if (view && currentView) {
           const currentIndex = view.tabs.indexOf(tabDraggable);
           view.tabs.splice(currentIndex, 1);
+          if (!isData(this.tabs, tabDraggable.id)) {
+            this.tabs.splice(this.tabs.indexOf(tabDraggable), 1);
+          }
           this.tabs.push(tabDraggable);
           this.dragTab = tabDraggable;
           this.onActive(tabDraggable.id);
           eventBus.$emit(EventBus.ViewTab.toss, tabDraggable.viewId);
           tabDraggable.viewId = this.viewId;
           viewStore.commit('setTabDraggable', tabDraggable);
+          viewStore.commit('setViewFocus', currentView);
         }
       }
       this.$emit('dragenter', event);

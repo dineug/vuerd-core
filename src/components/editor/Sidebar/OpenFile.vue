@@ -45,7 +45,7 @@
             span.arrow(@click="onClose($event, tabGroup, tab)")
               v-icon(color="grey lighten-1" size="12") mdi-close
             span.node(
-              :class="{active: tab.active, draggable: dragTab && dragTab.id === tab.id}"
+              :class="{active: tab.active, draggable: dragView && dragTab && dragView.id === tabGroup.id && dragTab.id === tab.id}"
               draggable="true"
               @click="onActive(tabGroup, tab)"
               @mousedown="onMousedown"
@@ -62,17 +62,12 @@
 
 <script lang="ts">
   import viewStore, {View, Tab} from '@/store/view';
-  import {log, icon, getData, isData} from '@/ts/util';
+  import {log, icon, getData} from '@/ts/util';
   import {deleteById} from '@/ts/recursionView';
   import {Component, Prop, Vue} from 'vue-property-decorator';
 
   import {fromEvent, Subscription, Subject} from 'rxjs';
   import {throttleTime, debounceTime} from 'rxjs/operators';
-
-  interface DraggableObservable {
-    id: string;
-    subDragover: Subscription;
-  }
 
   @Component({
     filters: {
@@ -83,7 +78,7 @@
     @Prop({type: Array, default: () => []})
     private tabGroups!: View[];
 
-    private draggableListener: DraggableObservable[] = [];
+    private draggableListener: Subscription[] = [];
     private dragView: View | null = null;
     private dragTab: Tab | null = null;
     private draggable$: Subject<DragEvent> = new Subject();
@@ -158,26 +153,18 @@
     private onDraggableStart() {
       log.debug('OpenFile onDraggableStart');
       const list = this.$el.querySelectorAll('.draggable');
-      list.forEach((child: Element) => {
-        const li = child as HTMLElement;
-        if (li.dataset.id && isData(this.draggableListener, li.dataset.id)) {
-          this.draggableListener.push({
-            id: li.dataset.id,
-            subDragover: fromEvent<DragEvent>(li, 'dragover').pipe(
-              throttleTime(300),
-            ).subscribe(this.onDragoverGroup),
-          });
-        }
+      list.forEach((li: Element) => {
+        this.draggableListener.push(
+          fromEvent<DragEvent>(li as HTMLElement, 'dragover').pipe(
+            throttleTime(300),
+          ).subscribe(this.onDragoverGroup),
+        );
       });
     }
 
     private onDraggableEnd() {
       log.debug('OpenFile onDraggableEnd');
-      this.draggableListener.forEach((draggable: DraggableObservable) => {
-        if (draggable.subDragover) {
-          draggable.subDragover.unsubscribe();
-        }
-      });
+      this.draggableListener.forEach((draggable: Subscription) => draggable.unsubscribe());
       this.draggableListener = [];
     }
 
@@ -253,7 +240,6 @@
 
           &.active {
             color: white;
-            background-color: $color-editor;
           }
 
           &.draggable {
@@ -276,5 +262,8 @@
   /* animation */
   .tab-move {
     transition: transform 0.3s;
+  }
+  .tab-enter, .tab-leave-to {
+    display: none;
   }
 </style>

@@ -2,7 +2,7 @@ import {View, Tab} from '@/store/view';
 import {Tree} from '@/store/tree';
 import {uuid, setParent} from '@/ts/util';
 import {dTree} from './tree';
-import {TreeToTab} from '@/models/TreeToTab';
+import TreeToTab from '@/models/TreeToTab';
 
 // tabs
 export const dTabs: Tab[] = [];
@@ -56,10 +56,7 @@ const view: View = {
 };
 export const dView = setParent<View>(view, view.children);
 
-/**
- * view init
- */
-export default {
+const init: View = {
   id: uuid(),
   vertical: true,
   horizontal: false,
@@ -67,6 +64,8 @@ export default {
   height: 2000,
   widthRatio: 1,
   heightRatio: 1,
+  parent: null,
   children: [],
   tabs: [],
 };
+export default init;

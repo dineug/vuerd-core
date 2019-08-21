@@ -17,8 +17,8 @@ enum Editor {
 }
 
 enum TreeView {
-  draggableFolder = 'tree-view-draggable-folder',
-  draggableFolderEnd = 'tree-view-draggable-folder-end',
+  draggableStart = 'tree-view-draggable-start',
+  draggableEnd = 'tree-view-draggable-end',
   update = 'tree-view-update',
 }
 

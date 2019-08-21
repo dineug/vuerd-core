@@ -1,5 +1,5 @@
 import {SIZE_SPLIT_MIN, SIZE_SPLIT_MIN_HEIGHT} from './layout';
-import {View, Tab} from '@/store/view';
+import viewStore, {View, Tab} from '@/store/view';
 import Direction from '@/models/Direction';
 import {uuid, log} from '@/ts/util';
 
@@ -132,6 +132,9 @@ export function deleteById(container: View, id: string) {
     const currentIndex = parent.children.indexOf(target);
     parent.children.splice(currentIndex, 1);
     resetSize(parent);
+    if (viewStore.state.viewFocus && viewStore.state.viewFocus.id === id) {
+      viewStore.commit('setViewFocus', null);
+    }
   }
 }
 
@@ -231,8 +234,8 @@ export function tabGroups(container: View, groups: View[] = []): View[] {
   return groups;
 }
 
-function addView(parent: View, tabs: Tab[]): View {
-  return {
+export function addView(parent: View, tabs: Tab[]): View {
+  const view = {
     id: uuid(),
     vertical: true,
     horizontal: false,
@@ -244,4 +247,6 @@ function addView(parent: View, tabs: Tab[]): View {
     children: [],
     tabs,
   };
+  viewStore.commit('setViewFocus', view);
+  return view;
 }

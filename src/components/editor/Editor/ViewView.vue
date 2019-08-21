@@ -1,5 +1,5 @@
 <template lang="pug">
-  .split-view-main.scrollbar
+  .split-view-main.scrollbar(@click="onFocusView")
     ViewTab(
       :tabs="view.tabs"
       :width="view.width"
@@ -25,7 +25,7 @@
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
   import Direction from '@/models/Direction';
-  import {eventBus, log} from '@/ts/util';
+  import {eventBus, log, isData} from '@/ts/util';
   import {findById, deleteById, split} from '@/ts/recursionView';
   import viewStore, {View, Tab, TabDraggable} from '@/store/view';
   import EventBus from '@/models/EventBus';
@@ -68,14 +68,64 @@
       this.height = height - SIZE_VIEW_TAB_HEIGHT;
     }
 
+    private splitView(tabDraggable: TabDraggable) {
+      log.debug('ViewView splitView');
+      if (tabDraggable && tabDraggable.viewId) {
+        let tabViewId!: string;
+        switch (this.direction) {
+          case Direction.all:
+            if (this.view.id === tabDraggable.viewId) {
+              this.onActive(tabDraggable.id);
+            } else {
+              const tabView = findById(viewStore.state.container, tabDraggable.viewId);
+              if (tabView) {
+                const currentIndex = tabView.tabs.indexOf(tabDraggable);
+                tabView.tabs.splice(currentIndex, 1);
+                if (!isData(this.view.tabs, tabDraggable.id)) {
+                  this.view.tabs.splice(this.view.tabs.indexOf(tabDraggable), 1);
+                }
+                if (tabView.tabs.length === 0) {
+                  deleteById(viewStore.state.container, tabDraggable.viewId);
+                }
+                this.view.tabs.push(tabDraggable);
+                this.onActive(tabDraggable.id);
+              }
+            }
+            viewStore.commit('setViewFocus', this.view);
+            break;
+          default:
+            if (this.view.id === tabDraggable.viewId) {
+              tabViewId = this.view.id;
+            } else {
+              tabViewId = tabDraggable.viewId;
+            }
+            if (tabViewId !== this.view.id || this.view.tabs.length !== 1) {
+              split(
+                viewStore.state.container,
+                this.direction,
+                tabDraggable,
+                tabViewId,
+                this.view.id,
+              );
+            }
+            break;
+        }
+      }
+    }
+
     // ==================== Event Handler ===================
+    private onFocusView() {
+      log.debug('ViewView onFocusView');
+      viewStore.commit('setViewFocus', this.view);
+    }
+
     private onActive(id?: string) {
       log.debug('ViewView onActive');
       if (id) {
         this.view.tabs.forEach((tab: Tab) => tab.active = tab.id === id);
       } else if (this.view.tabs.length !== 0) {
-        this.view.tabs.forEach((tab: Tab) => tab.active = false);
-        this.view.tabs[0].active = true;
+        const tabId = this.view.tabs[0].id;
+        this.view.tabs.forEach((tab: Tab) => tab.active = tab.id === tabId);
       }
     }
 
@@ -132,47 +182,6 @@
       }
     }
 
-    private onSplit(tabDraggable: TabDraggable) {
-      log.debug('ViewView onSplit');
-      if (tabDraggable && tabDraggable.viewId) {
-        let tabViewId!: string;
-        switch (this.direction) {
-          case Direction.all:
-            if (this.view.id === tabDraggable.viewId) {
-              this.onActive(tabDraggable.id);
-            } else {
-              const tabView = findById(viewStore.state.container, tabDraggable.viewId);
-              if (tabView) {
-                const currentIndex = tabView.tabs.indexOf(tabDraggable);
-                tabView.tabs.splice(currentIndex, 1);
-                if (tabView.tabs.length === 0) {
-                  deleteById(viewStore.state.container, tabDraggable.viewId);
-                }
-                this.view.tabs.push(tabDraggable);
-                this.onActive(tabDraggable.id);
-              }
-            }
-            break;
-          default:
-            if (this.view.id === tabDraggable.viewId) {
-              tabViewId = this.view.id;
-            } else {
-              tabViewId = tabDraggable.viewId;
-            }
-            if (tabViewId !== this.view.id || this.view.tabs.length !== 1) {
-              split(
-                viewStore.state.container,
-                this.direction,
-                tabDraggable,
-                tabViewId,
-                this.view.id,
-              );
-            }
-            break;
-        }
-      }
-    }
-
     private onViewViewDropStart() {
       log.debug('ViewView onViewViewDropStart');
       this.subDragenter = this.dragenter$.subscribe(this.onDragenter);
@@ -184,7 +193,7 @@
     private onViewViewDropEnd(tabDraggable: TabDraggable) {
       log.debug('ViewView onViewViewDropEnd');
       if (this.dropView) {
-        this.onSplit(tabDraggable);
+        this.splitView(tabDraggable);
       }
       this.dropView = false;
       if (this.subDragenter && this.subDragover) {

@@ -2,7 +2,7 @@ import {Tree} from '@/store/tree';
 import {Tab} from '@/store/view';
 import {path} from '@/ts/recursionTree';
 
-export class TreeToTab implements Tab {
+export default class TreeToTab implements Tab {
   public active: boolean;
   private tree: Tree;
   constructor(tree: Tree) {
@@ -20,5 +20,8 @@ export class TreeToTab implements Tab {
   }
   get path(): string {
     return path(this.tree).join('/');
+  }
+  public setTree(tree: Tree) {
+    this.tree = tree;
   }
 }

@@ -4,7 +4,7 @@
       v-for="node in trees"
       :key="node.id"
     )
-      span.arrow(@click="onClick($event, node, node.children !== undefined)")
+      span.arrow(@click="onSelect($event, node, node.children !== undefined)")
         v-icon(
           v-if="node.children"
           color="grey lighten-1"
@@ -19,7 +19,8 @@
         @mousedown="onMousedown"
         @dragstart="onDragstart($event, node)"
         @dragend="onDragend"
-        @click="onClick($event, node, node.children !== undefined)"
+        @click="onSelect($event, node, node.children !== undefined)"
+        @dblclick="onOpenFile($event, node, node.children !== undefined)"
       )
         span.icon
           v-icon(
@@ -50,18 +51,16 @@
   import {icon, log, eventBus, isData, getData} from '@/ts/util';
   import {findById, childrenCount} from '@/ts/recursionTree';
   import treeStore, {Tree} from '@/store/tree';
+  import viewStore from '@/store/view';
   import EventBus from '@/models/EventBus';
-  import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
+  import {Component, Prop, Vue} from 'vue-property-decorator';
 
-  import {fromEvent, Observable, Subscription} from 'rxjs';
+  import {fromEvent, Subscription} from 'rxjs';
   import {throttleTime} from 'rxjs/operators';
 
-  interface FolderDraggableObservable {
-    id: string;
-    dragover$: Observable<DragEvent>;
-    dragleave$: Observable<DragEvent>;
-    subDragover: Subscription | null;
-    subDragleave: Subscription | null;
+  interface DraggableObservable {
+    subDragover: Subscription;
+    subDragleave: Subscription;
   }
 
   @Component({
@@ -73,12 +72,7 @@
     @Prop({type: Array, default: () => []})
     private trees!: Tree[];
 
-    private folderDraggableListener: FolderDraggableObservable[] = [];
-
-    @Watch('trees')
-    private watchTrees() {
-      this.$nextTick(this.onDraggableFolder);
-    }
+    private draggableObservable: DraggableObservable[] = [];
 
     private findByNode(el: HTMLElement | null): HTMLElement | null {
       if (el === null) {
@@ -91,6 +85,25 @@
     }
 
     // ==================== Event Handler ===================
+    private onSelect(event: MouseEvent, tree: Tree, folder: boolean) {
+      log.debug('TreeView onSelect');
+      if (folder) {
+        tree.open = !tree.open;
+      } else {
+        log.debug('############# TreeView editor module loaded #############');
+        viewStore.commit('addTabPreview', tree);
+      }
+      treeStore.commit('select', {event, tree});
+    }
+
+    private onOpenFile(event: MouseEvent, tree: Tree, folder: boolean) {
+      log.debug('TreeView onOpenFile');
+      if (!folder) {
+        log.debug('############# TreeView editor module loaded #############');
+        viewStore.commit('addTab', tree);
+      }
+    }
+
     private onMousedown() {
       log.debug('TreeView onMousedown');
       const selection = window.getSelection();
@@ -102,7 +115,7 @@
     private onDragstart(event: DragEvent, tree: Tree) {
       log.debug('TreeView onDragstart');
       treeStore.commit('draggableTree', tree);
-      eventBus.$emit(EventBus.TreeView.draggableFolder);
+      eventBus.$emit(EventBus.TreeView.draggableStart);
       // firefox
       if (event.dataTransfer) {
         event.dataTransfer.setData('text/plain', tree.id);
@@ -114,67 +127,35 @@
       treeStore.commit('move');
       treeStore.commit('folderActive', null);
       treeStore.commit('draggableTree', null);
-      eventBus.$emit(EventBus.TreeView.draggableFolderEnd);
+      eventBus.$emit(EventBus.TreeView.draggableEnd);
     }
 
-    private onClick(event: MouseEvent, tree: Tree, folder: boolean) {
-      log.debug('TreeView onClick');
-      if (folder) {
-        tree.open = !tree.open;
-      } else {
-        log.debug('TreeView editor module loaded');
-      }
-      treeStore.commit('select', {event, tree});
-    }
-
-    private onDraggableFolder() {
-      log.debug('TreeView onDraggableFolder');
+    private onTreeViewDraggableStart() {
+      log.debug('TreeView onTreeViewDraggableStart');
       const targets: ChildNode[] = [];
       const ul = this.$el as HTMLElement;
       ul.childNodes.forEach((child: ChildNode) => targets.push(child.childNodes[1]));
       log.debug(`trees:${this.trees.length}, el:${targets.length}`);
       targets.forEach((child: ChildNode) => {
         const el = child as HTMLElement;
-        if (el.dataset.id && el.dataset.folder === 'true' && isData(this.folderDraggableListener, el.dataset.id)) {
-          this.folderDraggableListener.push({
-            id: el.dataset.id,
-            dragover$: fromEvent<DragEvent>(el, 'dragover'),
-            dragleave$: fromEvent<DragEvent>(el, 'dragleave'),
-            subDragover: null,
-            subDragleave: null,
+        if (el.dataset.folder === 'true') {
+          this.draggableObservable.push({
+            subDragover: fromEvent<DragEvent>(el, 'dragover').pipe(
+              throttleTime(100),
+            ).subscribe(this.onDragoverFolder),
+            subDragleave: fromEvent<DragEvent>(el, 'dragleave').subscribe(this.onDragleaveFolder),
           });
         }
       });
-      for (let i = 0; i < this.folderDraggableListener.length; i++) {
-        if (isData(this.trees, this.folderDraggableListener[i].id)) {
-          const draggable = this.folderDraggableListener[i];
-          if (draggable.subDragover) {
-            draggable.subDragover.unsubscribe();
-          }
-          this.folderDraggableListener.splice(i, 1);
-          i--;
-        }
-      }
     }
 
-    private onTreeViewDraggableFolder() {
-      log.debug('TreeView onTreeViewDraggableFolder');
-      this.folderDraggableListener.forEach((draggable: FolderDraggableObservable) => {
-        draggable.subDragover = draggable.dragover$.pipe(throttleTime(100)).subscribe(this.onDragoverFolder);
-        draggable.subDragleave = draggable.dragleave$.subscribe(this.onDragleaveFolder);
+    private onTreeViewDraggableEnd() {
+      log.debug('TreeView onTreeViewDraggableEnd');
+      this.draggableObservable.forEach((draggable: DraggableObservable) => {
+        draggable.subDragover.unsubscribe();
+        draggable.subDragleave.unsubscribe();
       });
-    }
-
-    private onTreeViewDraggableFolderEnd() {
-      log.debug('TreeView onTreeViewDraggableFolderEnd');
-      this.folderDraggableListener.forEach((draggable: FolderDraggableObservable) => {
-        if (draggable.subDragover) {
-          draggable.subDragover.unsubscribe();
-        }
-        if (draggable.subDragleave) {
-          draggable.subDragleave.unsubscribe();
-        }
-      });
+      this.draggableObservable = [];
     }
 
     private onDragoverFolder(event: DragEvent) {
@@ -216,8 +197,8 @@
             {
               duration: 200,
               complete: () => {
-                el.removeAttribute('style');
                 done();
+                el.removeAttribute('style');
               },
             },
           );
@@ -237,18 +218,14 @@
 
     // ==================== Life Cycle ====================
     private created() {
-      eventBus.$on(EventBus.TreeView.draggableFolder, this.onTreeViewDraggableFolder);
-      eventBus.$on(EventBus.TreeView.draggableFolderEnd, this.onTreeViewDraggableFolderEnd);
+      eventBus.$on(EventBus.TreeView.draggableStart, this.onTreeViewDraggableStart);
+      eventBus.$on(EventBus.TreeView.draggableEnd, this.onTreeViewDraggableEnd);
       eventBus.$on(EventBus.TreeView.update, this.onTreeViewUpdate);
     }
 
-    private mounted() {
-      this.onDraggableFolder();
-    }
-
     private destroyed() {
-      eventBus.$off(EventBus.TreeView.draggableFolder, this.onTreeViewDraggableFolder);
-      eventBus.$off(EventBus.TreeView.draggableFolderEnd, this.onTreeViewDraggableFolderEnd);
+      eventBus.$off(EventBus.TreeView.draggableStart, this.onTreeViewDraggableStart);
+      eventBus.$off(EventBus.TreeView.draggableEnd, this.onTreeViewDraggableEnd);
       eventBus.$off(EventBus.TreeView.update, this.onTreeViewUpdate);
     }
 
