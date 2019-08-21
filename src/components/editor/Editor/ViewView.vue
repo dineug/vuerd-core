@@ -4,7 +4,6 @@
       :tabs="view.tabs"
       :width="view.width"
       :viewId="view.id"
-      :activeId="activeId"
       @active="onActive"
       @dragstart="onDragstartTab"
       @dragend="onDragendTab"
@@ -26,9 +25,10 @@
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
   import Direction from '@/models/Direction';
-  import {eventBus, log, isData} from '@/ts/util';
+  import {eventBus, log} from '@/ts/util';
   import {findById, deleteById, split} from '@/ts/recursionView';
-  import viewStore, {View, TabDraggable} from '@/store/view';
+  import viewStore, {View, Tab, TabDraggable} from '@/store/view';
+  import EventBus from '@/models/EventBus';
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
   import ViewTab from './ViewTab.vue';
   import ViewDrop from './ViewDrop.vue';
@@ -50,10 +50,9 @@
 
     private dragover$!: Observable<DragEvent>;
     private dragenter$!: Observable<DragEvent>;
-    private subDragover!: Subscription;
-    private subDragenter!: Subscription;
+    private subDragover: Subscription | null = null;
+    private subDragenter: Subscription | null = null;
 
-    private activeId: string = '';
     private dropView: boolean = false;
     private width: number = 0;
     private height: number = 0;
@@ -73,30 +72,31 @@
     private onActive(id?: string) {
       log.debug('ViewView onActive');
       if (id) {
-        this.activeId = id;
-      } else if (this.view.tabs.length !== 0 && isData(this.view.tabs, this.activeId)) {
-        this.activeId = this.view.tabs[0].id;
+        this.view.tabs.forEach((tab: Tab) => tab.active = tab.id === id);
+      } else if (this.view.tabs.length !== 0) {
+        this.view.tabs.forEach((tab: Tab) => tab.active = false);
+        this.view.tabs[0].active = true;
       }
     }
 
     private onDragstartTab() {
       log.debug('ViewView onDragstartTab');
-      eventBus.$emit('view-view-drop-start');
+      eventBus.$emit(EventBus.ViewView.dropStart);
     }
 
     private onDragendTab(event: DragEvent, tabDraggable: TabDraggable) {
       log.debug('ViewView onDragendTab');
-      eventBus.$emit('view-view-drop-end', tabDraggable);
+      eventBus.$emit(EventBus.ViewView.dropEnd, tabDraggable);
     }
 
     private onDragenterTab() {
       log.debug('ViewView onDragenterTab');
-      eventBus.$emit('view-view-drop-view-end');
+      eventBus.$emit(EventBus.ViewView.dropViewEnd);
     }
 
     private onDragenter() {
       log.debug('ViewView onDragenter');
-      eventBus.$emit('view-view-drop-view', this.view.id);
+      eventBus.$emit(EventBus.ViewView.dropView, this.view.id);
     }
 
     private onDragover(event: DragEvent, drop: boolean = false) {
@@ -187,8 +187,10 @@
         this.onSplit(tabDraggable);
       }
       this.dropView = false;
-      this.subDragenter.unsubscribe();
-      this.subDragover.unsubscribe();
+      if (this.subDragenter && this.subDragover) {
+        this.subDragenter.unsubscribe();
+        this.subDragover.unsubscribe();
+      }
     }
 
     private onViewViewDropView(viewId: string) {
@@ -209,10 +211,10 @@
 
     // ==================== Life Cycle ====================
     private created() {
-      eventBus.$on('view-view-drop-start', this.onViewViewDropStart);
-      eventBus.$on('view-view-drop-end', this.onViewViewDropEnd);
-      eventBus.$on('view-view-drop-view', this.onViewViewDropView);
-      eventBus.$on('view-view-drop-view-end', this.onViewViewDropViewEnd);
+      eventBus.$on(EventBus.ViewView.dropStart, this.onViewViewDropStart);
+      eventBus.$on(EventBus.ViewView.dropEnd, this.onViewViewDropEnd);
+      eventBus.$on(EventBus.ViewView.dropView, this.onViewViewDropView);
+      eventBus.$on(EventBus.ViewView.dropViewEnd, this.onViewViewDropViewEnd);
       this.width = this.view.width;
       this.height = this.view.height - SIZE_VIEW_TAB_HEIGHT;
       this.onActive();
@@ -224,10 +226,10 @@
     }
 
     private destroyed() {
-      eventBus.$off('view-view-drop-start', this.onViewViewDropStart);
-      eventBus.$off('view-view-drop-end', this.onViewViewDropEnd);
-      eventBus.$off('view-view-drop-view', this.onViewViewDropView);
-      eventBus.$off('view-view-drop-view-end', this.onViewViewDropViewEnd);
+      eventBus.$off(EventBus.ViewView.dropStart, this.onViewViewDropStart);
+      eventBus.$off(EventBus.ViewView.dropEnd, this.onViewViewDropEnd);
+      eventBus.$off(EventBus.ViewView.dropView, this.onViewViewDropView);
+      eventBus.$off(EventBus.ViewView.dropViewEnd, this.onViewViewDropViewEnd);
     }
 
     // ==================== Life Cycle END ====================

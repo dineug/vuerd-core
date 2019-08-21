@@ -65,7 +65,7 @@ export function resetHeight(container: View) {
 // 1. minWidth 보다 작으면 width 수정
 // 2. 같은 레벨 view width 감소처리
 // 3. views로 minWidth 체크
-// 4. views중에 감소시 괜찮은녀석으로 감소처리 추가?
+// 4. views중에 감소시 괜찮은녀석으로 감소처리 추가
 export function resetWidthRatio(container: View) {
   container.children.forEach((view: View) => {
     view.width = container.width * view.widthRatio;
@@ -135,13 +135,7 @@ export function deleteById(container: View, id: string) {
   }
 }
 
-export function split(
-  container: View,
-  direction: Direction,
-  tab: Tab,
-  tabViewId: string,
-  targetViewId: string,
-) {
+export function split(container: View, direction: Direction, tab: Tab, tabViewId: string, targetViewId: string) {
   log.debug('recursionView split');
   if (direction !== Direction.all) {
     const tabView = findById(container, tabViewId);

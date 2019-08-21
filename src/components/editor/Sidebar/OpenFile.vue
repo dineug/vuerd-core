@@ -1,11 +1,27 @@
 <template lang="pug">
   .open-file
     ul(v-for="(tabGroup, i) in tabGroups" :key="tabGroup.id")
-      ul(v-if="tabGroups.length === 1")
-        li(v-for="tab in tabGroup.tabs" :key="tab.id")
-          span.arrow
+      transition-group(
+        v-if="tabGroups.length === 1"
+        name="tab"
+        tag="ul"
+      )
+        li.draggable(
+          v-for="tab in tabGroup.tabs"
+          :key="tab.id"
+          :data-id="tab.id"
+          :data-view-id="tabGroup.id"
+        )
+          span.arrow(@click="onClose($event, tabGroup, tab)")
             v-icon(color="grey lighten-1" size="12") mdi-close
-          span.node
+          span.node(
+            draggable="true"
+            :class="{active: tab.active, draggable: dragTab && dragTab.id === tab.id}"
+            @click="onActive(tabGroup, tab)"
+            @mousedown="onMousedown"
+            @dragstart="onDragstart($event, tabGroup, tab)"
+            @dragend="onDragend"
+          )
             span.icon
               v-icon(
                 color="grey lighten-1"
@@ -15,12 +31,27 @@
       li(v-else)
         span.arrow
           .none-arrow
-        span(@click="onClick(tabGroup)") 그룹 {{i + 1}}
-        ul
-          li(v-for="tab in tabGroup.tabs" :key="tab.id")
-            span.arrow
+        span.group-title(@click="onClick(tabGroup)") GROUP {{i + 1}}
+        transition-group(
+          name="tab"
+          tag="ul"
+        )
+          li.draggable(
+            v-for="tab in tabGroup.tabs"
+            :key="tab.id"
+            :data-id="tab.id"
+            :data-view-id="tabGroup.id"
+          )
+            span.arrow(@click="onClose($event, tabGroup, tab)")
               v-icon(color="grey lighten-1" size="12") mdi-close
-            span.node
+            span.node(
+              :class="{active: tab.active, draggable: dragTab && dragTab.id === tab.id}"
+              draggable="true"
+              @click="onActive(tabGroup, tab)"
+              @mousedown="onMousedown"
+              @dragstart="onDragstart($event, tabGroup, tab)"
+              @dragend="onDragend"
+            )
               span.icon
                 v-icon(
                   color="grey lighten-1"
@@ -30,9 +61,18 @@
 </template>
 
 <script lang="ts">
-  import {View} from '@/store/view';
-  import {icon, log, getData, isData} from '@/ts/util';
+  import viewStore, {View, Tab} from '@/store/view';
+  import {log, icon, getData, isData} from '@/ts/util';
+  import {deleteById} from '@/ts/recursionView';
   import {Component, Prop, Vue} from 'vue-property-decorator';
+
+  import {fromEvent, Subscription, Subject} from 'rxjs';
+  import {throttleTime, debounceTime} from 'rxjs/operators';
+
+  interface DraggableObservable {
+    id: string;
+    subDragover: Subscription;
+  }
 
   @Component({
     filters: {
@@ -43,6 +83,139 @@
     @Prop({type: Array, default: () => []})
     private tabGroups!: View[];
 
+    private draggableListener: DraggableObservable[] = [];
+    private dragView: View | null = null;
+    private dragTab: Tab | null = null;
+    private draggable$: Subject<DragEvent> = new Subject();
+    private subDraggable: Subscription | null = null;
+
+    private findByLi(el: HTMLElement | null): HTMLElement | null {
+      if (el === null) {
+        return null;
+      } else if (el.localName === 'li') {
+        return el;
+      } else {
+        return this.findByLi(el.parentElement);
+      }
+    }
+
+    private move(targetView: View, targetTab: Tab) {
+      if (this.dragView && this.dragTab && this.dragView.id === targetView.id) {
+        const currentIndex = this.dragView.tabs.indexOf(this.dragTab);
+        const targetIndex = this.dragView.tabs.indexOf(targetTab);
+        this.dragView.tabs.splice(currentIndex, 1);
+        this.dragView.tabs.splice(targetIndex, 0, this.dragTab);
+      }
+    }
+
+    // ==================== Event Handler ===================
+    private onActive(view: View, target: Tab) {
+      log.debug('onClick onClick');
+      view.tabs.forEach((tab: Tab) => tab.active = tab.id === target.id);
+    }
+
+    private onClose(event: Event, view: View, tab: Tab) {
+      log.debug('OpenFile onClose');
+      event.stopPropagation();
+      const index = view.tabs.indexOf(tab);
+      view.tabs.splice(index, 1);
+      if (view.tabs.length === 0) {
+        deleteById(viewStore.state.container, view.id);
+      } else if (tab.active) {
+        view.tabs[0].active = true;
+      }
+    }
+
+    private onMousedown() {
+      log.debug('OpenFile onMousedown');
+      const selection = window.getSelection();
+      if (selection) {
+        selection.removeAllRanges();
+      }
+    }
+
+    private onDragstart(event: DragEvent, view: View, tab: Tab) {
+      log.debug('OpenFile onDragstart');
+      this.dragView = view;
+      this.dragTab = getData(view.tabs, tab.id);
+      this.onDraggableStart();
+      // firefox
+      if (event.dataTransfer) {
+        event.dataTransfer.setData('text/plain', tab.id);
+      }
+    }
+
+    private onDragend(event: DragEvent) {
+      log.debug('OpenFile onDragend');
+      if (this.dragView && this.dragTab) {
+        this.onActive(this.dragView, this.dragTab);
+      }
+      this.dragView = null;
+      this.dragTab = null;
+      this.onDraggableEnd();
+    }
+
+    private onDraggableStart() {
+      log.debug('OpenFile onDraggableStart');
+      const list = this.$el.querySelectorAll('.draggable');
+      list.forEach((child: Element) => {
+        const li = child as HTMLElement;
+        if (li.dataset.id && isData(this.draggableListener, li.dataset.id)) {
+          this.draggableListener.push({
+            id: li.dataset.id,
+            subDragover: fromEvent<DragEvent>(li, 'dragover').pipe(
+              throttleTime(300),
+            ).subscribe(this.onDragoverGroup),
+          });
+        }
+      });
+    }
+
+    private onDraggableEnd() {
+      log.debug('OpenFile onDraggableEnd');
+      this.draggableListener.forEach((draggable: DraggableObservable) => {
+        if (draggable.subDragover) {
+          draggable.subDragover.unsubscribe();
+        }
+      });
+      this.draggableListener = [];
+    }
+
+    private onDragoverGroup(event: DragEvent) {
+      log.debug('OpenFile onDragoverGroup');
+      this.draggable$.next(event);
+    }
+
+    private onDragover(event: DragEvent) {
+      log.debug('OpenFile onDragover');
+      const li = this.findByLi(event.target as HTMLElement);
+      if (li && li.dataset.id && li.dataset.viewId) {
+        const view = getData(this.tabGroups, li.dataset.viewId);
+        if (view) {
+          const tab = getData(view.tabs, li.dataset.id);
+          if (tab) {
+            this.move(view, tab);
+          }
+        }
+      }
+    }
+
+    // ==================== Event Handler END ===================
+
+    // ==================== Life Cycle ====================
+    private mounted() {
+      this.subDraggable = this.draggable$.pipe(
+        debounceTime(50),
+      ).subscribe(this.onDragover);
+    }
+
+    private destroyed() {
+      if (this.subDraggable) {
+        this.subDraggable.unsubscribe();
+      }
+    }
+
+    // ==================== Life Cycle END ====================
   }
 </script>
 
@@ -71,8 +244,21 @@
           }
         }
 
+        .group-title {
+          font-size: $size-font + 2;
+        }
+
         .node {
           cursor: pointer;
+
+          &.active {
+            color: white;
+            background-color: $color-editor;
+          }
+
+          &.draggable {
+            opacity: 0.5;
+          }
 
           .icon {
             padding-right: 4px;
@@ -85,5 +271,10 @@
         }
       }
     }
+  }
+
+  /* animation */
+  .tab-move {
+    transition: transform 0.3s;
   }
 </style>

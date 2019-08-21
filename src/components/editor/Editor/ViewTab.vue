@@ -1,7 +1,6 @@
 <template lang="pug">
   .split-view-tab.scrollbar(
     :style="`width: ${width}px;`"
-    @dragenter="onDragenter"
   )
     transition-group(
       :style="`min-width: ${minWidth}px; height: ${SIZE_VIEW_TAB_HEIGHT}px;`"
@@ -12,8 +11,8 @@
         draggable="true"
         v-for="tab in tabs"
         :key="tab.id"
-        :id="tab.id"
-        :class="{active: activeId === tab.id, draggable: dragTab && dragTab.id === tab.id}"
+        :data-id="tab.id"
+        :class="{active: tab.active, draggable: dragTab && dragTab.id === tab.id}"
         :title="tab.path"
         @click="onActive(tab.id)"
         @mousedown="onMousedown"
@@ -32,10 +31,11 @@
   import {icon, log, eventBus, getData, isData, getTextWidth} from '@/ts/util';
   import {findById, deleteById} from '@/ts/recursionView';
   import viewStore, {Tab, TabDraggable} from '@/store/view';
+  import EventBus from '@/models/EventBus';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
 
-  import {fromEvent, Subscription} from 'rxjs';
-  import {throttleTime} from 'rxjs/operators';
+  import {fromEvent, Observable, Subscription, Subject} from 'rxjs';
+  import {throttleTime, debounceTime} from 'rxjs/operators';
 
   interface DraggableObservable {
     id: string;
@@ -53,8 +53,6 @@
   export default class ViewTab extends Vue {
     @Prop({type: Array, default: () => []})
     private tabs!: Tab[];
-    @Prop({type: String, default: ''})
-    private activeId!: string;
     @Prop({type: Number, default: 0})
     private width!: number;
     @Prop({type: String, default: ''})
@@ -65,10 +63,14 @@
     private minWidth: number = 0;
     private dragTab: Tab | null = null;
     private draggableListener: DraggableObservable[] = [];
+    private dragenter$!: Observable<DragEvent>;
+    private draggable$: Subject<DragEvent> = new Subject();
+    private subDragenter: Subscription | null = null;
+    private subDraggable: Subscription | null = null;
 
     @Watch('tabs')
     private watchTabs() {
-      this.onDraggable();
+      this.$nextTick(this.setMinWidth);
     }
 
     private setMinWidth() {
@@ -119,29 +121,16 @@
       this.$emit('active', id);
     }
 
-    private onDraggable() {
-      log.debug('ViewTab onDraggable');
-      const ul = this.$el.childNodes[0];
-      ul.childNodes.forEach((child: ChildNode) => {
-        const li = child as HTMLElement;
-        if (isData(this.draggableListener, li.id)) {
-          this.draggableListener.push({
-            id: li.id,
-            subDragover: fromEvent<DragEvent>(li, 'dragover').pipe(
-              throttleTime(300),
-            ).subscribe(this.onDragover),
-          });
-        }
-      });
-      for (let i = 0; i < this.draggableListener.length; i++) {
-        if (isData(this.tabs, this.draggableListener[i].id)) {
-          this.draggableListener[i].subDragover.unsubscribe();
-          this.draggableListener.splice(i, 1);
-          i--;
-          break;
-        }
+    private onClose(event: Event, tab: Tab) {
+      log.debug('ViewTab onClose');
+      event.stopPropagation();
+      const index = this.tabs.indexOf(tab);
+      this.tabs.splice(index, 1);
+      if (this.tabs.length === 0) {
+        deleteById(viewStore.state.container, this.viewId);
+      } else if (tab.active) {
+        this.onActive();
       }
-      this.$nextTick(this.setMinWidth);
     }
 
     private onMousedown() {
@@ -150,21 +139,24 @@
       if (selection) {
         selection.removeAllRanges();
       }
-   }
+    }
 
     private onDragstart(event: DragEvent) {
       log.debug('ViewTab onDragstart');
       const el = event.target as HTMLElement;
-      this.dragTab = getData(this.tabs, el.id);
-      const tabDraggable = this.dragTab as TabDraggable;
-      tabDraggable.viewId = this.viewId;
-      viewStore.commit('setTabDraggable', tabDraggable);
-      // firefox
-      if (event.dataTransfer) {
-        event.dataTransfer.setData('text/plain', el.id);
+      if (el.dataset.id) {
+        this.dragTab = getData(this.tabs, el.dataset.id);
+        const tabDraggable = this.dragTab as TabDraggable;
+        tabDraggable.viewId = this.viewId;
+        viewStore.commit('setTabDraggable', tabDraggable);
+        // firefox
+        if (event.dataTransfer) {
+          event.dataTransfer.setData('text/plain', el.dataset.id);
+        }
+        this.$emit('dragstart', event);
+        eventBus.$emit(EventBus.ViewTab.draggableStart);
+        eventBus.$emit(EventBus.Editor.dragstart);
       }
-      this.$emit('dragstart', event);
-      eventBus.$emit('editor-dragstart');
     }
 
     private onDragend(event: DragEvent) {
@@ -172,58 +164,87 @@
       if (findById(viewStore.state.container, this.viewId)) {
         this.$emit('dragend', event, viewStore.state.tabDraggable);
       } else {
-        eventBus.$emit('view-view-drop-end', viewStore.state.tabDraggable);
+        eventBus.$emit(EventBus.ViewView.dropEnd, viewStore.state.tabDraggable);
       }
       this.dragTab = null;
       const tabDraggable = viewStore.state.tabDraggable;
       if (tabDraggable) {
-        eventBus.$emit('view-tab-draggable-end', tabDraggable.viewId);
+        eventBus.$emit(EventBus.ViewTab.draggableEnd, tabDraggable.viewId);
       }
       viewStore.commit('setTabDraggable', null);
-      eventBus.$emit('editor-dragend');
+      eventBus.$emit(EventBus.Editor.dragend);
+    }
+
+    private onViewTabDraggableStart() {
+      log.debug('ViewTab onViewTabDraggableStart');
+      this.subDragenter = this.dragenter$.subscribe(this.onDragenter);
+      const ul = this.$el.childNodes[0];
+      ul.childNodes.forEach((child: ChildNode) => {
+        const li = child as HTMLElement;
+        if (li.dataset.id && isData(this.draggableListener, li.dataset.id)) {
+          this.draggableListener.push({
+            id: li.dataset.id,
+            subDragover: fromEvent<DragEvent>(li, 'dragover').pipe(
+              throttleTime(300),
+            ).subscribe(this.onDragoverGroup),
+          });
+        }
+      });
+    }
+
+    private onViewTabDraggableEnd(viewId: string) {
+      log.debug('ViewTab onViewTabDraggableEnd');
+      if (this.viewId === viewId) {
+        this.dragTab = null;
+      }
+      if (!this.tabs.some((tab: Tab) => tab.active)) {
+        this.onActive();
+      }
+      if (this.subDragenter) {
+        this.subDragenter.unsubscribe();
+      }
+      this.draggableListener.forEach((draggable: DraggableObservable) => {
+        if (draggable.subDragover) {
+          draggable.subDragover.unsubscribe();
+        }
+      });
+      this.draggableListener = [];
+    }
+
+    private onDragoverGroup(event: DragEvent) {
+      log.debug('ViewTab onDragoverGroup');
+      this.draggable$.next(event);
     }
 
     private onDragover(event: DragEvent) {
       log.debug('ViewTab onDragover');
       const li = this.findByLi(event.target as HTMLElement);
       if (this.dragTab) {
-        if (li && this.dragTab.id !== li.id) {
-          const tab = getData(this.tabs, li.id);
+        if (li && li.dataset.id && this.dragTab.id !== li.dataset.id) {
+          const tab = getData(this.tabs, li.dataset.id);
           if (tab) {
             this.move(tab);
           }
         }
       } else {
         const tabDraggable = viewStore.state.tabDraggable;
-        if (li && tabDraggable) {
+        if (li && li.dataset.id && tabDraggable) {
           const view = findById(viewStore.state.container, tabDraggable.viewId);
           if (view) {
             const currentIndex = view.tabs.indexOf(tabDraggable);
-            const tab = getData(this.tabs, li.id);
+            const tab = getData(this.tabs, li.dataset.id);
             if (tab) {
               const targetIndex = this.tabs.indexOf(tab);
               view.tabs.splice(currentIndex, 1);
               this.tabs.splice(targetIndex, 0, tabDraggable);
               this.dragTab = tabDraggable;
               this.onActive(tabDraggable.id);
-              eventBus.$emit('view-tab-toss', tabDraggable.viewId);
+              eventBus.$emit(EventBus.ViewTab.toss, tabDraggable.viewId);
               tabDraggable.viewId = this.viewId;
               viewStore.commit('setTabDraggable', tabDraggable);
             }
           }
         }
-      }
-    }
-
-    private onClose(event: Event, tab: Tab) {
-      log.debug('ViewTab onClose');
-      event.stopPropagation();
-      const index = this.tabs.indexOf(tab);
-      this.tabs.splice(index, 1);
-      if (this.tabs.length === 0) {
-        deleteById(viewStore.state.container, this.viewId);
-      } else if (this.activeId === tab.id) {
-        this.onActive();
       }
     }
 
@@ -238,7 +259,7 @@
           this.tabs.push(tabDraggable);
           this.dragTab = tabDraggable;
           this.onActive(tabDraggable.id);
-          eventBus.$emit('view-tab-toss', tabDraggable.viewId);
+          eventBus.$emit(EventBus.ViewTab.toss, tabDraggable.viewId);
           tabDraggable.viewId = this.viewId;
           viewStore.commit('setTabDraggable', tabDraggable);
         }
@@ -251,19 +272,11 @@
       if (this.tabs.length === 0) {
         deleteById(viewStore.state.container, this.viewId);
       } else if (this.viewId === viewId) {
-        if (this.dragTab && this.activeId === this.dragTab.id) {
+        if (this.dragTab && this.dragTab.active) {
           this.onActive();
         }
         this.dragTab = null;
       }
-    }
-
-    private onViewTabDraggableEnd(viewId: string) {
-      log.debug('ViewTab onViewTabDraggableEnd');
-      if (this.viewId === viewId) {
-        this.dragTab = null;
-      }
-      this.onActive();
     }
 
     // ==================== Event Handler END ===================
@@ -273,20 +286,26 @@
       if (this.tabs.length === 0) {
         deleteById(viewStore.state.container, this.viewId);
       }
-      eventBus.$on('view-tab-toss', this.onViewTabToss);
-      eventBus.$on('view-tab-draggable-end', this.onViewTabDraggableEnd);
+      eventBus.$on(EventBus.ViewTab.toss, this.onViewTabToss);
+      eventBus.$on(EventBus.ViewTab.draggableStart, this.onViewTabDraggableStart);
+      eventBus.$on(EventBus.ViewTab.draggableEnd, this.onViewTabDraggableEnd);
     }
 
     private mounted() {
-      this.onDraggable();
+      this.setMinWidth();
+      this.dragenter$ = fromEvent<DragEvent>(this.$el, 'dragenter');
+      this.subDraggable = this.draggable$.pipe(
+        debounceTime(50),
+      ).subscribe(this.onDragover);
     }
 
     private destroyed() {
-      this.draggableListener.forEach((draggable: DraggableObservable) => {
-        draggable.subDragover.unsubscribe();
-      });
-      eventBus.$off('view-tab-toss', this.onViewTabToss);
-      eventBus.$off('view-tab-draggable-end', this.onViewTabDraggableEnd);
+      eventBus.$off(EventBus.ViewTab.toss, this.onViewTabToss);
+      eventBus.$off(EventBus.ViewTab.draggableStart, this.onViewTabDraggableStart);
+      eventBus.$off(EventBus.ViewTab.draggableEnd, this.onViewTabDraggableEnd);
+      if (this.subDraggable) {
+        this.subDraggable.unsubscribe();
+      }
     }
 
     // ==================== Life Cycle END ====================

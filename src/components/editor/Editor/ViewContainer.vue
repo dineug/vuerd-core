@@ -145,7 +145,7 @@
     }
 
     private onMousedownSash(event: MouseEvent) {
-      log.debug('ViewContainer onMousedownSash', event.x, event.y);
+      log.debug('ViewContainer onMousedownSash');
       this.x = event.x;
       this.y = event.y;
     }

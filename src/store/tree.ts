@@ -2,11 +2,12 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import {select, move} from '@/ts/recursionTree';
 import {eventBus} from '@/ts/util';
+import EventBus from '@/models/EventBus';
 import {dTree} from '@/data/tree';
 
 Vue.use(Vuex);
 
-export interface State {
+interface State {
   container: Tree;
   selects: TreeSelect[];
   folder: Tree | null;
@@ -40,16 +41,18 @@ export default new Vuex.Store({
   getters: {},
   mutations: {
     select(state: State, payload: { event: MouseEvent, tree: Tree }) {
-      select(state, payload.tree, payload.event);
+      state.selects = select(state.container, state.selects, payload.tree, payload.event);
     },
     move(state: State) {
-      move(state);
+      if (state.folder && state.currentTree) {
+        state.selects = move(state.container, state.selects, state.folder, state.currentTree);
+      }
     },
     folderActive(state: State, tree: Tree | null) {
       if (state.folder) {
         state.folder.folderActive = false;
         if (tree === null || (tree && tree.parent !== state.folder.parent)) {
-          eventBus.$emit('tree-view-update', state.folder);
+          eventBus.$emit(EventBus.TreeView.update, state.folder);
         }
       }
       if (tree) {

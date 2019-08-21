@@ -12,6 +12,7 @@
   import viewStore, {View} from '@/store/view';
   import {resetSize, resetWidthRatio, resetHeightRatio} from '@/ts/recursionView';
   import {log, eventBus} from '@/ts/util';
+  import EventBus from '@/models/EventBus';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
   import ViewContainer from './Editor/ViewContainer.vue';
 
@@ -32,7 +33,7 @@
     private sidebarWidth!: number;
 
     private dragover$: Observable<DragEvent> = fromEvent<DragEvent>(window, 'dragover');
-    private subDragover!: Subscription;
+    private subDragover: Subscription | null = null;
 
     get container(): View {
       return viewStore.state.container;
@@ -70,7 +71,9 @@
 
     private onEditorDragend() {
       log.debug('Editor onEditorDragend');
-      this.subDragover.unsubscribe();
+      if (this.subDragover) {
+        this.subDragover.unsubscribe();
+      }
     }
 
     private onDragoverTrack(event: MouseEvent) {
@@ -78,7 +81,7 @@
       const x = event.x - this.sidebarWidth - SIZE_ACTIVITYBAR_WIDTH;
       const y = event.y - SIZE_TITLEBAR_HEIGHT;
       if (x < 0 || y < 0 || x > this.width || y > this.height) {
-        eventBus.$emit('view-view-drop-view-end');
+        eventBus.$emit(EventBus.ViewView.dropViewEnd);
       }
     }
 
@@ -89,13 +92,13 @@
       this.container.width = this.width;
       this.container.height = this.height;
       resetSize(this.container);
-      eventBus.$on('editor-dragstart', this.onEditorDragstart);
-      eventBus.$on('editor-dragend', this.onEditorDragend);
+      eventBus.$on(EventBus.Editor.dragstart, this.onEditorDragstart);
+      eventBus.$on(EventBus.Editor.dragend, this.onEditorDragend);
     }
 
     private destroyed() {
-      eventBus.$off('editor-dragstart', this.onEditorDragstart);
-      eventBus.$off('editor-dragend', this.onEditorDragend);
+      eventBus.$off(EventBus.Editor.dragstart, this.onEditorDragstart);
+      eventBus.$off(EventBus.Editor.dragend, this.onEditorDragend);
     }
 
     // ==================== Life Cycle END ====================

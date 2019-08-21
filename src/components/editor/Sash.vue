@@ -25,8 +25,8 @@
 
     private mouseup$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mouseup');
     private mousemove$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mousemove');
-    private subMouseup!: Subscription;
-    private subMousemove!: Subscription;
+    private subMouseup: Subscription | null = null;
+    private subMousemove: Subscription | null = null;
 
     get centerTop() {
       return this.top === 0 && !this.horizontal
@@ -48,8 +48,10 @@
     }
 
     private onMouseup(event: MouseEvent) {
-      this.subMouseup.unsubscribe();
-      this.subMousemove.unsubscribe();
+      if (this.subMouseup && this.subMousemove) {
+        this.subMouseup.unsubscribe();
+        this.subMousemove.unsubscribe();
+      }
       this.$emit('mouseup', event);
     }
 

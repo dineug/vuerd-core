@@ -1,9 +1,10 @@
 <template lang="pug">
   .explorer
-    Title(name="열려 있는 편집기")
+    Title(name="탐색기")
+    Title(name="OPEN FILES")
     .content
       OpenFile.file(:tab-groups="tabGroups")
-    Title(name="탐색기")
+    Title(name="WORKSPACE")
     .content
       TreeView.file(:trees="container.children")
       transition-group(name="select")

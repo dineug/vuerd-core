@@ -33,6 +33,7 @@ export interface Tab {
   readonly id: string;
   readonly path: string;
   name: string;
+  active: boolean;
 }
 
 export interface TabDraggable extends Tab {

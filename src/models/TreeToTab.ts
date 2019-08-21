@@ -3,9 +3,11 @@ import {Tab} from '@/store/view';
 import {path} from '@/ts/recursionTree';
 
 export class TreeToTab implements Tab {
+  public active: boolean;
   private tree: Tree;
   constructor(tree: Tree) {
     this.tree = tree;
+    this.active = false;
   }
   get id(): string {
     return this.tree.id;
