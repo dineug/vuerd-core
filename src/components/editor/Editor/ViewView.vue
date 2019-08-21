@@ -25,7 +25,7 @@
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
   import Direction from '@/models/Direction';
-  import {eventBus, log, isData} from '@/ts/util';
+  import {eventBus, log, isData, getDataIndex} from '@/ts/util';
   import {findById, deleteById, split} from '@/ts/recursionView';
   import viewStore, {View, Tab, TabDraggable} from '@/store/view';
   import EventBus from '@/models/EventBus';
@@ -81,13 +81,18 @@
               if (tabView) {
                 const currentIndex = tabView.tabs.indexOf(tabDraggable);
                 tabView.tabs.splice(currentIndex, 1);
-                if (!isData(this.view.tabs, tabDraggable.id)) {
-                  this.view.tabs.splice(this.view.tabs.indexOf(tabDraggable), 1);
-                }
                 if (tabView.tabs.length === 0) {
                   deleteById(viewStore.state.container, tabDraggable.viewId);
                 }
-                this.view.tabs.push(tabDraggable);
+                if (!isData(this.view.tabs, tabDraggable.id)) {
+                  const duplicationIndex = getDataIndex(this.view.tabs, tabDraggable.id);
+                  if (duplicationIndex) {
+                    this.view.tabs.splice(duplicationIndex, 1);
+                    this.view.tabs.splice(duplicationIndex, 0, tabDraggable);
+                  }
+                } else {
+                  this.view.tabs.push(tabDraggable);
+                }
                 this.onActive(tabDraggable.id);
               }
             }

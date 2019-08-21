@@ -29,7 +29,7 @@
 
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
-  import {icon, log, eventBus, getData, isData, getTextWidth} from '@/ts/util';
+  import {icon, log, eventBus, getData, isData, getTextWidth, getDataIndex} from '@/ts/util';
   import {findById, deleteById} from '@/ts/recursionView';
   import viewStore, {Tab, TabDraggable} from '@/store/view';
   import EventBus from '@/models/EventBus';
@@ -227,9 +227,14 @@
               const targetIndex = this.tabs.indexOf(tab);
               view.tabs.splice(currentIndex, 1);
               if (!isData(this.tabs, tabDraggable.id)) {
-                this.tabs.splice(this.tabs.indexOf(tabDraggable), 1);
+                const duplicationIndex = getDataIndex(this.tabs, tabDraggable.id);
+                if (duplicationIndex) {
+                  this.tabs.splice(duplicationIndex, 1);
+                  this.tabs.splice(duplicationIndex, 0, tabDraggable);
+                }
+              } else {
+                this.tabs.splice(targetIndex, 0, tabDraggable);
               }
-              this.tabs.splice(targetIndex, 0, tabDraggable);
               this.dragTab = tabDraggable;
               this.onActive(tabDraggable.id);
               eventBus.$emit(EventBus.ViewTab.toss, tabDraggable.viewId);
@@ -252,9 +257,14 @@
           const currentIndex = view.tabs.indexOf(tabDraggable);
           view.tabs.splice(currentIndex, 1);
           if (!isData(this.tabs, tabDraggable.id)) {
-            this.tabs.splice(this.tabs.indexOf(tabDraggable), 1);
+            const duplicationIndex = getDataIndex(this.tabs, tabDraggable.id);
+            if (duplicationIndex) {
+              this.tabs.splice(duplicationIndex, 1);
+              this.tabs.splice(duplicationIndex, 0, tabDraggable);
+            }
+          } else {
+            this.tabs.push(tabDraggable);
           }
-          this.tabs.push(tabDraggable);
           this.dragTab = tabDraggable;
           this.onActive(tabDraggable.id);
           eventBus.$emit(EventBus.ViewTab.toss, tabDraggable.viewId);

@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 import {tabGroups, addView, resetSize} from '@/ts/recursionView';
 import {Tree} from './tree';
 import TreeToTab from '@/models/TreeToTab';
-import {isData} from '@/ts/util';
+import {isData, log} from '@/ts/util';
 import init, {dView} from '@/data/view';
 
 Vue.use(Vuex);

@@ -87,6 +87,20 @@ export function getData<T extends List>(list: T[], id: string): T | null {
 }
 
 /**
+ * 리스트 index 반환
+ * @param list
+ * @param id
+ */
+export function getDataIndex<T extends List>(list: T[], id: string): number | null {
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].id === id) {
+      return i;
+    }
+  }
+  return null;
+}
+
+/**
  * 중복 체크
  * @param list
  * @param id
