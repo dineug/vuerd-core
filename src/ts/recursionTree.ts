@@ -8,8 +8,25 @@ export function findById(container: Tree, id: string): Tree | null {
   } else {
     let target: Tree | null = null;
     if (container.children) {
-      for (const tree of container.children) {
-        target = findById(tree, id);
+      for (const value of container.children) {
+        target = findById(value, id);
+        if (target) {
+          break;
+        }
+      }
+    }
+    return target;
+  }
+}
+
+export function findByTree(container: Tree, tree: Tree): Tree | null {
+  if (container.id === tree.id) {
+    return container;
+  } else {
+    let target: Tree | null = null;
+    if (container.children) {
+      for (const value of container.children) {
+        target = findByTree(value, tree);
         if (target) {
           break;
         }
@@ -124,22 +141,22 @@ export function childrenArray(container: Tree, stack?: Tree[]): Tree[] {
 export function move(container: Tree, selects: TreeSelect[], folder: Tree, currentTree: Tree): TreeSelect[] {
   if (folder.children && folder.id !== currentTree.id) {
     if (isData(selects, currentTree.id)) { // single
-      if (!findById(currentTree, folder.id)) {
-        deleteById(container, currentTree.id);
+      if (!findByTree(currentTree, folder)) {
+        deleteByTree(currentTree);
         folder.children.push(currentTree);
         currentTree.parent = folder;
         orderByNameASC(folder);
       }
     } else { // select
       for (let i = 0; i < selects.length; i++) {
-        if (findById(selects[i], folder.id)) {
+        if (findByTree(selects[i], folder)) {
           selects.splice(i, 1);
           i--;
         }
       }
       selects.forEach((treeSelect: TreeSelect) => {
         if (folder.children) {
-          deleteById(container, treeSelect.id);
+          deleteByTree(treeSelect as Tree);
           folder.children.push(treeSelect as Tree);
           treeSelect.parent = folder;
         }
@@ -151,13 +168,13 @@ export function move(container: Tree, selects: TreeSelect[], folder: Tree, curre
   return selects;
 }
 
-export function deleteById(container: Tree, id: string) {
+export function deleteByTree(tree: Tree) {
   log.debug('recursionTree deleteById');
-  const target = findById(container, id);
-  if (target && target.parent) {
-    const parent = target.parent;
+  // const target = findById(container, id);
+  if (tree && tree.parent) {
+    const parent = tree.parent;
     if (parent.children) {
-      const currentIndex = parent.children.indexOf(target);
+      const currentIndex = parent.children.indexOf(tree);
       parent.children.splice(currentIndex, 1);
     }
   }

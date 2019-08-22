@@ -1,5 +1,4 @@
 enum ViewTab {
-  toss = 'view-tab-toss',
   draggableStart = 'view-tab-draggable-start',
   draggableEnd = 'view-tab-draggable-end',
 }

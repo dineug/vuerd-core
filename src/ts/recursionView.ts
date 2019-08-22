@@ -3,13 +3,13 @@ import viewStore, {View, Tab} from '@/store/view';
 import Direction from '@/models/Direction';
 import {uuid, log} from '@/ts/util';
 
-export function findById(container: View, id: string): View | null {
-  if (container.id === id) {
+export function findByView(container: View, view: View): View | null {
+  if (container.id === view.id) {
     return container;
   } else {
     let target: View | null = null;
-    for (const view of container.children) {
-      target = findById(view, id);
+    for (const value of container.children) {
+      target = findByView(value, view);
       if (target) {
         break;
       }
@@ -124,31 +124,28 @@ export function minHorizontal(container: View): number {
   return result;
 }
 
-export function deleteById(container: View, id: string) {
+export function deleteByView(view: View) {
   log.debug('recursionView deleteById');
-  const target = findById(container, id);
-  if (target && target.parent) {
-    const parent = target.parent;
-    const currentIndex = parent.children.indexOf(target);
+  if (view && view.parent) {
+    const parent = view.parent;
+    const currentIndex = parent.children.indexOf(view);
     parent.children.splice(currentIndex, 1);
     resetSize(parent);
-    if (viewStore.state.viewFocus && viewStore.state.viewFocus.id === id) {
+    if (viewStore.state.viewFocus && viewStore.state.viewFocus.id === view.id) {
       viewStore.commit('setViewFocus', null);
     }
   }
 }
 
-export function split(container: View, direction: Direction, tab: Tab, tabViewId: string, targetViewId: string) {
+export function split(container: View, direction: Direction, tab: Tab, tabView: View, targetView: View) {
   log.debug('recursionView split');
   if (direction !== Direction.all) {
-    const tabView = findById(container, tabViewId);
-    const targetView = findById(container, targetViewId);
-    if (tabView && targetView && targetView.parent) {
+    if (targetView.parent) {
       const parentView = targetView.parent;
       const currentIndex = tabView.tabs.indexOf(tab);
       tabView.tabs.splice(currentIndex, 1);
       if (tabView.tabs.length === 0) {
-        deleteById(container, tabViewId);
+        deleteByView(tabView);
       }
       switch (direction) {
         case Direction.top:

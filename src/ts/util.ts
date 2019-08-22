@@ -174,3 +174,14 @@ export function setParent<T extends Node<T>>(parent: T, children?: T[]): T {
   }
   return parent;
 }
+
+
+export function findParentLiByElement(el: HTMLElement | null): HTMLElement | null {
+  if (el === null) {
+    return null;
+  } else if (el.localName === 'li') {
+    return el;
+  } else {
+    return findParentLiByElement(el.parentElement);
+  }
+}

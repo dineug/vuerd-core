@@ -1,12 +1,8 @@
 <template lang="pug">
   .split-view-main.scrollbar(@click="onFocusView")
     ViewTab(
-      :tabs="view.tabs"
-      :width="view.width"
-      :viewId="view.id"
-      @active="onActive"
+      :view="view"
       @dragstart="onDragstartTab"
-      @dragend="onDragendTab"
       @dragenter="onDragenterTab"
     )
     .split-view-editor(
@@ -25,8 +21,8 @@
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
   import Direction from '@/models/Direction';
-  import {eventBus, log, isData, getDataIndex} from '@/ts/util';
-  import {findById, deleteById, split} from '@/ts/recursionView';
+  import {eventBus, log} from '@/ts/util';
+  import {split} from '@/ts/recursionView';
   import viewStore, {View, Tab, TabDraggable} from '@/store/view';
   import EventBus from '@/models/EventBus';
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
@@ -70,49 +66,32 @@
 
     private splitView(tabDraggable: TabDraggable) {
       log.debug('ViewView splitView');
-      if (tabDraggable && tabDraggable.viewId) {
-        let tabViewId!: string;
+      if (tabDraggable) {
+        let tabView!: View;
         switch (this.direction) {
           case Direction.all:
-            if (this.view.id === tabDraggable.viewId) {
-              this.onActive(tabDraggable.id);
+            if (this.view.id === tabDraggable.view.id) {
+              viewStore.commit('tabActive', {view: this.view, tab: tabDraggable as Tab});
             } else {
-              const tabView = findById(viewStore.state.container, tabDraggable.viewId);
-              if (tabView) {
-                const currentIndex = tabView.tabs.indexOf(tabDraggable);
-                tabView.tabs.splice(currentIndex, 1);
-                if (tabView.tabs.length === 0) {
-                  deleteById(viewStore.state.container, tabDraggable.viewId);
-                }
-                if (!isData(this.view.tabs, tabDraggable.id)) {
-                  const duplicationIndex = getDataIndex(this.view.tabs, tabDraggable.id);
-                  if (duplicationIndex) {
-                    this.view.tabs.splice(duplicationIndex, 1);
-                    this.view.tabs.splice(duplicationIndex, 0, tabDraggable);
-                  }
-                } else {
-                  this.view.tabs.push(tabDraggable);
-                }
-                this.onActive(tabDraggable.id);
-              }
+              viewStore.commit('tabMove', {view: this.view});
             }
-            viewStore.commit('setViewFocus', this.view);
             break;
           default:
-            if (this.view.id === tabDraggable.viewId) {
-              tabViewId = this.view.id;
+            if (this.view.id === tabDraggable.view.id) {
+              tabView = this.view;
             } else {
-              tabViewId = tabDraggable.viewId;
+              tabView = tabDraggable.view;
             }
-            if (tabViewId !== this.view.id || this.view.tabs.length !== 1) {
+            if (tabView.id !== this.view.id || this.view.tabs.length !== 1) {
               split(
                 viewStore.state.container,
                 this.direction,
                 tabDraggable,
-                tabViewId,
-                this.view.id,
+                tabView,
+                this.view,
               );
             }
+            viewStore.commit('tabsActive');
             break;
         }
       }
@@ -124,24 +103,14 @@
       viewStore.commit('setViewFocus', this.view);
     }
 
-    private onActive(id?: string) {
+    private onActive(tab?: Tab) {
       log.debug('ViewView onActive');
-      if (id) {
-        this.view.tabs.forEach((tab: Tab) => tab.active = tab.id === id);
-      } else if (this.view.tabs.length !== 0) {
-        const tabId = this.view.tabs[0].id;
-        this.view.tabs.forEach((tab: Tab) => tab.active = tab.id === tabId);
-      }
+      viewStore.commit('tabActive', {view: this.view, tab});
     }
 
     private onDragstartTab() {
       log.debug('ViewView onDragstartTab');
       eventBus.$emit(EventBus.ViewView.dropStart);
-    }
-
-    private onDragendTab(event: DragEvent, tabDraggable: TabDraggable) {
-      log.debug('ViewView onDragendTab');
-      eventBus.$emit(EventBus.ViewView.dropEnd, tabDraggable);
     }
 
     private onDragenterTab() {

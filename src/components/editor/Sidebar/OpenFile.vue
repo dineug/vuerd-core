@@ -16,7 +16,7 @@
             v-icon(color="grey lighten-1" size="12") mdi-close
           span.node(
             draggable="true"
-            :class="{active: tab.active, draggable: dragTab && dragTab.id === tab.id}"
+            :class="{active: tab.active, draggable: tabDraggable && tabDraggable.view.id === tabGroup.id && tabDraggable.id === tab.id}"
             @click="onActive(tabGroup, tab)"
             @mousedown="onMousedown"
             @dragstart="onDragstart($event, tabGroup, tab)"
@@ -45,7 +45,7 @@
             span.arrow(@click="onClose($event, tabGroup, tab)")
               v-icon(color="grey lighten-1" size="12") mdi-close
             span.node(
-              :class="{active: tab.active, draggable: dragView && dragTab && dragView.id === tabGroup.id && dragTab.id === tab.id}"
+              :class="{active: tab.active, draggable: tabDraggable && tabDraggable.view.id === tabGroup.id && tabDraggable.id === tab.id}"
               draggable="true"
               @click="onActive(tabGroup, tab)"
               @mousedown="onMousedown"
@@ -61,9 +61,8 @@
 </template>
 
 <script lang="ts">
-  import viewStore, {View, Tab} from '@/store/view';
-  import {log, icon, getData} from '@/ts/util';
-  import {deleteById} from '@/ts/recursionView';
+  import viewStore, {View, Tab, TabDraggable} from '@/store/view';
+  import {log, icon, getData, findParentLiByElement} from '@/ts/util';
   import {Component, Prop, Vue} from 'vue-property-decorator';
 
   import {fromEvent, Subscription, Subject} from 'rxjs';
@@ -79,46 +78,23 @@
     private tabGroups!: View[];
 
     private draggableListener: Subscription[] = [];
-    private dragView: View | null = null;
-    private dragTab: Tab | null = null;
     private draggable$: Subject<DragEvent> = new Subject();
     private subDraggable: Subscription | null = null;
 
-    private findByLi(el: HTMLElement | null): HTMLElement | null {
-      if (el === null) {
-        return null;
-      } else if (el.localName === 'li') {
-        return el;
-      } else {
-        return this.findByLi(el.parentElement);
-      }
-    }
-
-    private move(targetView: View, targetTab: Tab) {
-      if (this.dragView && this.dragTab && this.dragView.id === targetView.id) {
-        const currentIndex = this.dragView.tabs.indexOf(this.dragTab);
-        const targetIndex = this.dragView.tabs.indexOf(targetTab);
-        this.dragView.tabs.splice(currentIndex, 1);
-        this.dragView.tabs.splice(targetIndex, 0, this.dragTab);
-      }
+    get tabDraggable(): TabDraggable | null {
+      return viewStore.state.tabDraggable;
     }
 
     // ==================== Event Handler ===================
-    private onActive(view: View, target: Tab) {
-      log.debug('onClick onClick');
-      view.tabs.forEach((tab: Tab) => tab.active = tab.id === target.id);
+    private onActive(view: View, tab?: Tab) {
+      log.debug('OpenFile onActive');
+      viewStore.commit('tabActive', {view, tab});
     }
 
     private onClose(event: Event, view: View, tab: Tab) {
       log.debug('OpenFile onClose');
       event.stopPropagation();
-      const index = view.tabs.indexOf(tab);
-      view.tabs.splice(index, 1);
-      if (view.tabs.length === 0) {
-        deleteById(viewStore.state.container, view.id);
-      } else if (tab.active) {
-        view.tabs[0].active = true;
-      }
+      viewStore.commit('tabClose', {view, tab});
     }
 
     private onMousedown() {
@@ -131,22 +107,19 @@
 
     private onDragstart(event: DragEvent, view: View, tab: Tab) {
       log.debug('OpenFile onDragstart');
-      this.dragView = view;
-      this.dragTab = getData(view.tabs, tab.id);
-      this.onDraggableStart();
+      const tabDraggable = tab as TabDraggable;
+      tabDraggable.view = view;
+      viewStore.commit('tabDraggableStart', tabDraggable);
       // firefox
       if (event.dataTransfer) {
         event.dataTransfer.setData('text/plain', tab.id);
       }
+      this.onDraggableStart();
     }
 
     private onDragend(event: DragEvent) {
       log.debug('OpenFile onDragend');
-      if (this.dragView && this.dragTab) {
-        this.onActive(this.dragView, this.dragTab);
-      }
-      this.dragView = null;
-      this.dragTab = null;
+      viewStore.commit('tabDraggableEnd');
       this.onDraggableEnd();
     }
 
@@ -175,13 +148,13 @@
 
     private onDragover(event: DragEvent) {
       log.debug('OpenFile onDragover');
-      const li = this.findByLi(event.target as HTMLElement);
-      if (li && li.dataset.id && li.dataset.viewId) {
+      const li = findParentLiByElement(event.target as HTMLElement);
+      if (li && li.dataset.id && li.dataset.viewId && this.tabDraggable) {
         const view = getData(this.tabGroups, li.dataset.viewId);
-        if (view) {
+        if (view && this.tabDraggable.view.id === view.id) {
           const tab = getData(view.tabs, li.dataset.id);
           if (tab) {
-            this.move(view, tab);
+            viewStore.commit('tabMove', {view, tab});
           }
         }
       }
@@ -263,6 +236,7 @@
   .tab-move {
     transition: transform 0.3s;
   }
+
   .tab-enter, .tab-leave-to {
     display: none;
   }

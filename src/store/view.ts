@@ -3,12 +3,13 @@ import Vuex from 'vuex';
 import {tabGroups, addView, resetSize} from '@/ts/recursionView';
 import {Tree} from './tree';
 import TreeToTab from '@/models/TreeToTab';
-import {isData, log} from '@/ts/util';
+import {isData} from '@/ts/util';
+import {tabClose, tabActive, tabDraggableStart, tabDraggableEnd, tabMove, tabViewDelete, tabsActive} from './view/DraggableTab';
 import init, {dView} from '@/data/view';
 
 Vue.use(Vuex);
 
-interface State {
+export interface State {
   container: View;
   tabDraggable: TabDraggable | null;
   viewFocus: View | null;
@@ -43,7 +44,7 @@ export interface Tab {
 }
 
 export interface TabDraggable extends Tab {
-  viewId: string;
+  view: View;
 }
 
 export interface TabPreview {
@@ -64,9 +65,13 @@ export default new Vuex.Store({
     tabGroups: (state: State): View[] => tabGroups(state.container),
   },
   mutations: {
-    setTabDraggable(state: State, tabDraggable: TabDraggable | null) {
-      state.tabDraggable = tabDraggable;
-    },
+    tabClose,
+    tabActive,
+    tabDraggableStart,
+    tabDraggableEnd,
+    tabMove,
+    tabViewDelete,
+    tabsActive,
     setViewFocus(state: State, view: View | null) {
       if (!view) {
         const views = tabGroups(state.container);

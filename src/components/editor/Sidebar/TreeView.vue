@@ -48,8 +48,8 @@
 
 <script lang="ts">
   import {SIZE_TREE_HEIGHT} from '@/ts/layout';
-  import {icon, log, eventBus, isData, getData} from '@/ts/util';
-  import {findById, childrenCount} from '@/ts/recursionTree';
+  import {icon, log, eventBus, getData} from '@/ts/util';
+  import {findByTree, findById, childrenCount} from '@/ts/recursionTree';
   import treeStore, {Tree} from '@/store/tree';
   import viewStore from '@/store/view';
   import EventBus from '@/models/EventBus';
