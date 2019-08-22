@@ -50,8 +50,8 @@
   import {SIZE_TREE_HEIGHT} from '@/ts/layout';
   import {icon, log, eventBus, getData} from '@/ts/util';
   import {findById, childrenCount} from '@/store/tree/recursionTree';
-  import treeStore, {Tree} from '@/store/tree';
-  import viewStore, {Commit} from '@/store/view';
+  import treeStore, {Tree, Commit} from '@/store/tree';
+  import viewStore, {Commit as ViewCommit} from '@/store/view';
   import EventBus from '@/models/EventBus';
   import {Component, Prop, Vue} from 'vue-property-decorator';
 
@@ -74,13 +74,13 @@
 
     private draggableObservable: DraggableObservable[] = [];
 
-    private findByNode(el: HTMLElement | null): HTMLElement | null {
+    private findNodeByElement(el: HTMLElement | null): HTMLElement | null {
       if (el === null) {
         return null;
       } else if (el.localName === 'span' && el.className === 'node') {
         return el;
       } else {
-        return this.findByNode(el.parentElement);
+        return this.findNodeByElement(el.parentElement);
       }
     }
 
@@ -91,16 +91,16 @@
         tree.open = !tree.open;
       } else {
         log.debug('############# TreeView editor module loaded #############');
-        viewStore.commit(Commit.tabAddPreviewStart, tree);
+        viewStore.commit(ViewCommit.tabAddPreviewStart, tree);
       }
-      treeStore.commit('select', {event, tree});
+      treeStore.commit(Commit.folderSelect, {event, tree});
     }
 
     private onOpenFile(event: MouseEvent, tree: Tree, folder: boolean) {
       log.debug('TreeView onOpenFile');
       if (!folder) {
         log.debug('############# TreeView editor module loaded #############');
-        viewStore.commit(Commit.tabAdd, tree);
+        viewStore.commit(ViewCommit.tabAdd, tree);
       }
     }
 
@@ -114,7 +114,7 @@
 
     private onDragstart(event: DragEvent, tree: Tree) {
       log.debug('TreeView onDragstart');
-      treeStore.commit('draggableTree', tree);
+      treeStore.commit(Commit.folderDraggableStart, tree);
       eventBus.$emit(EventBus.TreeView.draggableStart);
       // firefox
       if (event.dataTransfer) {
@@ -122,16 +122,16 @@
       }
     }
 
-    private onDragend(event: DragEvent) {
+    private onDragend() {
       log.debug('TreeView onDragend');
-      treeStore.commit('move');
-      treeStore.commit('folderActive', null);
-      treeStore.commit('draggableTree', null);
+      treeStore.commit(Commit.folderMove);
+      treeStore.commit(Commit.folderActiveEnd);
+      treeStore.commit(Commit.folderDraggableEnd);
       eventBus.$emit(EventBus.TreeView.draggableEnd);
     }
 
-    private onTreeViewDraggableStart() {
-      log.debug('TreeView onTreeViewDraggableStart');
+    private onDraggableStart() {
+      log.debug('TreeView onDraggableStart');
       const targets: ChildNode[] = [];
       const ul = this.$el as HTMLElement;
       ul.childNodes.forEach((child: ChildNode) => targets.push(child.childNodes[1]));
@@ -149,8 +149,8 @@
       });
     }
 
-    private onTreeViewDraggableEnd() {
-      log.debug('TreeView onTreeViewDraggableEnd');
+    private onDraggableEnd() {
+      log.debug('TreeView onDraggableEnd');
       this.draggableObservable.forEach((draggable: DraggableObservable) => {
         draggable.subDragover.unsubscribe();
         draggable.subDragleave.unsubscribe();
@@ -160,23 +160,23 @@
 
     private onDragoverFolder(event: DragEvent) {
       log.debug('TreeView onDragoverFolder');
-      const target = this.findByNode(event.target as HTMLElement);
+      const target = this.findNodeByElement(event.target as HTMLElement);
       if (target && target.dataset.id) {
         const tree = getData(this.trees, target.dataset.id);
         if (tree) {
-          treeStore.commit('folderActive', tree);
+          treeStore.commit(Commit.folderActiveStart, tree);
           this.$forceUpdate();
         }
       }
     }
 
-    private onDragleaveFolder(event: DragEvent) {
+    private onDragleaveFolder() {
       log.debug('TreeView onDragleaveFolder');
-      treeStore.commit('folderActive', null);
+      treeStore.commit(Commit.folderActiveEnd);
     }
 
-    private onTreeViewUpdate(tree: Tree) {
-      log.debug('TreeView onTreeViewUpdate');
+    private onUpdate(tree: Tree) {
+      log.debug('TreeView onUpdate');
       if (this.trees.indexOf(tree) !== -1) {
         this.$forceUpdate();
       }
@@ -218,15 +218,15 @@
 
     // ==================== Life Cycle ====================
     private created() {
-      eventBus.$on(EventBus.TreeView.draggableStart, this.onTreeViewDraggableStart);
-      eventBus.$on(EventBus.TreeView.draggableEnd, this.onTreeViewDraggableEnd);
-      eventBus.$on(EventBus.TreeView.update, this.onTreeViewUpdate);
+      eventBus.$on(EventBus.TreeView.draggableStart, this.onDraggableStart);
+      eventBus.$on(EventBus.TreeView.draggableEnd, this.onDraggableEnd);
+      eventBus.$on(EventBus.TreeView.update, this.onUpdate);
     }
 
     private destroyed() {
-      eventBus.$off(EventBus.TreeView.draggableStart, this.onTreeViewDraggableStart);
-      eventBus.$off(EventBus.TreeView.draggableEnd, this.onTreeViewDraggableEnd);
-      eventBus.$off(EventBus.TreeView.update, this.onTreeViewUpdate);
+      eventBus.$off(EventBus.TreeView.draggableStart, this.onDraggableStart);
+      eventBus.$off(EventBus.TreeView.draggableEnd, this.onDraggableEnd);
+      eventBus.$off(EventBus.TreeView.update, this.onUpdate);
     }
 
     // ==================== Life Cycle END ====================

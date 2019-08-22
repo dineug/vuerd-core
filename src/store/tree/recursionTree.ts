@@ -169,8 +169,7 @@ export function move(container: Tree, selects: TreeSelect[], folder: Tree, curre
 }
 
 export function deleteByTree(tree: Tree) {
-  log.debug('recursionTree deleteById');
-  // const target = findById(container, id);
+  log.debug('recursionTree deleteByTree');
   if (tree && tree.parent) {
     const parent = tree.parent;
     if (parent.children) {

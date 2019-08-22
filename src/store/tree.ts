@@ -1,13 +1,18 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {select, move} from './tree/recursionTree';
-import {eventBus} from '@/ts/util';
-import EventBus from '@/models/EventBus';
+import {
+  folderSelect,
+  folderMove,
+  folderActiveStart,
+  folderActiveEnd,
+  folderDraggableStart,
+  folderDraggableEnd,
+} from './tree/folderController';
 import {dTree} from '@/data/tree';
 
 Vue.use(Vuex);
 
-interface State {
+export interface State {
   container: Tree;
   selects: TreeSelect[];
   folder: Tree | null;
@@ -31,6 +36,15 @@ export interface TreeSelect extends Tree {
   order: number;
 }
 
+export const enum Commit {
+  folderSelect = 'folderSelect',
+  folderMove = 'folderMove',
+  folderActiveStart = 'folderActiveStart',
+  folderActiveEnd = 'folderActiveEnd',
+  folderDraggableStart = 'folderDraggableStart',
+  folderDraggableEnd = 'folderDraggableEnd',
+}
+
 export default new Vuex.Store({
   state: {
     container: dTree,
@@ -40,29 +54,12 @@ export default new Vuex.Store({
   },
   getters: {},
   mutations: {
-    select(state: State, payload: { event: MouseEvent, tree: Tree }) {
-      state.selects = select(state.container, state.selects, payload.tree, payload.event);
-    },
-    move(state: State) {
-      if (state.folder && state.currentTree) {
-        state.selects = move(state.container, state.selects, state.folder, state.currentTree);
-      }
-    },
-    folderActive(state: State, tree: Tree | null) {
-      if (state.folder) {
-        state.folder.folderActive = false;
-        if (tree === null || (tree && tree.parent !== state.folder.parent)) {
-          eventBus.$emit(EventBus.TreeView.update, state.folder);
-        }
-      }
-      if (tree) {
-        tree.folderActive = true;
-      }
-      state.folder = tree;
-    },
-    draggableTree(state: State, tree: Tree | null) {
-      state.currentTree = tree;
-    },
+    folderSelect,
+    folderMove,
+    folderActiveStart,
+    folderActiveEnd,
+    folderDraggableStart,
+    folderDraggableEnd,
   },
   actions: {},
 });

@@ -177,7 +177,7 @@
     }
 
     private onDropViewStart(viewId: string) {
-      log.debug('ViewView onDropView');
+      log.debug('ViewView onDropViewStart');
       if (this.view.id === viewId) {
         this.dropView = true;
       } else {
