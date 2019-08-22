@@ -49,9 +49,9 @@
 <script lang="ts">
   import {SIZE_TREE_HEIGHT} from '@/ts/layout';
   import {icon, log, eventBus, getData} from '@/ts/util';
-  import {findByTree, findById, childrenCount} from '@/ts/recursionTree';
+  import {findById, childrenCount} from '@/store/tree/recursionTree';
   import treeStore, {Tree} from '@/store/tree';
-  import viewStore from '@/store/view';
+  import viewStore, {Commit} from '@/store/view';
   import EventBus from '@/models/EventBus';
   import {Component, Prop, Vue} from 'vue-property-decorator';
 
@@ -91,7 +91,7 @@
         tree.open = !tree.open;
       } else {
         log.debug('############# TreeView editor module loaded #############');
-        viewStore.commit('addTabPreview', tree);
+        viewStore.commit(Commit.tabAddPreviewStart, tree);
       }
       treeStore.commit('select', {event, tree});
     }
@@ -100,7 +100,7 @@
       log.debug('TreeView onOpenFile');
       if (!folder) {
         log.debug('############# TreeView editor module loaded #############');
-        viewStore.commit('addTab', tree);
+        viewStore.commit(Commit.tabAdd, tree);
       }
     }
 

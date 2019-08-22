@@ -1,6 +1,6 @@
 import {Tree} from '@/store/tree';
 import {Tab} from '@/store/view';
-import {path} from '@/ts/recursionTree';
+import {path} from '@/store/tree/recursionTree';
 
 export default class TreeToTab implements Tab {
   public active: boolean;

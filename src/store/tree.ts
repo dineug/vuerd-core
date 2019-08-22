@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {select, move} from '@/ts/recursionTree';
+import {select, move} from './tree/recursionTree';
 import {eventBus} from '@/ts/util';
 import EventBus from '@/models/EventBus';
 import {dTree} from '@/data/tree';

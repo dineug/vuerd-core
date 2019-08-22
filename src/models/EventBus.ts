@@ -6,7 +6,7 @@ enum ViewTab {
 enum ViewView {
   dropStart = 'view-view-drop-start',
   dropEnd = 'view-view-drop-end',
-  dropView = 'view-view-drop-view',
+  dropViewStart = 'view-view-drop-view-start',
   dropViewEnd = 'view-view-drop-view-end',
 }
 
@@ -21,11 +21,15 @@ enum TreeView {
   update = 'tree-view-update',
 }
 
-class EventBus {
+enum OpenFile {
+  draggableStart = 'tree-view-draggable-start',
+  draggableEnd = 'tree-view-draggable-end',
+}
+
+export default class EventBus {
   public static ViewTab = ViewTab;
   public static ViewView = ViewView;
   public static Editor = Editor;
   public static TreeView = TreeView;
+  public static OpenFile = OpenFile;
 }
-
-export default EventBus;

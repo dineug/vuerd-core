@@ -22,8 +22,8 @@
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
   import Direction from '@/models/Direction';
   import {eventBus, log} from '@/ts/util';
-  import {split} from '@/ts/recursionView';
-  import viewStore, {View, Tab, TabDraggable} from '@/store/view';
+  import {split} from '@/store/view/recursionView';
+  import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
   import EventBus from '@/models/EventBus';
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
   import ViewTab from './ViewTab.vue';
@@ -64,16 +64,16 @@
       this.height = height - SIZE_VIEW_TAB_HEIGHT;
     }
 
-    private splitView(tabDraggable: TabDraggable) {
+    private splitView(tabDraggable: TabView) {
       log.debug('ViewView splitView');
       if (tabDraggable) {
         let tabView!: View;
         switch (this.direction) {
           case Direction.all:
             if (this.view.id === tabDraggable.view.id) {
-              viewStore.commit('tabActive', {view: this.view, tab: tabDraggable as Tab});
+              viewStore.commit(Commit.tabActive, {view: this.view, tab: tabDraggable as Tab});
             } else {
-              viewStore.commit('tabMove', {view: this.view});
+              viewStore.commit(Commit.tabMove, {view: this.view});
             }
             break;
           default:
@@ -91,7 +91,7 @@
                 this.view,
               );
             }
-            viewStore.commit('tabsActive');
+            viewStore.commit(Commit.tabsActive);
             break;
         }
       }
@@ -100,12 +100,12 @@
     // ==================== Event Handler ===================
     private onFocusView() {
       log.debug('ViewView onFocusView');
-      viewStore.commit('setViewFocus', this.view);
+      viewStore.commit(Commit.viewFocusStart, this.view);
     }
 
     private onActive(tab?: Tab) {
       log.debug('ViewView onActive');
-      viewStore.commit('tabActive', {view: this.view, tab});
+      viewStore.commit(Commit.tabActive, {view: this.view, tab});
     }
 
     private onDragstartTab() {
@@ -120,7 +120,7 @@
 
     private onDragenter() {
       log.debug('ViewView onDragenter');
-      eventBus.$emit(EventBus.ViewView.dropView, this.view.id);
+      eventBus.$emit(EventBus.ViewView.dropViewStart, this.view.id);
     }
 
     private onDragover(event: DragEvent, drop: boolean = false) {
@@ -156,16 +156,16 @@
       }
     }
 
-    private onViewViewDropStart() {
-      log.debug('ViewView onViewViewDropStart');
+    private onDropStart() {
+      log.debug('ViewView onDropStart');
       this.subDragenter = this.dragenter$.subscribe(this.onDragenter);
       this.subDragover = this.dragover$.pipe(
         throttleTime(200),
       ).subscribe(this.onDragover);
     }
 
-    private onViewViewDropEnd(tabDraggable: TabDraggable) {
-      log.debug('ViewView onViewViewDropEnd');
+    private onDropEnd(tabDraggable: TabView) {
+      log.debug('ViewView onDropEnd');
       if (this.dropView) {
         this.splitView(tabDraggable);
       }
@@ -176,8 +176,8 @@
       }
     }
 
-    private onViewViewDropView(viewId: string) {
-      log.debug('ViewView onViewViewDropView');
+    private onDropViewStart(viewId: string) {
+      log.debug('ViewView onDropView');
       if (this.view.id === viewId) {
         this.dropView = true;
       } else {
@@ -185,8 +185,8 @@
       }
     }
 
-    private onViewViewDropViewEnd() {
-      log.debug('ViewView onViewViewDropViewEnd');
+    private onDropViewEnd() {
+      log.debug('ViewView onDropViewEnd');
       this.dropView = false;
     }
 
@@ -194,10 +194,10 @@
 
     // ==================== Life Cycle ====================
     private created() {
-      eventBus.$on(EventBus.ViewView.dropStart, this.onViewViewDropStart);
-      eventBus.$on(EventBus.ViewView.dropEnd, this.onViewViewDropEnd);
-      eventBus.$on(EventBus.ViewView.dropView, this.onViewViewDropView);
-      eventBus.$on(EventBus.ViewView.dropViewEnd, this.onViewViewDropViewEnd);
+      eventBus.$on(EventBus.ViewView.dropStart, this.onDropStart);
+      eventBus.$on(EventBus.ViewView.dropEnd, this.onDropEnd);
+      eventBus.$on(EventBus.ViewView.dropViewStart, this.onDropViewStart);
+      eventBus.$on(EventBus.ViewView.dropViewEnd, this.onDropViewEnd);
       this.width = this.view.width;
       this.height = this.view.height - SIZE_VIEW_TAB_HEIGHT;
       this.onActive();
@@ -209,10 +209,10 @@
     }
 
     private destroyed() {
-      eventBus.$off(EventBus.ViewView.dropStart, this.onViewViewDropStart);
-      eventBus.$off(EventBus.ViewView.dropEnd, this.onViewViewDropEnd);
-      eventBus.$off(EventBus.ViewView.dropView, this.onViewViewDropView);
-      eventBus.$off(EventBus.ViewView.dropViewEnd, this.onViewViewDropViewEnd);
+      eventBus.$off(EventBus.ViewView.dropStart, this.onDropStart);
+      eventBus.$off(EventBus.ViewView.dropEnd, this.onDropEnd);
+      eventBus.$off(EventBus.ViewView.dropViewStart, this.onDropViewStart);
+      eventBus.$off(EventBus.ViewView.dropViewEnd, this.onDropViewEnd);
     }
 
     // ==================== Life Cycle END ====================

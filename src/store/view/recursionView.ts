@@ -1,22 +1,7 @@
-import {SIZE_SPLIT_MIN, SIZE_SPLIT_MIN_HEIGHT} from './layout';
-import viewStore, {View, Tab} from '@/store/view';
+import {SIZE_SPLIT_MIN, SIZE_SPLIT_MIN_HEIGHT} from '@/ts/layout';
+import viewStore, {View, Tab, Commit} from '@/store/view';
 import Direction from '@/models/Direction';
 import {uuid, log} from '@/ts/util';
-
-export function findByView(container: View, view: View): View | null {
-  if (container.id === view.id) {
-    return container;
-  } else {
-    let target: View | null = null;
-    for (const value of container.children) {
-      target = findByView(value, view);
-      if (target) {
-        break;
-      }
-    }
-    return target;
-  }
-}
 
 export function resetSize(container: View) {
   const width = container.vertical ? container.width / container.children.length : container.width;
@@ -125,14 +110,14 @@ export function minHorizontal(container: View): number {
 }
 
 export function deleteByView(view: View) {
-  log.debug('recursionView deleteById');
+  log.debug('recursionView deleteByView');
   if (view && view.parent) {
     const parent = view.parent;
     const currentIndex = parent.children.indexOf(view);
     parent.children.splice(currentIndex, 1);
     resetSize(parent);
     if (viewStore.state.viewFocus && viewStore.state.viewFocus.id === view.id) {
-      viewStore.commit('setViewFocus', null);
+      viewStore.commit(Commit.viewFocusEnd, null);
     }
   }
 }
@@ -244,6 +229,6 @@ export function addView(parent: View, tabs: Tab[]): View {
     children: [],
     tabs,
   };
-  viewStore.commit('setViewFocus', view);
+  viewStore.commit(Commit.viewFocusStart, view);
   return view;
 }

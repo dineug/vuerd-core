@@ -1,37 +1,13 @@
 <template lang="pug">
   .open-file
     ul(v-for="(tabGroup, i) in tabGroups" :key="tabGroup.id")
-      transition-group(
-        v-if="tabGroups.length === 1"
-        name="tab"
-        tag="ul"
-      )
-        li.draggable(
-          v-for="tab in tabGroup.tabs"
-          :key="tab.id"
-          :data-id="tab.id"
-          :data-view-id="tabGroup.id"
-        )
-          span.arrow(@click="onClose($event, tabGroup, tab)")
-            v-icon(color="grey lighten-1" size="12") mdi-close
-          span.node(
-            draggable="true"
-            :class="{active: tab.active, draggable: tabDraggable && tabDraggable.view.id === tabGroup.id && tabDraggable.id === tab.id}"
-            @click="onActive(tabGroup, tab)"
-            @mousedown="onMousedown"
-            @dragstart="onDragstart($event, tabGroup, tab)"
-            @dragend="onDragend"
-          )
-            span.icon
-              v-icon(
-                color="grey lighten-1"
-                small
-              ) {{tab.name | icon}}
-            span.name {{tab.name}}
-      li(v-else)
-        span.arrow
+      li
+        span.arrow(v-if="tabGroups.length !== 1")
           .none-arrow
-        span.group-title(@click="onClick(tabGroup)") GROUP {{i + 1}}
+        span.group-title(
+          v-if="tabGroups.length !== 1"
+          @click="onClick(tabGroup)"
+        ) GROUP {{i + 1}}
         transition-group(
           name="tab"
           tag="ul"
@@ -61,8 +37,9 @@
 </template>
 
 <script lang="ts">
-  import viewStore, {View, Tab, TabDraggable} from '@/store/view';
-  import {log, icon, getData, findParentLiByElement} from '@/ts/util';
+  import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
+  import {log, icon, getData, findParentLiByElement, eventBus} from '@/ts/util';
+  import EventBus from '@/models/EventBus';
   import {Component, Prop, Vue} from 'vue-property-decorator';
 
   import {fromEvent, Subscription, Subject} from 'rxjs';
@@ -81,20 +58,20 @@
     private draggable$: Subject<DragEvent> = new Subject();
     private subDraggable: Subscription | null = null;
 
-    get tabDraggable(): TabDraggable | null {
+    get tabDraggable(): TabView | null {
       return viewStore.state.tabDraggable;
     }
 
     // ==================== Event Handler ===================
     private onActive(view: View, tab?: Tab) {
       log.debug('OpenFile onActive');
-      viewStore.commit('tabActive', {view, tab});
+      viewStore.commit(Commit.tabActive, {view, tab});
     }
 
     private onClose(event: Event, view: View, tab: Tab) {
       log.debug('OpenFile onClose');
       event.stopPropagation();
-      viewStore.commit('tabClose', {view, tab});
+      viewStore.commit(Commit.tabClose, {view, tab});
     }
 
     private onMousedown() {
@@ -107,20 +84,26 @@
 
     private onDragstart(event: DragEvent, view: View, tab: Tab) {
       log.debug('OpenFile onDragstart');
-      const tabDraggable = tab as TabDraggable;
+      const tabDraggable = tab as TabView;
       tabDraggable.view = view;
-      viewStore.commit('tabDraggableStart', tabDraggable);
+      viewStore.commit(Commit.tabDraggableStart, tabDraggable);
+      this.onDraggableStart();
+      eventBus.$emit(EventBus.ViewTab.draggableStart);
+      eventBus.$emit(EventBus.ViewView.dropStart);
+      eventBus.$emit(EventBus.Editor.dragstart);
       // firefox
       if (event.dataTransfer) {
         event.dataTransfer.setData('text/plain', tab.id);
       }
-      this.onDraggableStart();
     }
 
     private onDragend(event: DragEvent) {
       log.debug('OpenFile onDragend');
-      viewStore.commit('tabDraggableEnd');
+      eventBus.$emit(EventBus.ViewView.dropEnd, this.tabDraggable);
+      eventBus.$emit(EventBus.ViewTab.draggableEnd);
+      eventBus.$emit(EventBus.Editor.dragend);
       this.onDraggableEnd();
+      viewStore.commit(Commit.tabDraggableEnd);
     }
 
     private onDraggableStart() {
@@ -151,10 +134,10 @@
       const li = findParentLiByElement(event.target as HTMLElement);
       if (li && li.dataset.id && li.dataset.viewId && this.tabDraggable) {
         const view = getData(this.tabGroups, li.dataset.viewId);
-        if (view && this.tabDraggable.view.id === view.id) {
+        if (view) {
           const tab = getData(view.tabs, li.dataset.id);
           if (tab) {
-            viewStore.commit('tabMove', {view, tab});
+            viewStore.commit(Commit.tabMove, {view, tab});
           }
         }
       }
@@ -163,6 +146,11 @@
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
+    private created() {
+      eventBus.$on(EventBus.OpenFile.draggableStart, this.onDraggableStart);
+      eventBus.$on(EventBus.OpenFile.draggableEnd, this.onDraggableEnd);
+    }
+
     private mounted() {
       this.subDraggable = this.draggable$.pipe(
         debounceTime(50),
@@ -170,6 +158,8 @@
     }
 
     private destroyed() {
+      eventBus.$off(EventBus.OpenFile.draggableStart, this.onDraggableStart);
+      eventBus.$off(EventBus.OpenFile.draggableEnd, this.onDraggableEnd);
       if (this.subDraggable) {
         this.subDraggable.unsubscribe();
       }

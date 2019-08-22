@@ -22,7 +22,7 @@
 
   import * as layout from '@/ts/layout';
   import {addSpanText, removeSpanText} from '@/ts/util';
-  import {minVertical, minHorizontal} from '@/ts/recursionView';
+  import {minVertical, minHorizontal} from '@/store/view/recursionView';
   import viewStore from '@/store/view';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Titlebar from './Titlebar.vue';

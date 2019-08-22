@@ -10,7 +10,7 @@
 <script lang="ts">
   import {SIZE_TITLEBAR_HEIGHT, SIZE_ACTIVITYBAR_WIDTH} from '@/ts/layout';
   import viewStore, {View} from '@/store/view';
-  import {resetSize, resetWidthRatio, resetHeightRatio} from '@/ts/recursionView';
+  import {resetSize, resetWidthRatio, resetHeightRatio} from '@/store/view/recursionView';
   import {log, eventBus} from '@/ts/util';
   import EventBus from '@/models/EventBus';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';

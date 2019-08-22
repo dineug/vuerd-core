@@ -27,7 +27,7 @@
   import {View} from '@/store/view';
   import Direction from '@/models/Direction';
   import {log} from '@/ts/util';
-  import {minHorizontal, minVertical, resetHeightRatio, resetWidthRatio} from '@/ts/recursionView';
+  import {minHorizontal, minVertical, resetHeightRatio, resetWidthRatio} from '@/store/view/recursionView';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Sash from '../Sash.vue';
   import ViewView from './ViewView.vue';
