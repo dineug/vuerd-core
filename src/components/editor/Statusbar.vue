@@ -20,5 +20,6 @@
     font-size: $size-font;
     color: $color-statusbar-font;
     background-color: $color-statusbar;
+    z-index: 300;
   }
 </style>

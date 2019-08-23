@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts">
-  import {SIZE_TREE_HEIGHT} from '@/ts/layout';
+  import {SIZE_TREE_HEIGHT, SIZE_SCROLLBAR} from '@/ts/layout';
   import {icon, log, eventBus, getData, validFileName} from '@/ts/util';
   import {findById, childrenCount} from '@/store/tree/recursionTree';
   import treeStore, {Tree, Commit} from '@/store/tree';
@@ -73,7 +73,7 @@
     subDragleave: Subscription;
   }
 
-  const PADDING_LEFT = 53;
+  const PADDING_LEFT = 53 + SIZE_SCROLLBAR;
   const PADDING_DEPTH = 10;
 
   @Component({
@@ -274,6 +274,7 @@
     padding-left: 0;
     position: relative;
     z-index: 200;
+    height: 100%;
 
     li {
       padding: 1px 0 1px 10px;

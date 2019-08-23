@@ -5,8 +5,11 @@
     .content
       OpenFile.file(:tab-groups="tabGroups")
     Title(name="WORKSPACE")
-    .content
-      TreeView.file(:trees="container.children" :width="width")
+    .content.tree-view.scrollbar(:style="`height: ${treeHeight}px;`")
+      TreeView.file(
+        :trees="container.children"
+        :width="width"
+      )
       transition-group(name="select")
         .active(
           v-for="select in selects"
@@ -16,6 +19,7 @@
 </template>
 
 <script lang="ts">
+  import {SIZE_TITLEBAR_HEIGHT, SIZE_STATUSBAR_HEIGHT} from '@/ts/layout';
   import treeStore, {Tree, TreeSelect, Commit} from '@/store/tree';
   import viewStore, {View} from '@/store/view';
   import log from '@/ts/Logger';
@@ -26,6 +30,9 @@
   import OpenFile from './OpenFile.vue';
 
   import {fromEvent, Observable, Subscription} from 'rxjs';
+
+  const TITLE_HEIGHT = 35;
+  const FILE_HEIGHT = 20;
 
   @Component({
     components: {
@@ -40,8 +47,14 @@
 
     private keydown$: Observable<KeyboardEvent> = fromEvent<KeyboardEvent>(window, 'keydown');
     private mousedown$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mousedown');
+    private resize$: Observable<Event> = fromEvent(window, 'resize');
     private subKeydown: Subscription | null = null;
     private subMousedown!: Subscription;
+    private subContextmenu!: Subscription;
+    private subResize!: Subscription;
+
+    private windowWidth: number = 0;
+    private windowHeight: number = 0;
 
     get container(): Tree {
       return treeStore.state.container;
@@ -59,6 +72,20 @@
       return treeStore.state.editTree;
     }
 
+    get treeHeight(): number {
+      const height = this.windowHeight - (TITLE_HEIGHT * 3) - SIZE_TITLEBAR_HEIGHT - SIZE_STATUSBAR_HEIGHT;
+      if (this.tabGroups.length === 0) {
+        return height;
+      } else if (this.tabGroups.length === 1) {
+        return height - (FILE_HEIGHT * this.tabGroups[0].tabs.length);
+      } else {
+        let count = this.tabGroups.length;
+        this.tabGroups.forEach((view: View) => count += view.tabs.length);
+        return height - (FILE_HEIGHT * count);
+      }
+    }
+
+    // ==================== Event Handler ===================
     private onMousedown(event: MouseEvent) {
       log.debug('Explorer onMousedown');
       if (event.target) {
@@ -99,13 +126,30 @@
       }
     }
 
+    private onContextmenu(event: MouseEvent) {
+      log.debug('Explorer onContextmenu');
+      event.preventDefault();
+    }
+
+    private onResize() {
+      log.debug('Explorer onResize');
+      this.windowWidth = window.innerWidth;
+      this.windowHeight = window.innerHeight;
+    }
+    // ==================== Event Handler END ===================
+
     // ==================== Life Cycle ====================
     private mounted() {
       this.subMousedown = this.mousedown$.subscribe(this.onMousedown);
+      this.subResize = this.resize$.subscribe(this.onResize);
+      this.subContextmenu = fromEvent<MouseEvent>(this.$el, 'contextmenu').subscribe(this.onContextmenu);
+      window.dispatchEvent(new Event('resize'));
     }
 
     private destroyed() {
       this.subMousedown.unsubscribe();
+      this.subResize.unsubscribe();
+      this.subContextmenu.unsubscribe();
     }
     // ==================== Life Cycle END ====================
 
@@ -118,6 +162,10 @@
 
     .content {
       position: relative;
+
+      &.tree-view {
+        overflow-y: auto;
+      }
 
       .file {
         padding-left: 6px;

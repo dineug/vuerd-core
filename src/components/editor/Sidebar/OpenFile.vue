@@ -171,6 +171,8 @@
 
 <style scoped lang="scss">
   .open-file {
+    overflow-y: auto;
+    max-height: 300px;
 
     ul {
       padding-left: 0;

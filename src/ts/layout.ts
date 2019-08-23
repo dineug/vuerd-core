@@ -9,3 +9,4 @@ export const SIZE_SPLIT_MIN = 30;
 export const SIZE_SPLIT_MIN_HEIGHT = SIZE_SPLIT_MIN + SIZE_VIEW_TAB_HEIGHT;
 export const SIZE_FONT = 11;
 export const SIZE_TREE_HEIGHT = 20;
+export const SIZE_SCROLLBAR = 8;
