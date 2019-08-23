@@ -72,7 +72,7 @@
     subDragleave: Subscription;
   }
 
-  const PADDING_LEFT = 43;
+  const PADDING_LEFT = 53;
   const PADDING_DEPTH = 10;
 
   @Component({
@@ -92,9 +92,8 @@
     private trees!: Tree[];
     @Prop({type: Number, default: 200})
     private width!: number;
-    @Prop({type: Number, default: 1})
+    @Prop({type: Number, default: 0})
     private depth!: number;
-
 
     private draggableObservable: DraggableObservable[] = [];
 
@@ -123,13 +122,13 @@
     // ==================== Event Handler ===================
     private onSelect(event: MouseEvent, tree: Tree, folder: boolean) {
       log.debug('TreeView onSelect');
-      if (folder) {
+      if (folder && !event.ctrlKey && !event.shiftKey) {
         tree.open = !tree.open;
-      } else {
+      } else if (!folder) {
         log.debug('############# TreeView editor module loaded #############');
         viewStore.commit(ViewCommit.tabAddPreviewStart, tree);
       }
-      treeStore.commit(Commit.folderSelect, {event, tree});
+      treeStore.commit(Commit.fileSelect, {event, tree});
     }
 
     private onOpenFile(event: MouseEvent, tree: Tree, folder: boolean) {

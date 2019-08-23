@@ -1,14 +1,16 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {
-  folderSelect,
   folderMove,
   folderActiveStart,
   folderActiveEnd,
   folderDraggableStart,
   folderDraggableEnd,
+  folderSelectOpen,
 } from './tree/folderController';
 import {
+  fileSelect,
+  fileSelectMove,
   fileEditNameStart,
   fileEditNameEnd,
 } from './tree/fileController';
@@ -41,12 +43,14 @@ export interface TreeSelect extends Tree {
 }
 
 export const enum Commit {
-  folderSelect = 'folderSelect',
   folderMove = 'folderMove',
   folderActiveStart = 'folderActiveStart',
   folderActiveEnd = 'folderActiveEnd',
   folderDraggableStart = 'folderDraggableStart',
   folderDraggableEnd = 'folderDraggableEnd',
+  folderSelectOpen = 'folderSelectOpen',
+  fileSelect = 'fileSelect',
+  fileSelectMove = 'fileSelectMove',
   fileEditNameStart = 'fileEditNameStart',
   fileEditNameEnd = 'fileEditNameEnd',
 }
@@ -61,12 +65,14 @@ export default new Vuex.Store({
   },
   getters: {},
   mutations: {
-    folderSelect,
     folderMove,
     folderActiveStart,
     folderActiveEnd,
     folderDraggableStart,
     folderDraggableEnd,
+    folderSelectOpen,
+    fileSelect,
+    fileSelectMove,
     fileEditNameStart,
     fileEditNameEnd,
   },

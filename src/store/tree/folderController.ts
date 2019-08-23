@@ -1,19 +1,7 @@
 import {State, Tree} from '@/store/tree';
-import {select, move, lastSelect} from './recursionTree';
-import {fileEditNameEnd} from './fileController';
+import {lastSelect, move} from './recursionTree';
 import {log} from '@/ts/util';
-
-export function folderSelect(state: State, payload: { event: MouseEvent, tree: Tree }) {
-  log.debug('folderController folderSelect');
-  const selects = select(state.container, state.selects, payload.tree, payload.event);
-  state.selects = [...selects];
-  if (state.editTree) {
-    const treeSelect = lastSelect(selects);
-    if (!treeSelect || state.editTree.id !== treeSelect.id) {
-      fileEditNameEnd(state);
-    }
-  }
-}
+import Key from '@/models/Key';
 
 export function folderMove(state: State) {
   log.debug('folderController folderMove');
@@ -40,4 +28,18 @@ export function folderDraggableStart(state: State, tree: Tree) {
 export function folderDraggableEnd(state: State) {
   log.debug('folderController folderDraggableEnd');
   state.currentTree = null;
+}
+
+export function folderSelectOpen(state: State, key: Key) {
+  log.debug('folderController folderSelectOpen');
+  const treeSelect = lastSelect(state.selects);
+  if (treeSelect && treeSelect.children) {
+    state.selects = [];
+    state.selects.push(treeSelect);
+    if (key === Key.ArrowLeft && treeSelect.open) {
+      treeSelect.open = false;
+    } else if (key === Key.ArrowRight && !treeSelect.open) {
+      treeSelect.open = true;
+    }
+  }
 }

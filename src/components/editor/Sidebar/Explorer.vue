@@ -6,7 +6,7 @@
       OpenFile.file(:tab-groups="tabGroups")
     Title(name="WORKSPACE")
     .content
-      TreeView.file(:trees="container.children" :width="width" :depth="depth + 1")
+      TreeView.file(:trees="container.children" :width="width")
       transition-group(name="select")
         .active(
           v-for="select in selects"
@@ -19,6 +19,7 @@
   import treeStore, {Tree, TreeSelect, Commit} from '@/store/tree';
   import viewStore, {View} from '@/store/view';
   import log from '@/ts/Logger';
+  import Key from '@/models/Key';
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import Title from './Title.vue';
   import TreeView from './TreeView.vue';
@@ -36,8 +37,6 @@
   export default class Explorer extends Vue {
     @Prop({type: Number, default: 200})
     private width!: number;
-
-    private depth: number = 0;
 
     private keydown$: Observable<KeyboardEvent> = fromEvent<KeyboardEvent>(window, 'keydown');
     private mousedown$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mousedown');
@@ -80,10 +79,21 @@
 
     private onKeydown(event: KeyboardEvent) {
       log.debug('Explorer onKeydown');
-      if (!this.editTree && event.key === 'F2') {
+      if (!this.editTree && event.key === Key.F2) {
         treeStore.commit(Commit.fileEditNameStart);
-      } else if (this.editTree && event.key === 'Escape' || event.key === 'Enter' || event.key === 'Tab') {
+      } else if (this.editTree
+        && (event.key === Key.Escape
+          || event.key === Key.Enter
+          || event.key === Key.Tab)) {
         treeStore.commit(Commit.fileEditNameEnd);
+      } else if (!this.editTree
+        && (event.key === Key.ArrowUp
+          || event.key === Key.ArrowDown)) {
+        treeStore.commit(Commit.fileSelectMove, event.key);
+      } else if (!this.editTree
+        && (event.key === Key.ArrowLeft
+          || event.key === Key.ArrowRight)) {
+        treeStore.commit(Commit.folderSelectOpen, event.key);
       }
     }
 

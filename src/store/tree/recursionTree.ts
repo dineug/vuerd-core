@@ -221,6 +221,14 @@ export function lastSelect(selects: TreeSelect[]): TreeSelect | null {
   }
 }
 
+export function treeToSelect(tree: Tree, top: number = 0, order: number = 0): TreeSelect {
+  const treeSelect = tree as TreeSelect;
+  treeSelect.top = top;
+  treeSelect.order = order;
+  return treeSelect;
+}
+
+
 function nextOrder(selects: TreeSelect[]): number {
   let max = 0;
   selects.forEach((treeSelect: TreeSelect) => {
@@ -233,11 +241,4 @@ function nextOrder(selects: TreeSelect[]): number {
 
 function nameASC(a: Tree, b: Tree): number {
   return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
-}
-
-function treeToSelect(tree: Tree, top: number = 0, order: number = 0): TreeSelect {
-  const treeSelect = tree as TreeSelect;
-  treeSelect.top = top;
-  treeSelect.order = order;
-  return treeSelect;
 }
