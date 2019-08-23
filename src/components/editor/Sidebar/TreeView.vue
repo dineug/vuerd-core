@@ -36,9 +36,10 @@
         input.name(
           v-if="editTree && node.id === editTree.id"
           type="text"
-          v-model="node.name"
           v-focus
           :style="`width: ${editWidth}px;`"
+          :value="node.name"
+          @input="onInputName($event, node)"
         )
         span.name(v-else) {{node.name}}
       transition(
@@ -57,7 +58,7 @@
 
 <script lang="ts">
   import {SIZE_TREE_HEIGHT} from '@/ts/layout';
-  import {icon, log, eventBus, getData} from '@/ts/util';
+  import {icon, log, eventBus, getData, validFileName} from '@/ts/util';
   import {findById, childrenCount} from '@/store/tree/recursionTree';
   import treeStore, {Tree, Commit} from '@/store/tree';
   import viewStore, {Commit as ViewCommit} from '@/store/view';
@@ -120,6 +121,15 @@
     }
 
     // ==================== Event Handler ===================
+    private onInputName(event: Event, tree: Tree) {
+      log.debug('TreeView onInputName');
+      if (event.target) {
+        const el = event.target as HTMLInputElement;
+        el.value = validFileName(el.value);
+        tree.name = el.value;
+      }
+    }
+
     private onSelect(event: MouseEvent, tree: Tree, folder: boolean) {
       log.debug('TreeView onSelect');
       if (folder && !event.ctrlKey && !event.shiftKey) {

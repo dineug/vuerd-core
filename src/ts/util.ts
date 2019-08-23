@@ -149,3 +149,8 @@ export function findParentLiByElement(el: HTMLElement | null): HTMLElement | nul
     return findParentLiByElement(el.parentElement);
   }
 }
+
+export function validFileName(name: string): string {
+  return name.replace(/[<>:"\/\\|?*\x00-\x1F]/g, '')
+    .replace(/^(con|prn|aux|nul|com[0-9]|lpt[0-9])$/i, '');
+}
