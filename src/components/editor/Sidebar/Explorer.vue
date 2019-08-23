@@ -94,6 +94,8 @@
         && (event.key === Key.ArrowLeft
           || event.key === Key.ArrowRight)) {
         treeStore.commit(Commit.folderSelectOpen, event.key);
+      } else if (!this.editTree && event.key === Key.Enter) {
+        treeStore.commit(Commit.fileSelectTabAddPreview);
       }
     }
 

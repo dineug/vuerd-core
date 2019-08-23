@@ -24,6 +24,26 @@ export function tabActive(state: State, payload: { view: View, tab?: Tab }) {
   }
 }
 
+export function tabsActive(state: State) {
+  log.debug('tabController tabsActive');
+  const views = tabGroups(state.container);
+  views.forEach((view: View) => {
+    if (!view.tabs.some((tab: Tab) => tab.active)) {
+      tabActive(state, {view});
+    }
+  });
+}
+
+export function tabViewDelete(state: State, payload: { view: View, tab?: Tab }) {
+  log.debug('tabController tabViewDelete');
+  const {view, tab} = payload;
+  if (view.tabs.length === 0) {
+    deleteByView(view);
+  } else if (tab && tab.active) {
+    tabActive(state, {view});
+  }
+}
+
 export function tabDraggableStart(state: State, tabDraggable: TabView) {
   log.debug('tabController tabDraggableStart');
   state.tabDraggable = tabDraggable;
@@ -69,26 +89,6 @@ export function tabMove(state: State, payload: { view: View, tab?: Tab }) {
     state.tabDraggable.view = view;
     viewFocusStart(state, view);
   }
-}
-
-export function tabViewDelete(state: State, payload: { view: View, tab?: Tab }) {
-  log.debug('tabController tabViewDelete');
-  const {view, tab} = payload;
-  if (view.tabs.length === 0) {
-    deleteByView(view);
-  } else if (tab && tab.active) {
-    tabActive(state, {view});
-  }
-}
-
-export function tabsActive(state: State) {
-  log.debug('tabController tabsActive');
-  const views = tabGroups(state.container);
-  views.forEach((view: View) => {
-    if (!view.tabs.some((tab: Tab) => tab.active)) {
-      tabActive(state, {view});
-    }
-  });
 }
 
 export function tabAdd(state: State, tree: Tree) {

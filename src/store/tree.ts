@@ -11,6 +11,7 @@ import {
 import {
   fileSelect,
   fileSelectMove,
+  fileSelectTabAddPreview,
   fileEditNameStart,
   fileEditNameEnd,
 } from './tree/fileController';
@@ -51,6 +52,7 @@ export const enum Commit {
   folderSelectOpen = 'folderSelectOpen',
   fileSelect = 'fileSelect',
   fileSelectMove = 'fileSelectMove',
+  fileSelectTabAddPreview = 'fileSelectTabAddPreview',
   fileEditNameStart = 'fileEditNameStart',
   fileEditNameEnd = 'fileEditNameEnd',
 }
@@ -73,6 +75,7 @@ export default new Vuex.Store({
     folderSelectOpen,
     fileSelect,
     fileSelectMove,
+    fileSelectTabAddPreview,
     fileEditNameStart,
     fileEditNameEnd,
   },
