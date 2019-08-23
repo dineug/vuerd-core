@@ -122,7 +122,7 @@ export function getTextWidth(text: string): number {
 }
 
 interface Node<T> {
-  parent?: T | null;
+  parent: T | null;
   children?: T[];
 }
 

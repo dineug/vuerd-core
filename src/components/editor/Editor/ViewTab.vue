@@ -249,7 +249,13 @@
         .name {
           padding-right: 7px;
           font-size: $size-font + 2;
-          line-height: 22px;
+          line-height: 18px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: inline-block;
+          max-width: $size-tab-max-width;
+          vertical-align: middle;
         }
       }
     }

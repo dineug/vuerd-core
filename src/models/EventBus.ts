@@ -18,7 +18,6 @@ enum Editor {
 enum TreeView {
   draggableStart = 'tree-view-draggable-start',
   draggableEnd = 'tree-view-draggable-end',
-  update = 'tree-view-update',
 }
 
 enum OpenFile {

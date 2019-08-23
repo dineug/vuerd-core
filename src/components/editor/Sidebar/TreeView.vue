@@ -13,7 +13,7 @@
         .none-arrow(v-else)
       span.node(
         draggable="true"
-        :class="{'folder-active': node.folderActive}"
+        :class="{'folder-active': folder && node.id === folder.id}"
         :data-id="node.id"
         :data-folder="node.children !== undefined"
         @mousedown="onMousedown"
@@ -33,7 +33,14 @@
             color="grey lighten-1"
             small
           ) {{node.name | icon}}
-        span.name {{node.name}}
+        input.name(
+          v-if="editTree && node.id === editTree.id"
+          type="text"
+          v-model="node.name"
+          v-focus
+          :style="`width: ${editWidth}px;`"
+        )
+        span.name(v-else) {{node.name}}
       transition(
         @before-enter="onBeforeEnter"
         @enter="onEnter"
@@ -42,6 +49,8 @@
         TreeView(
           v-if="node.open && node.children && node.children.length !== 0"
           :trees="node.children"
+          :width="width"
+          :depth="depth + 1"
           :data-id="node.id"
         )
 </template>
@@ -63,16 +72,43 @@
     subDragleave: Subscription;
   }
 
+  const PADDING_LEFT = 43;
+  const PADDING_DEPTH = 10;
+
   @Component({
     filters: {
       icon,
+    },
+    directives: {
+      focus: {
+        inserted(el: HTMLElement) {
+          el.focus();
+        },
+      },
     },
   })
   export default class TreeView extends Vue {
     @Prop({type: Array, default: () => []})
     private trees!: Tree[];
+    @Prop({type: Number, default: 200})
+    private width!: number;
+    @Prop({type: Number, default: 1})
+    private depth!: number;
+
 
     private draggableObservable: DraggableObservable[] = [];
+
+    get folder(): Tree | null {
+      return treeStore.state.folder;
+    }
+
+    get editTree(): Tree | null {
+      return treeStore.state.editTree;
+    }
+
+    get editWidth(): number {
+      return this.width - PADDING_LEFT - (this.depth * PADDING_DEPTH);
+    }
 
     private findNodeByElement(el: HTMLElement | null): HTMLElement | null {
       if (el === null) {
@@ -175,13 +211,6 @@
       treeStore.commit(Commit.folderActiveEnd);
     }
 
-    private onUpdate(tree: Tree) {
-      log.debug('TreeView onUpdate');
-      if (this.trees.indexOf(tree) !== -1) {
-        this.$forceUpdate();
-      }
-    }
-
     private onBeforeEnter(el: HTMLElement) {
       el.style.opacity = '0';
       el.style.height = '0';
@@ -220,13 +249,11 @@
     private created() {
       eventBus.$on(EventBus.TreeView.draggableStart, this.onDraggableStart);
       eventBus.$on(EventBus.TreeView.draggableEnd, this.onDraggableEnd);
-      eventBus.$on(EventBus.TreeView.update, this.onUpdate);
     }
 
     private destroyed() {
       eventBus.$off(EventBus.TreeView.draggableStart, this.onDraggableStart);
       eventBus.$off(EventBus.TreeView.draggableEnd, this.onDraggableEnd);
-      eventBus.$off(EventBus.TreeView.update, this.onUpdate);
     }
 
     // ==================== Life Cycle END ====================

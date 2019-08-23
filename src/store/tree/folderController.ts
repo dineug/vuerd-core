@@ -1,11 +1,18 @@
 import {State, Tree} from '@/store/tree';
-import {select, move} from './recursionTree';
-import {eventBus, log} from '@/ts/util';
-import EventBus from '@/models/EventBus';
+import {select, move, lastSelect} from './recursionTree';
+import {fileEditNameEnd} from './fileController';
+import {log} from '@/ts/util';
 
 export function folderSelect(state: State, payload: { event: MouseEvent, tree: Tree }) {
   log.debug('folderController folderSelect');
-  state.selects = select(state.container, state.selects, payload.tree, payload.event);
+  const selects = select(state.container, state.selects, payload.tree, payload.event);
+  state.selects = [...selects];
+  if (state.editTree) {
+    const treeSelect = lastSelect(selects);
+    if (!treeSelect || state.editTree.id !== treeSelect.id) {
+      fileEditNameEnd(state);
+    }
+  }
 }
 
 export function folderMove(state: State) {
@@ -17,16 +24,11 @@ export function folderMove(state: State) {
 
 export function folderActiveStart(state: State, tree: Tree) {
   log.debug('folderController folderActiveStart');
-  tree.folderActive = true;
   state.folder = tree;
 }
 
 export function folderActiveEnd(state: State) {
   log.debug('folderController folderActiveEnd');
-  if (state.folder) {
-    state.folder.folderActive = false;
-    eventBus.$emit(EventBus.TreeView.update, state.folder);
-  }
   state.folder = null;
 }
 

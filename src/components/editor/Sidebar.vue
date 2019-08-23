@@ -4,7 +4,7 @@
     @dragover="onDragover"
     @drop="onDrop"
   )
-    Explorer
+    Explorer(:width="width")
 </template>
 
 <script lang="ts">

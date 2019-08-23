@@ -6,7 +6,7 @@
       OpenFile.file(:tab-groups="tabGroups")
     Title(name="WORKSPACE")
     .content
-      TreeView.file(:trees="container.children")
+      TreeView.file(:trees="container.children" :width="width" :depth="depth + 1")
       transition-group(name="select")
         .active(
           v-for="select in selects"
@@ -16,12 +16,15 @@
 </template>
 
 <script lang="ts">
-  import treeStore, {Tree, TreeSelect} from '@/store/tree';
+  import treeStore, {Tree, TreeSelect, Commit} from '@/store/tree';
   import viewStore, {View} from '@/store/view';
+  import log from '@/ts/Logger';
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import Title from './Title.vue';
   import TreeView from './TreeView.vue';
   import OpenFile from './OpenFile.vue';
+
+  import {fromEvent, Observable, Subscription} from 'rxjs';
 
   @Component({
     components: {
@@ -31,6 +34,15 @@
     },
   })
   export default class Explorer extends Vue {
+    @Prop({type: Number, default: 200})
+    private width!: number;
+
+    private depth: number = 0;
+
+    private keydown$: Observable<KeyboardEvent> = fromEvent<KeyboardEvent>(window, 'keydown');
+    private mousedown$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mousedown');
+    private subKeydown: Subscription | null = null;
+    private subMousedown!: Subscription;
 
     get container(): Tree {
       return treeStore.state.container;
@@ -43,6 +55,47 @@
     get tabGroups(): View[] {
       return viewStore.getters.tabGroups;
     }
+
+    get editTree(): Tree | null {
+      return treeStore.state.editTree;
+    }
+
+    private onMousedown(event: MouseEvent) {
+      log.debug('Explorer onMousedown');
+      if (event.target) {
+        const el = event.target as HTMLElement;
+        if (el.closest('.tree-view')) {
+          if (!this.subKeydown) {
+            this.subKeydown = this.keydown$.subscribe(this.onKeydown);
+          }
+        } else {
+          if (this.subKeydown) {
+            this.subKeydown.unsubscribe();
+            this.subKeydown = null;
+            treeStore.commit(Commit.fileEditNameEnd);
+          }
+        }
+      }
+    }
+
+    private onKeydown(event: KeyboardEvent) {
+      log.debug('Explorer onKeydown');
+      if (!this.editTree && event.key === 'F2') {
+        treeStore.commit(Commit.fileEditNameStart);
+      } else if (this.editTree && event.key === 'Escape' || event.key === 'Enter' || event.key === 'Tab') {
+        treeStore.commit(Commit.fileEditNameEnd);
+      }
+    }
+
+    // ==================== Life Cycle ====================
+    private mounted() {
+      this.subMousedown = this.mousedown$.subscribe(this.onMousedown);
+    }
+
+    private destroyed() {
+      this.subMousedown.unsubscribe();
+    }
+    // ==================== Life Cycle END ====================
 
   }
 </script>

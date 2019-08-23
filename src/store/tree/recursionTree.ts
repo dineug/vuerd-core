@@ -70,7 +70,11 @@ export function select(container: Tree, selects: TreeSelect[], tree: Tree, event
     selects.push(treeSelect);
   } else if (event.ctrlKey && event.shiftKey) { // multiple range select
     let start = trees.indexOf(tree);
-    let end = trees.indexOf(lastSelect(selects));
+    const last = lastSelect(selects);
+    let end = start;
+    if (last) {
+      end = trees.indexOf(last);
+    }
     if (start > end) {
       const temp = start;
       start = end;
@@ -92,7 +96,11 @@ export function select(container: Tree, selects: TreeSelect[], tree: Tree, event
     }
   } else if (event.shiftKey) { // range select
     let start = trees.indexOf(tree);
-    let end = trees.indexOf(lastSelect(selects));
+    let end = start;
+    const last = lastSelect(selects);
+    if (last) {
+      end = trees.indexOf(last);
+    }
     const current = start;
     selects = [];
     if (start > end) {
@@ -199,6 +207,20 @@ export function orderByNameASC(folder: Tree) {
   }
 }
 
+export function lastSelect(selects: TreeSelect[]): TreeSelect | null {
+  if (selects.length === 0) {
+    return null;
+  } else {
+    let target = selects[0];
+    selects.forEach((treeSelect: TreeSelect) => {
+      if (target.order < treeSelect.order) {
+        target = treeSelect;
+      }
+    });
+    return target;
+  }
+}
+
 function nextOrder(selects: TreeSelect[]): number {
   let max = 0;
   selects.forEach((treeSelect: TreeSelect) => {
@@ -207,16 +229,6 @@ function nextOrder(selects: TreeSelect[]): number {
     }
   });
   return max + 1;
-}
-
-function lastSelect(selects: TreeSelect[]): TreeSelect {
-  let target = selects[0];
-  selects.forEach((treeSelect: TreeSelect) => {
-    if (target.order < treeSelect.order) {
-      target = treeSelect;
-    }
-  });
-  return target;
 }
 
 function nameASC(a: Tree, b: Tree): number {

@@ -8,6 +8,10 @@ import {
   folderDraggableStart,
   folderDraggableEnd,
 } from './tree/folderController';
+import {
+  fileEditNameStart,
+  fileEditNameEnd,
+} from './tree/fileController';
 import {dTree} from '@/data/tree';
 
 Vue.use(Vuex);
@@ -17,6 +21,7 @@ export interface State {
   selects: TreeSelect[];
   folder: Tree | null;
   currentTree: Tree | null;
+  editTree: Tree | null;
 }
 
 /**
@@ -26,9 +31,8 @@ export interface Tree {
   readonly id: string;
   name: string;
   open?: boolean;
-  parent?: Tree | null;
+  parent: Tree | null;
   children?: Tree[];
-  folderActive?: boolean;
 }
 
 export interface TreeSelect extends Tree {
@@ -43,6 +47,8 @@ export const enum Commit {
   folderActiveEnd = 'folderActiveEnd',
   folderDraggableStart = 'folderDraggableStart',
   folderDraggableEnd = 'folderDraggableEnd',
+  fileEditNameStart = 'fileEditNameStart',
+  fileEditNameEnd = 'fileEditNameEnd',
 }
 
 export default new Vuex.Store({
@@ -51,6 +57,7 @@ export default new Vuex.Store({
     selects: [],
     folder: null,
     currentTree: null,
+    editTree: null,
   },
   getters: {},
   mutations: {
@@ -60,6 +67,8 @@ export default new Vuex.Store({
     folderActiveEnd,
     folderDraggableStart,
     folderDraggableEnd,
+    fileEditNameStart,
+    fileEditNameEnd,
   },
   actions: {},
 });
