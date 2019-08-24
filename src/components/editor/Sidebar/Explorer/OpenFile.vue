@@ -19,7 +19,7 @@
             :data-view-id="tabGroup.id"
           )
             span.arrow(@click="onClose($event, tabGroup, tab)")
-              v-icon(color="grey lighten-1" size="12") mdi-close
+              MDIcon(:size="12") mdi-close
             span.node(
               :class="{active: tab.active, draggable: tabDraggable && tabDraggable.view.id === tabGroup.id && tabDraggable.id === tab.id}"
               draggable="true"
@@ -29,25 +29,23 @@
               @dragend="onDragend"
             )
               span.icon
-                v-icon(
-                  color="grey lighten-1"
-                  small
-                ) {{tab.name | icon}}
+                MDIcon(:size="16" file) {{tab.name}}
               span.name {{tab.name}}
 </template>
 
 <script lang="ts">
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
-  import {log, icon, getData, findParentLiByElement, eventBus} from '@/ts/util';
+  import {log, getData, findParentLiByElement, eventBus} from '@/ts/util';
   import EventBus from '@/models/EventBus';
   import {Component, Prop, Vue} from 'vue-property-decorator';
+  import MDIcon from '@/components/editor/MDIcon.vue';
 
   import {fromEvent, Subscription, Subject} from 'rxjs';
   import {throttleTime, debounceTime} from 'rxjs/operators';
 
   @Component({
-    filters: {
-      icon,
+    components: {
+      MDIcon,
     },
   })
   export default class OpenFile extends Vue {
@@ -183,7 +181,6 @@
         padding: 1px 0 1px 10px;
         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
 
         .arrow {
           cursor: pointer;
@@ -202,6 +199,8 @@
 
         .node {
           cursor: pointer;
+          display: inline-flex;
+          align-items: center;
 
           &.active {
             color: white;
@@ -217,7 +216,6 @@
 
           .name {
             font-size: $size-font + 2;
-            overflow: hidden;
           }
         }
       }

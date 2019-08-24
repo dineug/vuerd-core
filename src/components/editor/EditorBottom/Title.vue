@@ -7,13 +7,18 @@
     .title-action
       ul
         li
-          v-icon(color="grey lighten-1" small) mdi-close
+          MDIcon(:size="16") mdi-close
 </template>
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
+  import MDIcon from '@/components/editor/MDIcon.vue';
 
-  @Component
+  @Component({
+    components: {
+      MDIcon,
+    },
+  })
   export default class Title extends Vue {
   }
 </script>

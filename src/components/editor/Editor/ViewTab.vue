@@ -21,18 +21,19 @@
         @dragend="onDragend"
       )
         span.icon
-          v-icon(color="grey lighten-1" small) {{tab.name | icon}}
+          MDIcon(:size="16" file) {{tab.name}}
         span.name {{tab.name}}
         span.close(@click="onClose($event, tab)")
-          v-icon(color="grey lighten-1" size="12") mdi-close
+          MDIcon(:size="12") mdi-close
 </template>
 
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
-  import {icon, log, eventBus, getData, getTextWidth, findParentLiByElement} from '@/ts/util';
+  import {log, eventBus, getData, getTextWidth, findParentLiByElement} from '@/ts/util';
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
   import EventBus from '@/models/EventBus';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
+  import MDIcon from '@/components/editor/MDIcon.vue';
 
   import {fromEvent, Observable, Subscription, Subject} from 'rxjs';
   import {throttleTime, debounceTime} from 'rxjs/operators';
@@ -41,8 +42,8 @@
   const TAB_PADDING_SPAN = 49.2;
 
   @Component({
-    filters: {
-      icon,
+    components: {
+      MDIcon,
     },
   })
   export default class ViewTab extends Vue {
@@ -228,10 +229,11 @@
       overflow-y: hidden;
 
       li {
-        display: inline-block;
         padding: 5px;
         cursor: pointer;
         background-color: $color-tab;
+        display: inline-flex;
+        align-items: center;
 
         &.active {
           color: white;
@@ -249,13 +251,10 @@
         .name {
           padding-right: 7px;
           font-size: $size-font + 2;
-          line-height: 18px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          display: inline-block;
           max-width: $size-tab-max-width;
-          vertical-align: middle;
         }
       }
     }

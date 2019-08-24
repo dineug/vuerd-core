@@ -1,7 +1,7 @@
 import {Tree} from '@/store/tree';
 import {uuid, setParent} from '@/ts/util';
 
-const tree: Tree = {
+const dataTree: Tree = {
   id: uuid(),
   name: '',
   open: true,
@@ -82,5 +82,17 @@ const tree: Tree = {
     },
   ],
 };
+setParent<Tree>(dataTree, dataTree.children);
 
-export const dTree: Tree = setParent<Tree>(tree, tree.children);
+export {
+  dataTree,
+};
+
+const init: Tree = {
+  id: uuid(),
+  name: '',
+  open: true,
+  parent: null,
+  children: [],
+};
+export default init;

@@ -5,10 +5,9 @@
       :key="node.id"
     )
       span.arrow(@click="onSelect($event, node, node.children !== undefined)")
-        v-icon(
+        MDIcon(
           v-if="node.children"
-          color="grey lighten-1"
-          small
+          :size="16"
         ) {{node.open ? 'mdi-chevron-down' : 'mdi-chevron-right'}}
         .none-arrow(v-else)
       span.node(
@@ -19,20 +18,19 @@
         @mousedown="onMousedown"
         @dragstart="onDragstart($event, node)"
         @dragend="onDragend"
-        @click="onSelect($event, node, node.children !== undefined)"
-        @dblclick="onOpenFile($event, node, node.children !== undefined)"
+        @click="onSelect($event, node)"
+        @dblclick="onOpenFile($event, node)"
       )
         span.icon
-          v-icon(
+          MDIcon(
             v-if="node.children"
-            color="grey lighten-1"
-            small
+            :size="16"
           ) {{node.open ? 'mdi-folder-open' : 'mdi-folder'}}
-          v-icon(
+          MDIcon(
             v-else
-            color="grey lighten-1"
-            small
-          ) {{node.name | icon}}
+            :size="16"
+            file
+          ) {{node.name}}
         input.name(
           v-if="editTree && node.id === editTree.id"
           type="text"
@@ -40,6 +38,15 @@
           :style="`width: ${editWidth}px;`"
           :value="node.name"
           @input="onInputName($event, node)"
+        )
+        input.name(
+          v-else-if="createTree && node.id === createTree.id"
+          type="text"
+          v-focus
+          :style="`width: ${editWidth}px;`"
+          :value="node.name"
+          @input="onInputName($event, node)"
+          @blur="onBlur"
         )
         span.name(v-else) {{node.name}}
       transition(
@@ -58,12 +65,13 @@
 
 <script lang="ts">
   import {SIZE_TREE_HEIGHT, SIZE_SCROLLBAR} from '@/ts/layout';
-  import {icon, log, eventBus, getData, validFileName} from '@/ts/util';
+  import {log, eventBus, getData, validFileName} from '@/ts/util';
   import {findById, childrenCount} from '@/store/tree/recursionTree';
   import treeStore, {Tree, Commit} from '@/store/tree';
   import viewStore, {Commit as ViewCommit} from '@/store/view';
   import EventBus from '@/models/EventBus';
   import {Component, Prop, Vue} from 'vue-property-decorator';
+  import MDIcon from '@/components/editor/MDIcon.vue';
 
   import {fromEvent, Subscription} from 'rxjs';
   import {throttleTime} from 'rxjs/operators';
@@ -77,8 +85,8 @@
   const PADDING_DEPTH = 10;
 
   @Component({
-    filters: {
-      icon,
+    components: {
+      MDIcon,
     },
     directives: {
       focus: {
@@ -110,6 +118,10 @@
       return this.width - PADDING_LEFT - (this.depth * PADDING_DEPTH);
     }
 
+    get createTree(): Tree | null {
+      return treeStore.state.createTree;
+    }
+
     private findNodeByElement(el: HTMLElement | null): HTMLElement | null {
       if (el === null) {
         return null;
@@ -130,20 +142,25 @@
       }
     }
 
-    private onSelect(event: MouseEvent, tree: Tree, folder: boolean) {
+    private onBlur(event: Event) {
+      log.debug('TreeView onBlur');
+      treeStore.commit(Commit.fileCreateEnd);
+    }
+
+    private onSelect(event: MouseEvent, tree: Tree) {
       log.debug('TreeView onSelect');
-      if (folder && !event.ctrlKey && !event.shiftKey) {
+      if (tree.children && !event.ctrlKey && !event.shiftKey) {
         tree.open = !tree.open;
-      } else if (!folder) {
+      } else if (!tree.children) {
         log.debug('############# TreeView editor module loaded #############');
         viewStore.commit(ViewCommit.tabAddPreviewStart, tree);
       }
-      treeStore.commit(Commit.fileSelect, {event, tree});
+      treeStore.commit(Commit.fileSelectStart, {event, tree});
     }
 
-    private onOpenFile(event: MouseEvent, tree: Tree, folder: boolean) {
+    private onOpenFile(event: MouseEvent, tree: Tree) {
       log.debug('TreeView onOpenFile');
-      if (!folder) {
+      if (!tree.children) {
         log.debug('############# TreeView editor module loaded #############');
         viewStore.commit(ViewCommit.tabAdd, tree);
       }
@@ -280,7 +297,6 @@
       padding: 1px 0 1px 10px;
       white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis;
 
       .arrow {
         cursor: pointer;
@@ -294,6 +310,8 @@
 
       .node {
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
 
         .icon {
           padding-right: 4px;
@@ -301,11 +319,11 @@
 
         .name {
           font-size: $size-font + 2;
-          overflow: hidden;
         }
 
         &.folder-active {
-          border: solid $color-active 1px;
+          color: white;
+          background-color: $color-active;
         }
       }
     }

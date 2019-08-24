@@ -17,7 +17,6 @@
 </template>
 
 <script lang="ts">
-  import '@/plugins/vuetify';
   import 'velocity-animate/velocity.min.js';
 
   import * as layout from '@/ts/layout';
@@ -178,6 +177,7 @@
 
 <style lang="scss">
   @import '../../scss/reset.scss';
+  @import '~@mdi/font/css/materialdesignicons.min.css';
 
   html {
     overflow-y: auto !important;

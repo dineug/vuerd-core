@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import {lastSelect} from './tree/recursionTree';
 import {
   folderMove,
   folderActiveStart,
@@ -7,15 +8,19 @@ import {
   folderDraggableStart,
   folderDraggableEnd,
   folderSelectOpen,
+  folderCreateStart,
 } from './tree/folderController';
 import {
-  fileSelect,
+  fileSelectStart,
+  fileSelectEnd,
   fileSelectMove,
   fileSelectTabAddPreview,
   fileEditNameStart,
   fileEditNameEnd,
+  fileCreateStart,
+  fileCreateEnd,
 } from './tree/fileController';
-import {dTree} from '@/data/tree';
+import init, {dataTree} from '@/data/tree';
 
 Vue.use(Vuex);
 
@@ -25,6 +30,7 @@ export interface State {
   folder: Tree | null;
   currentTree: Tree | null;
   editTree: Tree | null;
+  createTree: Tree | null;
 }
 
 /**
@@ -50,22 +56,29 @@ export const enum Commit {
   folderDraggableStart = 'folderDraggableStart',
   folderDraggableEnd = 'folderDraggableEnd',
   folderSelectOpen = 'folderSelectOpen',
-  fileSelect = 'fileSelect',
+  folderCreateStart = 'folderCreateStart',
+  fileSelectStart = 'fileSelectStart',
+  fileSelectEnd = 'fileSelectEnd',
   fileSelectMove = 'fileSelectMove',
   fileSelectTabAddPreview = 'fileSelectTabAddPreview',
   fileEditNameStart = 'fileEditNameStart',
   fileEditNameEnd = 'fileEditNameEnd',
+  fileCreateStart = 'fileCreateStart',
+  fileCreateEnd = 'fileCreateEnd',
 }
 
 export default new Vuex.Store({
   state: {
-    container: dTree,
+    container: dataTree,
     selects: [],
     folder: null,
     currentTree: null,
     editTree: null,
+    createTree: null,
   },
-  getters: {},
+  getters: {
+    lastSelect: (state: State): TreeSelect | null => lastSelect(state.selects),
+  },
   mutations: {
     folderMove,
     folderActiveStart,
@@ -73,11 +86,15 @@ export default new Vuex.Store({
     folderDraggableStart,
     folderDraggableEnd,
     folderSelectOpen,
-    fileSelect,
+    folderCreateStart,
+    fileSelectStart,
+    fileSelectEnd,
     fileSelectMove,
     fileSelectTabAddPreview,
     fileEditNameStart,
     fileEditNameEnd,
+    fileCreateStart,
+    fileCreateEnd,
   },
   actions: {},
 });

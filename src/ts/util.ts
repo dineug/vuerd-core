@@ -11,49 +11,6 @@ export {
   eventBus,
 };
 
-export function icon(name: string): string {
-  const ext = name.substr(name.lastIndexOf('.') + 1);
-  let mdi = 'mdi-file-document';
-  switch (ext) {
-    case 'html':
-      mdi = 'mdi-language-html5';
-      break;
-    case 'css':
-      mdi = 'mdi-language-css3';
-      break;
-    case 'js':
-      mdi = 'mdi-language-javascript';
-      break;
-    case 'ts':
-      mdi = 'mdi-language-typescript';
-      break;
-    case 'json':
-      mdi = 'mdi-json';
-      break;
-    case 'md':
-      mdi = 'mdi-markdown';
-      break;
-    case 'pdf':
-      mdi = 'mdi-file-pdf';
-      break;
-    case 'png':
-    case 'jpg':
-    case 'jpeg':
-    case 'gif':
-    case 'ico':
-      mdi = 'mdi-file-image';
-      break;
-    case 'xls':
-      mdi = 'mdi-file-excel';
-      break;
-    case 'txt':
-    default:
-      mdi = 'mdi-file-document';
-      break;
-  }
-  return mdi;
-}
-
 interface List {
   id: string;
 }
@@ -151,6 +108,5 @@ export function findParentLiByElement(el: HTMLElement | null): HTMLElement | nul
 }
 
 export function validFileName(name: string): string {
-  return name.replace(/[<>:"\/\\|?*\x00-\x1F]/g, '')
-    .replace(/^(con|prn|aux|nul|com[0-9]|lpt[0-9])$/i, '');
+  return name.replace(/[<>:"\/\\|?*\x00-\x1F]/g, '');
 }

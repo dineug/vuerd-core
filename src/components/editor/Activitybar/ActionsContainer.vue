@@ -1,13 +1,18 @@
 <template lang="pug">
   ul.actions-container
     li
-      v-icon(color="grey lighten-1") mdi-file-multiple
+      MDIcon mdi-file-multiple
 </template>
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
+  import MDIcon from '@/components/editor/MDIcon.vue';
 
-  @Component
+  @Component({
+    components: {
+      MDIcon,
+    },
+  })
   export default class ActionsContainer extends Vue {
   }
 </script>

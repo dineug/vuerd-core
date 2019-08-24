@@ -1,11 +1,11 @@
 import {View, Tab} from '@/store/view';
 import {Tree} from '@/store/tree';
 import {uuid, setParent} from '@/ts/util';
-import {dTree} from './tree';
+import {dataTree} from './tree';
 import TreeToTab from '@/models/TreeToTab';
 
 // tabs
-export const dTabs: Tab[] = [];
+export const dataTabs: Tab[] = [];
 
 function setTab(children: Tree[] | undefined) {
   if (children) {
@@ -13,15 +13,15 @@ function setTab(children: Tree[] | undefined) {
       if (tree.children) {
         setTab(tree.children);
       } else {
-        dTabs.push(new TreeToTab(tree));
+        dataTabs.push(new TreeToTab(tree));
       }
     });
   }
 }
-setTab(dTree.children);
+setTab(dataTree.children);
 
 // view
-const view: View = {
+const dataView: View = {
   id: uuid(),
   vertical: true,
   horizontal: false,
@@ -42,19 +42,22 @@ const view: View = {
       parent: null,
       children: [],
       tabs: [
-        dTabs[0],
-        dTabs[1],
-        dTabs[2],
-        dTabs[3],
-        dTabs[4],
-        dTabs[5],
-        dTabs[6],
+        dataTabs[0],
+        dataTabs[1],
+        dataTabs[2],
+        dataTabs[3],
+        dataTabs[4],
+        dataTabs[5],
+        dataTabs[6],
       ],
     },
   ],
   tabs: [],
 };
-export const dView = setParent<View>(view, view.children);
+setParent<View>(dataView, dataView.children);
+export {
+  dataView,
+};
 
 const init: View = {
   id: uuid(),

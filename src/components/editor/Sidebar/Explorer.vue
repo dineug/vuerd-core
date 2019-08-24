@@ -16,29 +16,40 @@
           :key="select.id"
           :style="`top: ${select.top}px;`"
         )
+    Contextmenu.contextmenu-explorer(
+      v-if="contextmenu"
+      :menus="menus"
+      :x="contextmenuX"
+      :y="contextmenuY"
+      :scope="contextmenuScope"
+    )
 </template>
 
 <script lang="ts">
-  import {SIZE_TITLEBAR_HEIGHT, SIZE_STATUSBAR_HEIGHT} from '@/ts/layout';
-  import treeStore, {Tree, TreeSelect, Commit} from '@/store/tree';
+  import {SIZE_STATUSBAR_HEIGHT, SIZE_TITLEBAR_HEIGHT, SIZE_TREE_HEIGHT} from '@/ts/layout';
+  import treeStore, {Commit, Tree, TreeSelect} from '@/store/tree';
   import viewStore, {View} from '@/store/view';
-  import log from '@/ts/Logger';
+  import contextmenuStore, {Menu, Scope} from '@/store/contextmenu';
+  import {findById} from '@/store/tree/recursionTree';
   import Key from '@/models/Key';
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+  import EventBus from '@/models/EventBus';
+  import {eventBus, log} from '@/ts/util';
+  import {Component, Prop, Vue} from 'vue-property-decorator';
   import Title from './Title.vue';
-  import TreeView from './TreeView.vue';
-  import OpenFile from './OpenFile.vue';
+  import TreeView from './Explorer/TreeView.vue';
+  import OpenFile from './Explorer/OpenFile.vue';
+  import Contextmenu from '../Contextmenu.vue';
 
   import {fromEvent, Observable, Subscription} from 'rxjs';
 
   const TITLE_HEIGHT = 35;
-  const FILE_HEIGHT = 20;
 
   @Component({
     components: {
       Title,
       TreeView,
       OpenFile,
+      Contextmenu,
     },
   })
   export default class Explorer extends Vue {
@@ -47,6 +58,7 @@
 
     private keydown$: Observable<KeyboardEvent> = fromEvent<KeyboardEvent>(window, 'keydown');
     private mousedown$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mousedown');
+    private contextmenu$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'contextmenu');
     private resize$: Observable<Event> = fromEvent(window, 'resize');
     private subKeydown: Subscription | null = null;
     private subMousedown!: Subscription;
@@ -55,6 +67,9 @@
 
     private windowWidth: number = 0;
     private windowHeight: number = 0;
+    private contextmenu: boolean = false;
+    private contextmenuX: number = 0;
+    private contextmenuY: number = 0;
 
     get container(): Tree {
       return treeStore.state.container;
@@ -72,16 +87,28 @@
       return treeStore.state.editTree;
     }
 
+    get menus(): Array<Menu<TreeSelect>> {
+      return contextmenuStore.state.explorer;
+    }
+
+    get contextmenuScope(): Scope {
+      return Scope.explorer;
+    }
+
+    get createTree(): Tree | null {
+      return treeStore.state.createTree;
+    }
+
     get treeHeight(): number {
       const height = this.windowHeight - (TITLE_HEIGHT * 3) - SIZE_TITLEBAR_HEIGHT - SIZE_STATUSBAR_HEIGHT;
       if (this.tabGroups.length === 0) {
         return height;
       } else if (this.tabGroups.length === 1) {
-        return height - (FILE_HEIGHT * this.tabGroups[0].tabs.length);
+        return height - (SIZE_TREE_HEIGHT * this.tabGroups[0].tabs.length);
       } else {
         let count = this.tabGroups.length;
         this.tabGroups.forEach((view: View) => count += view.tabs.length);
-        return height - (FILE_HEIGHT * count);
+        return height - (SIZE_TREE_HEIGHT * count);
       }
     }
 
@@ -90,23 +117,53 @@
       log.debug('Explorer onMousedown');
       if (event.target) {
         const el = event.target as HTMLElement;
-        if (el.closest('.tree-view')) {
-          if (!this.subKeydown) {
+        if (el.closest('.explorer') || el.closest('.contextmenu-explorer')) {
+          if (this.subKeydown === null) {
             this.subKeydown = this.keydown$.subscribe(this.onKeydown);
           }
         } else {
-          if (this.subKeydown) {
+          if (this.subKeydown !== null) {
             this.subKeydown.unsubscribe();
             this.subKeydown = null;
             treeStore.commit(Commit.fileEditNameEnd);
           }
+        }
+        if (!el.closest('.contextmenu')) {
+          this.contextmenu = false;
+        }
+      }
+    }
+
+    private onContextmenu(event: MouseEvent) {
+      log.debug('Explorer onContextmenu');
+      event.preventDefault();
+      if (event.target) {
+        const el = event.target as HTMLElement;
+        this.contextmenu = !!el.closest('.explorer');
+        if (this.contextmenu) {
+          this.contextmenuX = event.clientX;
+          this.contextmenuY = event.clientY;
+        }
+        const node = el.closest('.node') as HTMLElement;
+        if (node && node.dataset.id) {
+          const tree = findById(this.container, node.dataset.id);
+          if (tree) {
+            treeStore.commit(Commit.fileSelectStart, {event, tree});
+          }
+        } else if (this.contextmenu) {
+          treeStore.commit(Commit.fileSelectEnd);
         }
       }
     }
 
     private onKeydown(event: KeyboardEvent) {
       log.debug('Explorer onKeydown');
-      if (!this.editTree && event.key === Key.F2) {
+      if (this.createTree
+        && (event.key === Key.Escape
+          || event.key === Key.Enter
+          || event.key === Key.Tab)) {
+        treeStore.commit(Commit.fileCreateEnd);
+      } else if (!this.editTree && event.key === Key.F2) {
         treeStore.commit(Commit.fileEditNameStart);
       } else if (this.editTree
         && (event.key === Key.Escape
@@ -126,31 +183,38 @@
       }
     }
 
-    private onContextmenu(event: MouseEvent) {
-      log.debug('Explorer onContextmenu');
-      event.preventDefault();
-    }
-
     private onResize() {
       log.debug('Explorer onResize');
       this.windowWidth = window.innerWidth;
       this.windowHeight = window.innerHeight;
     }
+
+    private onContextmenuEnd() {
+      log.debug('Explorer onContextmenuEnd');
+      this.contextmenu = false;
+    }
+
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
     private mounted() {
       this.subMousedown = this.mousedown$.subscribe(this.onMousedown);
       this.subResize = this.resize$.subscribe(this.onResize);
-      this.subContextmenu = fromEvent<MouseEvent>(this.$el, 'contextmenu').subscribe(this.onContextmenu);
+      this.subContextmenu = this.contextmenu$.subscribe(this.onContextmenu);
       window.dispatchEvent(new Event('resize'));
+      eventBus.$on(EventBus.Explorer.contextmenuEnd, this.onContextmenuEnd);
     }
 
     private destroyed() {
       this.subMousedown.unsubscribe();
       this.subResize.unsubscribe();
       this.subContextmenu.unsubscribe();
+      eventBus.$off(EventBus.Explorer.contextmenuEnd, this.onContextmenuEnd);
+      if (this.subKeydown !== null) {
+        this.subMousedown.unsubscribe();
+      }
     }
+
     // ==================== Life Cycle END ====================
 
   }
@@ -173,7 +237,7 @@
 
       .active {
         background-color: $color-sidebar-hover;
-        height: 20px;
+        height: $size-tree-height;
         position: absolute;
         width: 100%;
         z-index: 100;

@@ -25,10 +25,15 @@ enum OpenFile {
   draggableEnd = 'tree-view-draggable-end',
 }
 
+enum Explorer {
+  contextmenuEnd = 'explorer-contextmenu-end',
+}
+
 export default class EventBus {
   public static ViewTab = ViewTab;
   public static ViewView = ViewView;
   public static Editor = Editor;
   public static TreeView = TreeView;
   public static OpenFile = OpenFile;
+  public static Explorer = Explorer;
 }

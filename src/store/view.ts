@@ -18,7 +18,7 @@ import {
   viewFocusStart,
   viewFocusEnd,
 } from './view/viewController';
-import init, {dView} from '@/data/view';
+import init, {dataView} from '@/data/view';
 
 Vue.use(Vuex);
 
@@ -78,10 +78,10 @@ export const enum Commit {
 export default new Vuex.Store({
   state: {
     // container: init,
-    container: dView,
+    container: dataView,
     tabDraggable: null,
     // viewFocus: null,
-    viewFocus: dView.children[0],
+    viewFocus: dataView.children[0],
     tabPreview: null,
   },
   getters: {
