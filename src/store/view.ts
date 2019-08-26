@@ -13,6 +13,7 @@ import {
   tabAdd,
   tabAddPreviewStart,
   tabAddPreviewEnd,
+  tabDelete,
 } from './view/tabController';
 import {
   viewFocusStart,
@@ -71,6 +72,7 @@ export const enum Commit {
   tabAdd = 'tabAdd',
   tabAddPreviewStart = 'tabAddPreviewStart',
   tabAddPreviewEnd = 'tabAddPreviewEnd',
+  tabDelete = 'tabDelete',
   viewFocusStart = 'viewFocusStart',
   viewFocusEnd = 'viewFocusEnd',
 }
@@ -98,6 +100,7 @@ export default new Vuex.Store({
     tabAdd,
     tabAddPreviewStart,
     tabAddPreviewEnd,
+    tabDelete,
     viewFocusStart,
     viewFocusEnd,
   },

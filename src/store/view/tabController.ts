@@ -1,7 +1,7 @@
 import {State, View, Tab, TabView} from '@/store/view';
 import {Tree} from '@/store/tree';
 import {addView, deleteByView, resetSize, tabGroups} from './recursionView';
-import {log, isData, getDataIndex} from '@/ts/util';
+import {log, isData, getDataIndex, getData} from '@/ts/util';
 import TreeToTab from '@/models/TreeToTab';
 import {viewFocusStart} from './viewController';
 
@@ -134,4 +134,22 @@ export function tabAddPreviewStart(state: State, tree: Tree) {
 export function tabAddPreviewEnd(state: State) {
   log.debug('tabController tabAddPreviewEnd');
   state.tabPreview = null;
+}
+
+export function tabDelete(state: State, id: string) {
+  log.debug('tabController tabDelete');
+  const views = tabGroups(state.container);
+  const targetTabs: TabView[] = [];
+  views.forEach((view: View) => {
+    const tab = getData(view.tabs, id);
+    if (tab) {
+      const tabView = tab as TabView;
+      tabView.view = view;
+      targetTabs.push(tabView);
+      view.tabs.splice(view.tabs.indexOf(tab), 1);
+    }
+  });
+  targetTabs.forEach((tabView: TabView) => {
+    tabViewDelete(state, {view: tabView.view, tab: tabView as Tab});
+  });
 }

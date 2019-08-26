@@ -2,7 +2,7 @@
   .contextmenu
     ul(:style="`top: ${y}px; left: ${x}px`" ref="ul")
       li(
-        v-for="menu in menus"
+        v-for="menu in getMenus"
         :key="menu.id"
         @click="onExecute(menu)"
         @mouseover="onMouseover(menu)"
@@ -47,6 +47,23 @@
 
     private currentMenu: Menu<any> | null = null;
 
+    get getMenus(): Array<Menu<any>> {
+      let menus = this.menus;
+      switch (this.scope) {
+        case Scope.explorer:
+          if (treeStore.state.selects.length === 0) {
+            menus = [];
+            this.menus.forEach((menu: Menu<any>) => {
+              if (!menu.option || !menu.option.selectOnly) {
+                menus.push(menu);
+              }
+            });
+          }
+          break;
+      }
+      return menus;
+    }
+
     get childrenX(): number {
       const ul = this.$refs.ul as HTMLElement;
       return this.x + ul.clientWidth;
@@ -54,7 +71,8 @@
 
     get childrenY(): number {
       if (this.currentMenu) {
-        return this.y + this.menus.indexOf(this.currentMenu) * MENU_HEIGHT;
+        const menus = this.getMenus;
+        return this.y + menus.indexOf(this.currentMenu) * MENU_HEIGHT;
       } else {
         return this.y;
       }
@@ -63,10 +81,13 @@
     private onExecute(menu: Menu<any>) {
       log.debug('Contextmenu onExecute');
       if (!menu.children && menu.execute && typeof menu.execute === 'function') {
-        menu.execute(treeStore.getters.lastSelect);
         switch (this.scope) {
           case Scope.explorer:
+            menu.execute(treeStore.state.selects);
             eventBus.$emit(EventBus.Explorer.contextmenuEnd);
+            break;
+          default:
+            menu.execute(null);
             break;
         }
       }

@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {lastSelect} from './tree/recursionTree';
 import {
   folderMove,
   folderActiveStart,
@@ -9,6 +8,7 @@ import {
   folderDraggableEnd,
   folderSelectOpen,
   folderCreateStart,
+  folderDelete,
 } from './tree/folderController';
 import {
   fileSelectStart,
@@ -19,6 +19,8 @@ import {
   fileEditNameEnd,
   fileCreateStart,
   fileCreateEnd,
+  fileDelete,
+  fileRename,
 } from './tree/fileController';
 import init, {dataTree} from '@/data/tree';
 
@@ -57,6 +59,7 @@ export const enum Commit {
   folderDraggableEnd = 'folderDraggableEnd',
   folderSelectOpen = 'folderSelectOpen',
   folderCreateStart = 'folderCreateStart',
+  folderDelete = 'folderDelete',
   fileSelectStart = 'fileSelectStart',
   fileSelectEnd = 'fileSelectEnd',
   fileSelectMove = 'fileSelectMove',
@@ -65,6 +68,8 @@ export const enum Commit {
   fileEditNameEnd = 'fileEditNameEnd',
   fileCreateStart = 'fileCreateStart',
   fileCreateEnd = 'fileCreateEnd',
+  fileDelete = 'fileDelete',
+  fileRename = 'fileRename',
 }
 
 export default new Vuex.Store({
@@ -76,9 +81,7 @@ export default new Vuex.Store({
     editTree: null,
     createTree: null,
   },
-  getters: {
-    lastSelect: (state: State): TreeSelect | null => lastSelect(state.selects),
-  },
+  getters: {},
   mutations: {
     folderMove,
     folderActiveStart,
@@ -87,6 +90,7 @@ export default new Vuex.Store({
     folderDraggableEnd,
     folderSelectOpen,
     folderCreateStart,
+    folderDelete,
     fileSelectStart,
     fileSelectEnd,
     fileSelectMove,
@@ -95,6 +99,8 @@ export default new Vuex.Store({
     fileEditNameEnd,
     fileCreateStart,
     fileCreateEnd,
+    fileDelete,
+    fileRename,
   },
   actions: {},
 });

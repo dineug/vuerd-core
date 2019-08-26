@@ -13,6 +13,7 @@ enum Key {
   F12 = 'F12',
   Escape = 'Escape',
   Enter = 'Enter',
+  Delete = 'Delete',
   Tab = 'Tab',
   ArrowUp = 'ArrowUp',
   ArrowRight = 'ArrowRight',

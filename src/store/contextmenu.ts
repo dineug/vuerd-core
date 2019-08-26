@@ -14,7 +14,12 @@ export interface Menu<T> {
   name: string;
   keymap?: string;
   children?: Array<Menu<T>>;
+  option?: Option;
   execute?(arg: T | null): void;
+}
+
+export interface Option {
+  selectOnly?: boolean;
 }
 
 export const enum Scope {

@@ -87,7 +87,7 @@
       return treeStore.state.editTree;
     }
 
-    get menus(): Array<Menu<TreeSelect>> {
+    get menus(): Array<Menu<TreeSelect[]>> {
       return contextmenuStore.state.explorer;
     }
 
@@ -158,6 +158,7 @@
 
     private onKeydown(event: KeyboardEvent) {
       log.debug('Explorer onKeydown');
+      log.debug(event.key);
       if (this.createTree
         && (event.key === Key.Escape
           || event.key === Key.Enter
@@ -170,6 +171,14 @@
           || event.key === Key.Enter
           || event.key === Key.Tab)) {
         treeStore.commit(Commit.fileEditNameEnd);
+      } else if (!this.editTree && event.key === Key.Delete) {
+        this.selects.forEach((tree: TreeSelect) => {
+          if (tree.children) {
+            treeStore.commit(Commit.folderDelete, tree);
+          } else {
+            treeStore.commit(Commit.fileDelete, tree);
+          }
+        });
       } else if (!this.editTree
         && (event.key === Key.ArrowUp
           || event.key === Key.ArrowDown)) {

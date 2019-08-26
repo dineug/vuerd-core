@@ -1,32 +1,32 @@
 enum ViewTab {
-  draggableStart = 'view-tab-draggable-start',
-  draggableEnd = 'view-tab-draggable-end',
+  draggableStart = 'ViewTab.draggableStart',
+  draggableEnd = 'ViewTab.draggableEnd',
 }
 
 enum ViewView {
-  dropStart = 'view-view-drop-start',
-  dropEnd = 'view-view-drop-end',
-  dropViewStart = 'view-view-drop-view-start',
-  dropViewEnd = 'view-view-drop-view-end',
+  dropStart = 'ViewView.dropStart',
+  dropEnd = 'ViewView.dropEnd',
+  dropViewStart = 'ViewView.dropViewStart',
+  dropViewEnd = 'ViewView.dropViewEnd',
 }
 
 enum Editor {
-  dragstart = 'editor-dragstart',
-  dragend = 'editor-dragend',
+  dragstart = 'Editor.dragstart',
+  dragend = 'Editor.dragend',
 }
 
 enum TreeView {
-  draggableStart = 'tree-view-draggable-start',
-  draggableEnd = 'tree-view-draggable-end',
+  draggableStart = 'TreeView.draggableStart',
+  draggableEnd = 'TreeView.draggableEnd',
 }
 
 enum OpenFile {
-  draggableStart = 'tree-view-draggable-start',
-  draggableEnd = 'tree-view-draggable-end',
+  draggableStart = 'OpenFile.draggableStart',
+  draggableEnd = 'OpenFile.draggableEnd',
 }
 
 enum Explorer {
-  contextmenuEnd = 'explorer-contextmenu-end',
+  contextmenuEnd = 'Explorer.contextmenuEnd',
 }
 
 export default class EventBus {

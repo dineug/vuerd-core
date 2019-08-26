@@ -71,7 +71,7 @@
         switch (this.direction) {
           case Direction.all:
             if (this.view.id === tabDraggable.view.id) {
-              viewStore.commit(Commit.tabActive, {view: this.view, tab: tabDraggable as Tab});
+              viewStore.commit(Commit.tabActive, {view: this.view, tab: tabDraggable});
             } else {
               viewStore.commit(Commit.tabMove, {view: this.view});
             }

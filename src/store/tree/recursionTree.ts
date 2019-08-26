@@ -55,7 +55,7 @@ export function path(tree: Tree, buffer: string[] = []): string[] {
 }
 
 export function select(container: Tree, selects: TreeSelect[], tree: Tree, event: MouseEvent): TreeSelect[] {
-  const trees = childrenArray(container);
+  const trees = childrenOpenArray(container);
   // none display delete
   for (let i = 0; i < selects.length; i++) {
     const index = trees.indexOf(selects[i]);
@@ -132,13 +132,27 @@ export function select(container: Tree, selects: TreeSelect[], tree: Tree, event
   return selects;
 }
 
-export function childrenArray(container: Tree, stack?: Tree[]): Tree[] {
+export function childrenOpenArray(container: Tree, stack?: Tree[]): Tree[] {
   if (!stack) {
     stack = [];
   } else {
     stack.push(container);
   }
   if (container.children && container.children.length !== 0 && container.open) {
+    container.children.forEach((tree: Tree) => {
+      childrenOpenArray(tree, stack);
+    });
+  }
+  return stack;
+}
+
+export function childrenArray(container: Tree, stack?: Tree[]): Tree[] {
+  if (!stack) {
+    stack = [];
+  } else {
+    stack.push(container);
+  }
+  if (container.children && container.children.length !== 0) {
     container.children.forEach((tree: Tree) => {
       childrenArray(tree, stack);
     });
