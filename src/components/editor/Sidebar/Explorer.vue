@@ -1,5 +1,5 @@
 <template lang="pug">
-  .explorer
+  .explorer(:class="{active: subKeydown !== null}" :style="`height: ${height}px;`")
     Title(name="탐색기")
     Title(name="OPEN FILES")
     .content
@@ -43,6 +43,7 @@
   import {fromEvent, Observable, Subscription} from 'rxjs';
 
   const TITLE_HEIGHT = 35;
+  const BORDER = 2;
 
   @Component({
     components: {
@@ -70,6 +71,10 @@
     private contextmenu: boolean = false;
     private contextmenuX: number = 0;
     private contextmenuY: number = 0;
+
+    get height(): number {
+      return this.windowHeight - SIZE_TITLEBAR_HEIGHT - SIZE_STATUSBAR_HEIGHT - 2;
+    }
 
     get container(): Tree {
       return treeStore.state.container;
@@ -232,6 +237,10 @@
 <style scoped lang="scss">
   .explorer {
     height: 100%;
+
+    &.active {
+      border: solid 1px $color-active;
+    }
 
     .content {
       position: relative;
