@@ -237,6 +237,7 @@
 <style scoped lang="scss">
   .explorer {
     height: 100%;
+    border: solid 1px $color-sidebar;
 
     &.active {
       border: solid 1px $color-active;
