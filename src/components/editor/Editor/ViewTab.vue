@@ -224,7 +224,6 @@
     }
 
     ul {
-      padding: 0;
       background-color: $color-sidebar;
       overflow-y: hidden;
 
@@ -263,5 +262,11 @@
   /* animation */
   .tab-move {
     transition: transform 0.3s;
+  }
+
+  ul, ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
 </style>

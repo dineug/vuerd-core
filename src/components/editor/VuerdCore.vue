@@ -201,42 +201,7 @@
 </script>
 
 <style lang="scss">
-  @import '../../scss/reset.scss';
   @import '~@mdi/font/css/materialdesignicons.min.css';
-
-  html {
-    overflow-y: auto !important;
-  }
-
-  /* firefox */
-  .scrollbar {
-    scrollbar-color: $color-scrollbar-thumb $color-opacity;
-    scrollbar-width: thin;
-  }
-  /* width */
-  ::-webkit-scrollbar {
-    width: $size-scrollbar;
-    height: $size-scrollbar;
-  }
-
-  /* Track */
-  ::-webkit-scrollbar-track {
-    background: $color-opacity;
-  }
-
-  ::-webkit-scrollbar-corner {
-    background: $color-opacity;
-  }
-
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
-    background: $color-scrollbar-thumb;
-  }
-
-  /* Handle : hover*/
-  ::-webkit-scrollbar-thumb:hover {
-    background: $color-sash;
-  }
 
   .vuerd-core {
     height: 100vh;
@@ -244,6 +209,31 @@
     overflow: hidden;
     color: $color-font;
     min-width: $size-min-width;
+
+    /* width */
+    ::-webkit-scrollbar {
+      width: $size-scrollbar;
+      height: $size-scrollbar;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: $color-opacity;
+    }
+
+    ::-webkit-scrollbar-corner {
+      background: $color-opacity;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: $color-scrollbar-thumb;
+    }
+
+    /* Handle : hover*/
+    ::-webkit-scrollbar-thumb:hover {
+      background: $color-sash;
+    }
 
     .workspace {
       height: 100%;
@@ -257,5 +247,15 @@
       position: relative;
       overflow: hidden;
     }
+
+    /* firefox */
+    .scrollbar {
+      scrollbar-color: $color-scrollbar-thumb $color-opacity;
+      scrollbar-width: thin;
+    }
+  }
+
+  body {
+    margin: 0;
   }
 </style>

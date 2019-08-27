@@ -173,7 +173,6 @@
     max-height: 300px;
 
     ul {
-      padding-left: 0;
       position: relative;
       z-index: 200;
 
@@ -229,5 +228,11 @@
 
   .tab-enter, .tab-leave-to {
     display: none;
+  }
+
+  ul, ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
 </style>
