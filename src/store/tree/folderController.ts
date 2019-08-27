@@ -1,5 +1,5 @@
 import {State, Tree} from '@/store/tree';
-import {lastSelect, move, orderByNameASC, childrenArray, deleteByTree} from './recursionTree';
+import {lastSelect, move, orderByNameASC, childrenArray, deleteByTree, treeToSelect} from './recursionTree';
 import {fileSelectEnd, fileDelete, fileRenameStart} from './fileController';
 import {log, uuid} from '@/ts/util';
 import Key from '@/models/Key';
@@ -92,5 +92,17 @@ export function folderDelete(state: State, folder: Tree) {
       fileDelete(state, tree);
     }
   });
-  deleteByTree(folder);
+  if (folder.parent && folder.parent.id === state.container.id) {
+    if (folder.name.trim() === '') {
+      folder.name = 'unnamed';
+    }
+    state.selects = [treeToSelect(folder)];
+    list.forEach((tree: Tree) => {
+      if (tree.children) {
+        deleteByTree(tree);
+      }
+    });
+  } else {
+    deleteByTree(folder);
+  }
 }

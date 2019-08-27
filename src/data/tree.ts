@@ -60,7 +60,7 @@ const dataTree: Tree = {
         },
         {
           id: uuid(),
-          name: 'vue.config.js',
+          name: 'README.md',
           parent: null,
         },
         {
@@ -70,7 +70,7 @@ const dataTree: Tree = {
         },
         {
           id: uuid(),
-          name: 'README.md',
+          name: 'vue.config.js',
           parent: null,
         },
         {

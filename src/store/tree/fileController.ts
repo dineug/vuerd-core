@@ -88,7 +88,7 @@ export function fileRenameEnd(state: State) {
       const trees = childrenOpenArray(state.container);
       const index = trees.indexOf(state.renameTree);
       if (isData(state.selects, trees[index].id)) {
-        state.selects.push(treeToSelect(trees[index], (index) * SIZE_TREE_HEIGHT));
+        state.selects.push(treeToSelect(trees[index], index * SIZE_TREE_HEIGHT));
       }
     }
     state.renameTree = null;
