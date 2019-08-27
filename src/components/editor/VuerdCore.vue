@@ -210,6 +210,19 @@
     color: $color-font;
     min-width: $size-min-width;
 
+    .workspace {
+      height: 100%;
+      position: relative;
+      left: $size-activitybar-width;
+      overflow: hidden;
+    }
+
+    .main {
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
     /* width */
     ::-webkit-scrollbar {
       width: $size-scrollbar;
@@ -233,19 +246,6 @@
     /* Handle : hover*/
     ::-webkit-scrollbar-thumb:hover {
       background: $color-sash;
-    }
-
-    .workspace {
-      height: 100%;
-      position: relative;
-      left: $size-activitybar-width;
-      overflow: hidden;
-    }
-
-    .main {
-      height: 100%;
-      position: relative;
-      overflow: hidden;
     }
 
     /* firefox */

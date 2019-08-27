@@ -43,6 +43,7 @@
   import {fromEvent, Observable, Subscription} from 'rxjs';
 
   const TITLE_HEIGHT = 35;
+  const MENU_HEIGHT = 39.17;
   const BORDER = 2;
 
   @Component({
@@ -117,6 +118,19 @@
       }
     }
 
+    get getMenus(): Array<Menu<any>> {
+      let menus = this.menus;
+      if (treeStore.state.selects.length === 0) {
+        menus = [];
+        this.menus.forEach((menu: Menu<any>) => {
+          if (!menu.option || !menu.option.selectOnly) {
+            menus.push(menu);
+          }
+        });
+      }
+      return menus;
+    }
+
     // ==================== Event Handler ===================
     private onMousedown(event: MouseEvent) {
       log.debug('Explorer onMousedown');
@@ -146,7 +160,12 @@
         this.contextmenu = !!el.closest('.explorer');
         if (this.contextmenu) {
           this.contextmenuX = event.clientX;
-          this.contextmenuY = event.clientY;
+          const height = this.getMenus.length * MENU_HEIGHT;
+          if (event.clientY + height > this.windowHeight) {
+            this.contextmenuY = event.clientY - height;
+          } else {
+            this.contextmenuY = event.clientY;
+          }
         }
         const node = el.closest('.node') as HTMLElement;
         if (node && node.dataset.id) {
@@ -162,7 +181,6 @@
 
     private onKeydown(event: KeyboardEvent) {
       log.debug('Explorer onKeydown');
-      log.debug(event.key);
       if (!this.renameTree && event.key === Key.F2) {
         treeStore.commit(Commit.fileRenameStart, this.lastSelect);
       } else if (this.renameTree
