@@ -112,14 +112,21 @@ export function validFileName(name: string): string {
 }
 
 interface Name {
+  id: string;
   name: string;
 }
 
-export function autoName<T extends Name>(list: T[], name: string, num: number = 1): string {
+export function autoName<T extends Name>(list: T[], id: string, name: string, num: number = 1): string {
+  let result = true;
   for (const value of list) {
-    if (name === value.name) {
-      return autoName(list, name.replace(/[0-9]/g, '') + num, num + 1);
+    if (name === value.name && value.id !== id) {
+      result = false;
+      break;
     }
   }
-  return name;
+  if (result) {
+    return name;
+  } else {
+    return autoName(list, id, name.replace(/[0-9]/g, '') + num, num + 1);
+  }
 }

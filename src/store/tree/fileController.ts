@@ -5,7 +5,7 @@ import {folderDelete} from './folderController';
 import {lastSelect, select, childrenOpenArray, treeToSelect, orderByNameASC} from './recursionTree';
 import {deleteByTree} from './recursionTree';
 import Key from '@/models/Key';
-import {log, uuid, isData} from '@/ts/util';
+import {log, uuid, isData, autoName} from '@/ts/util';
 
 export function fileSelectStart(state: State, payload: { event: MouseEvent, tree: Tree }) {
   log.debug('fileController fileSelectStart');
@@ -68,7 +68,21 @@ export function fileRenameEnd(state: State) {
         fileDelete(state, state.renameTree);
       }
     } else {
-      if (state.renameTree.parent) {
+      if (state.renameTree.parent && state.renameTree.parent.children) {
+        const folders: Tree[] = [];
+        const files: Tree[] = [];
+        state.renameTree.parent.children.forEach((tree: Tree) => {
+          if (tree.children) {
+            folders.push(tree);
+          } else {
+            files.push(tree);
+          }
+        });
+        if (state.renameTree.children) {
+          state.renameTree.name = autoName(folders, state.renameTree.id, state.renameTree.name);
+        } else {
+          state.renameTree.name = autoName(files, state.renameTree.id, state.renameTree.name);
+        }
         orderByNameASC(state.renameTree.parent);
       }
       const trees = childrenOpenArray(state.container);
