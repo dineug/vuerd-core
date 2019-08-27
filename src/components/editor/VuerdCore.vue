@@ -20,7 +20,8 @@
   import 'velocity-animate/velocity.min.js';
 
   import * as layout from '@/ts/layout';
-  import {addSpanText, removeSpanText} from '@/ts/util';
+  import {addSpanText, removeSpanText, eventBus, log} from '@/ts/util';
+  import EventBus from '@/models/EventBus';
   import {minVertical, minHorizontal} from '@/store/view/recursionView';
   import viewStore from '@/store/view';
   import {Component, Prop, Vue} from 'vue-property-decorator';
@@ -59,6 +60,7 @@
   })
   export default class VuerdCore extends Vue {
     private sidebarWidth: number = 200;
+    private sidebarWidthOld: number = 200;
     private mainWidth: number = 2000;
     private editorHeight: number = 1000;
     private editorBottomHeight: number = 200;
@@ -155,9 +157,30 @@
       }
     }
 
+    private onExplorerStart() {
+      log.debug('VuerdCore onActivitybarStart');
+      this.sidebarWidth = this.sidebarWidthOld;
+      if (this.sidebarWidth < 50) {
+        this.sidebarWidth = 200;
+      }
+      this.onResize();
+    }
+
+    private onExplorerEnd() {
+      log.debug('VuerdCore onActivitybarEnd');
+      this.sidebarWidthOld = this.sidebarWidth;
+      this.sidebarWidth = 0;
+      this.onResize();
+    }
+
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
+    private created() {
+      eventBus.$on(EventBus.VuerdCore.explorerStart, this.onExplorerStart);
+      eventBus.$on(EventBus.VuerdCore.explorerEnd, this.onExplorerEnd);
+    }
+
     private mounted() {
       this.subResizeMovement = this.resize$.subscribe(this.onResizeMovement);
       this.subResize = this.resize$.subscribe(this.onResize);
@@ -169,6 +192,8 @@
       this.subResize.unsubscribe();
       this.subResizeMovement.unsubscribe();
       removeSpanText();
+      eventBus.$off(EventBus.VuerdCore.explorerStart, this.onExplorerStart);
+      eventBus.$off(EventBus.VuerdCore.explorerEnd, this.onExplorerEnd);
     }
 
     // ==================== Life Cycle END ====================

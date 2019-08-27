@@ -1,10 +1,16 @@
 <template lang="pug">
   ul.actions-container
-    li
-      MDIcon mdi-file-multiple
+    li(
+      v-for="menu in menus"
+      :key="menu.id"
+      :class="{active: activeMenu && menu.id === activeMenu.id}"
+      @click="menu.execute"
+    )
+      MDIcon {{menu.icon}}
 </template>
 
 <script lang="ts">
+  import activitybarStore, {ActivityMenu} from '@/store/activitybar';
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import MDIcon from '@/components/editor/MDIcon.vue';
 
@@ -14,6 +20,15 @@
     },
   })
   export default class ActionsContainer extends Vue {
+
+    get menus(): ActivityMenu[] {
+      return activitybarStore.state.menus;
+    }
+
+    get activeMenu(): ActivityMenu | null {
+      return activitybarStore.state.activeMenu;
+    }
+
   }
 </script>
 
@@ -25,6 +40,10 @@
 
     li {
       padding: 5px 0;
+
+      &.active {
+        color: white;
+      }
     }
   }
 </style>

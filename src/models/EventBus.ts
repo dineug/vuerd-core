@@ -29,6 +29,11 @@ enum Explorer {
   contextmenuEnd = 'Explorer.contextmenuEnd',
 }
 
+enum VuerdCore {
+  explorerStart = 'VuerdCore.explorerStart',
+  explorerEnd = 'VuerdCore.explorerEnd',
+}
+
 export default class EventBus {
   public static ViewTab = ViewTab;
   public static ViewView = ViewView;
@@ -36,4 +41,5 @@ export default class EventBus {
   public static TreeView = TreeView;
   public static OpenFile = OpenFile;
   public static Explorer = Explorer;
+  public static VuerdCore = VuerdCore;
 }
