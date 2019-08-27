@@ -32,21 +32,13 @@
             file
           ) {{node.name}}
         input.name(
-          v-if="editTree && node.id === editTree.id"
+          v-if="renameTree && node.id === renameTree.id"
           type="text"
           v-focus
           :style="`width: ${editWidth}px;`"
           :value="node.name"
           @input="onInputName($event, node)"
-        )
-        input.name(
-          v-else-if="createTree && node.id === createTree.id"
-          type="text"
-          v-focus
-          :style="`width: ${editWidth}px;`"
-          :value="node.name"
-          @input="onInputName($event, node)"
-          @blur="onBlur"
+          @blur="onRenameEnd"
         )
         span.name(v-else) {{node.name}}
       transition(
@@ -110,16 +102,12 @@
       return treeStore.state.folder;
     }
 
-    get editTree(): Tree | null {
-      return treeStore.state.editTree;
+    get renameTree(): Tree | null {
+      return treeStore.state.renameTree;
     }
 
     get editWidth(): number {
       return this.width - PADDING_LEFT - (this.depth * PADDING_DEPTH);
-    }
-
-    get createTree(): Tree | null {
-      return treeStore.state.createTree;
     }
 
     private findNodeByElement(el: HTMLElement | null): HTMLElement | null {
@@ -142,9 +130,9 @@
       }
     }
 
-    private onBlur(event: Event) {
-      log.debug('TreeView onBlur');
-      treeStore.commit(Commit.fileCreateEnd);
+    private onRenameEnd() {
+      log.debug('TreeView onRenameEnd');
+      treeStore.commit(Commit.fileRenameEnd);
     }
 
     private onSelect(event: MouseEvent, tree: Tree) {

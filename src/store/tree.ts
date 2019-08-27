@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import {lastSelect} from './tree/recursionTree';
 import {
   folderMove,
   folderActiveStart,
@@ -15,12 +16,10 @@ import {
   fileSelectEnd,
   fileSelectMove,
   fileSelectTabAddPreview,
-  fileEditNameStart,
-  fileEditNameEnd,
+  fileRenameStart,
+  fileRenameEnd,
   fileCreateStart,
-  fileCreateEnd,
   fileDelete,
-  fileRename,
 } from './tree/fileController';
 import init, {dataTree} from '@/data/tree';
 
@@ -31,8 +30,7 @@ export interface State {
   selects: TreeSelect[];
   folder: Tree | null;
   currentTree: Tree | null;
-  editTree: Tree | null;
-  createTree: Tree | null;
+  renameTree: Tree | null;
 }
 
 /**
@@ -64,12 +62,10 @@ export const enum Commit {
   fileSelectEnd = 'fileSelectEnd',
   fileSelectMove = 'fileSelectMove',
   fileSelectTabAddPreview = 'fileSelectTabAddPreview',
-  fileEditNameStart = 'fileEditNameStart',
-  fileEditNameEnd = 'fileEditNameEnd',
+  fileRenameStart = 'fileRenameStart',
+  fileRenameEnd = 'fileRenameEnd',
   fileCreateStart = 'fileCreateStart',
-  fileCreateEnd = 'fileCreateEnd',
   fileDelete = 'fileDelete',
-  fileRename = 'fileRename',
 }
 
 export default new Vuex.Store({
@@ -78,10 +74,11 @@ export default new Vuex.Store({
     selects: [],
     folder: null,
     currentTree: null,
-    editTree: null,
-    createTree: null,
+    renameTree: null,
   },
-  getters: {},
+  getters: {
+    lastSelect: (state: State): TreeSelect | null => lastSelect(state.selects),
+  },
   mutations: {
     folderMove,
     folderActiveStart,
@@ -95,12 +92,10 @@ export default new Vuex.Store({
     fileSelectEnd,
     fileSelectMove,
     fileSelectTabAddPreview,
-    fileEditNameStart,
-    fileEditNameEnd,
+    fileRenameStart,
+    fileRenameEnd,
     fileCreateStart,
-    fileCreateEnd,
     fileDelete,
-    fileRename,
   },
   actions: {},
 });

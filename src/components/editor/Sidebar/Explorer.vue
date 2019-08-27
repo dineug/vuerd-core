@@ -73,7 +73,7 @@
     private contextmenuY: number = 0;
 
     get height(): number {
-      return this.windowHeight - SIZE_TITLEBAR_HEIGHT - SIZE_STATUSBAR_HEIGHT - 2;
+      return this.windowHeight - SIZE_TITLEBAR_HEIGHT - SIZE_STATUSBAR_HEIGHT - BORDER;
     }
 
     get container(): Tree {
@@ -88,8 +88,8 @@
       return viewStore.getters.tabGroups;
     }
 
-    get editTree(): Tree | null {
-      return treeStore.state.editTree;
+    get renameTree(): Tree | null {
+      return treeStore.state.renameTree;
     }
 
     get menus(): Array<Menu<TreeSelect[]>> {
@@ -100,8 +100,8 @@
       return Scope.explorer;
     }
 
-    get createTree(): Tree | null {
-      return treeStore.state.createTree;
+    get lastSelect(): TreeSelect | null {
+      return treeStore.getters.lastSelect;
     }
 
     get treeHeight(): number {
@@ -130,7 +130,6 @@
           if (this.subKeydown !== null) {
             this.subKeydown.unsubscribe();
             this.subKeydown = null;
-            treeStore.commit(Commit.fileEditNameEnd);
           }
         }
         if (!el.closest('.contextmenu')) {
@@ -164,19 +163,14 @@
     private onKeydown(event: KeyboardEvent) {
       log.debug('Explorer onKeydown');
       log.debug(event.key);
-      if (this.createTree
+      if (!this.renameTree && event.key === Key.F2) {
+        treeStore.commit(Commit.fileRenameStart, this.lastSelect);
+      } else if (this.renameTree
         && (event.key === Key.Escape
           || event.key === Key.Enter
           || event.key === Key.Tab)) {
-        treeStore.commit(Commit.fileCreateEnd);
-      } else if (!this.editTree && event.key === Key.F2) {
-        treeStore.commit(Commit.fileEditNameStart);
-      } else if (this.editTree
-        && (event.key === Key.Escape
-          || event.key === Key.Enter
-          || event.key === Key.Tab)) {
-        treeStore.commit(Commit.fileEditNameEnd);
-      } else if (!this.editTree && event.key === Key.Delete) {
+        treeStore.commit(Commit.fileRenameEnd);
+      } else if (!this.renameTree && event.key === Key.Delete) {
         this.selects.forEach((tree: TreeSelect) => {
           if (tree.children) {
             treeStore.commit(Commit.folderDelete, tree);
@@ -184,15 +178,15 @@
             treeStore.commit(Commit.fileDelete, tree);
           }
         });
-      } else if (!this.editTree
+      } else if (!this.renameTree
         && (event.key === Key.ArrowUp
           || event.key === Key.ArrowDown)) {
         treeStore.commit(Commit.fileSelectMove, event.key);
-      } else if (!this.editTree
+      } else if (!this.renameTree
         && (event.key === Key.ArrowLeft
           || event.key === Key.ArrowRight)) {
         treeStore.commit(Commit.folderSelectOpen, event.key);
-      } else if (!this.editTree && event.key === Key.Enter) {
+      } else if (!this.renameTree && event.key === Key.Enter) {
         treeStore.commit(Commit.fileSelectTabAddPreview);
       }
     }

@@ -35,7 +35,7 @@ const init: Array<Menu<TreeSelect[]>> = [
       if (trees) {
         tree = lastSelect(trees);
       }
-      treeStore.commit(Commit.fileRename, tree);
+      treeStore.commit(Commit.fileRenameStart, tree);
     },
     option: {
       selectOnly: true,

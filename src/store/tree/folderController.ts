@@ -1,6 +1,6 @@
 import {State, Tree} from '@/store/tree';
 import {lastSelect, move, orderByNameASC, childrenArray, deleteByTree} from './recursionTree';
-import {fileSelectEnd, fileDelete} from './fileController';
+import {fileSelectEnd, fileDelete, fileRenameStart} from './fileController';
 import {log, uuid} from '@/ts/util';
 import Key from '@/models/Key';
 
@@ -47,7 +47,6 @@ export function folderSelectOpen(state: State, key: Key) {
 
 export function folderCreateStart(state: State, targetTree: Tree | null) {
   log.debug('folderController folderCreateStart');
-  fileSelectEnd(state);
   const tree: Tree = {
     id: uuid(),
     name: '',
@@ -81,7 +80,7 @@ export function folderCreateStart(state: State, targetTree: Tree | null) {
       }
     }
   }
-  state.createTree = tree;
+  fileRenameStart(state, tree);
 }
 
 export function folderDelete(state: State, folder: Tree) {

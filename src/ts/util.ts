@@ -110,3 +110,16 @@ export function findParentLiByElement(el: HTMLElement | null): HTMLElement | nul
 export function validFileName(name: string): string {
   return name.replace(/[<>:"\/\\|?*\x00-\x1F]/g, '');
 }
+
+interface Name {
+  name: string;
+}
+
+export function autoName<T extends Name>(list: T[], name: string, num: number = 1): string {
+  for (const value of list) {
+    if (name === value.name) {
+      return autoName(list, name.replace(/[0-9]/g, '') + num, num + 1);
+    }
+  }
+  return name;
+}

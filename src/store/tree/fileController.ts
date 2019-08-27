@@ -1,6 +1,7 @@
 import {SIZE_TREE_HEIGHT} from '@/ts/layout';
 import {State, Tree} from '@/store/tree';
 import viewStore, {Commit} from '@/store/view';
+import {folderDelete} from './folderController';
 import {lastSelect, select, childrenOpenArray, treeToSelect, orderByNameASC} from './recursionTree';
 import {deleteByTree} from './recursionTree';
 import Key from '@/models/Key';
@@ -10,12 +11,6 @@ export function fileSelectStart(state: State, payload: { event: MouseEvent, tree
   log.debug('fileController fileSelectStart');
   const selects = select(state.container, state.selects, payload.tree, payload.event);
   state.selects = [...selects];
-  if (state.editTree) {
-    const treeSelect = lastSelect(selects);
-    if (!treeSelect || state.editTree.id !== treeSelect.id) {
-      fileEditNameEnd(state);
-    }
-  }
 }
 
 export function fileSelectEnd(state: State) {
@@ -55,22 +50,39 @@ export function fileSelectTabAddPreview(state: State) {
   }
 }
 
-export function fileEditNameStart(state: State) {
-  log.debug('fileController fileEditNameStart');
-  const treeSelect = lastSelect(state.selects);
-  if (treeSelect) {
-    state.editTree = treeSelect as Tree;
+export function fileRenameStart(state: State, tree: Tree | null) {
+  log.debug('fileController fileRenameStart');
+  if (tree) {
+    fileSelectEnd(state);
+    state.renameTree = tree;
   }
 }
 
-export function fileEditNameEnd(state: State) {
-  log.debug('fileController fileEditNameEnd');
-  state.editTree = null;
+export function fileRenameEnd(state: State) {
+  log.debug('fileController fileRenameEnd');
+  if (state.renameTree) {
+    if (state.renameTree.name.trim() === '') {
+      if (state.renameTree.children) {
+        folderDelete(state, state.renameTree);
+      } else {
+        fileDelete(state, state.renameTree);
+      }
+    } else {
+      if (state.renameTree.parent) {
+        orderByNameASC(state.renameTree.parent);
+      }
+      const trees = childrenOpenArray(state.container);
+      const index = trees.indexOf(state.renameTree);
+      if (isData(state.selects, trees[index].id)) {
+        state.selects.push(treeToSelect(trees[index], (index) * SIZE_TREE_HEIGHT));
+      }
+    }
+    state.renameTree = null;
+  }
 }
 
 export function fileCreateStart(state: State, targetTree: Tree | null) {
   log.debug('fileController fileCreateStart');
-  fileSelectEnd(state);
   let tree: Tree = {
     id: uuid(),
     name: '',
@@ -116,23 +128,7 @@ export function fileCreateStart(state: State, targetTree: Tree | null) {
       }
     }
   }
-  state.createTree = tree;
-}
-
-export function fileCreateEnd(state: State) {
-  log.debug('fileController fileCreateEnd');
-  if (state.createTree) {
-    if (state.createTree.name.trim() === '') {
-      deleteByTree(state.createTree);
-    } else {
-      const trees = childrenOpenArray(state.container);
-      const index = trees.indexOf(state.createTree);
-      if (isData(state.selects, trees[index].id)) {
-        state.selects.push(treeToSelect(trees[index], (index) * SIZE_TREE_HEIGHT));
-      }
-    }
-    state.createTree = null;
-  }
+  fileRenameStart(state, tree);
 }
 
 export function fileDelete(state: State, tree: Tree) {
@@ -140,10 +136,4 @@ export function fileDelete(state: State, tree: Tree) {
   fileSelectEnd(state);
   deleteByTree(tree);
   viewStore.commit(Commit.tabDelete, tree.id);
-}
-
-export function fileRename(state: State, tree: Tree) {
-  log.debug('fileController fileDelete');
-  fileSelectEnd(state);
-  state.createTree = tree;
 }
