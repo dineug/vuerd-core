@@ -32,6 +32,7 @@ enum Explorer {
 enum VuerdCore {
   explorerStart = 'VuerdCore.explorerStart',
   explorerEnd = 'VuerdCore.explorerEnd',
+  changeTree = 'VuerdCore.changeTree',
 }
 
 export default class EventBus {

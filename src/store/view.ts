@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {tabGroups} from './view/recursionView';
+import {tabGroups} from './view/viewHandler';
 import {Tree} from './tree';
 import {
   tabClose,
@@ -19,7 +19,7 @@ import {
   viewFocusStart,
   viewFocusEnd,
 } from './view/viewController';
-import init, {dataView} from '@/data/view';
+import init from '@/data/view';
 
 Vue.use(Vuex);
 
@@ -54,6 +54,7 @@ export interface Tab {
   readonly path: string;
   name: string;
   active: boolean;
+
   setTree(tree: Tree): void;
 }
 
@@ -79,11 +80,9 @@ export const enum Commit {
 
 export default new Vuex.Store({
   state: {
-    // container: init,
-    container: dataView,
+    container: init,
     tabDraggable: null,
-    // viewFocus: null,
-    viewFocus: dataView.children[0],
+    viewFocus: null,
     tabPreview: null,
   },
   getters: {

@@ -2,10 +2,11 @@ import {SIZE_TREE_HEIGHT} from '@/ts/layout';
 import {State, Tree} from '@/store/tree';
 import viewStore, {Commit} from '@/store/view';
 import {folderDelete} from './folderController';
-import {lastSelect, select, childrenOpenArray, treeToSelect, orderByNameASC} from './recursionTree';
-import {deleteByTree} from './recursionTree';
+import {lastSelect, select, childrenOpenArray, treeToSelect, orderByNameASC} from './treeHandler';
+import {deleteByTree} from './treeHandler';
 import Key from '@/models/Key';
-import {log, uuid, isData, autoName} from '@/ts/util';
+import {log, uuid, isData, autoName, eventBus} from '@/ts/util';
+import EventBus from '@/models/EventBus';
 
 export function fileSelectStart(state: State, payload: { event: MouseEvent, tree: Tree }) {
   log.debug('fileController fileSelectStart');
@@ -93,6 +94,7 @@ export function fileRenameEnd(state: State) {
     }
     state.renameTree = null;
   }
+  eventBus.$emit(EventBus.VuerdCore.changeTree);
 }
 
 export function fileCreateStart(state: State, targetTree: Tree | null) {

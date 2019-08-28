@@ -22,7 +22,7 @@
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
   import Direction from '@/models/Direction';
   import {eventBus, log} from '@/ts/util';
-  import {split} from '@/store/view/recursionView';
+  import {split} from '@/store/view/viewHandler';
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
   import EventBus from '@/models/EventBus';
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator';

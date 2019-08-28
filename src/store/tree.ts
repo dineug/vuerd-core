@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {lastSelect} from './tree/recursionTree';
+import {lastSelect} from './tree/treeHandler';
 import {
   folderMove,
   folderActiveStart,
@@ -10,6 +10,7 @@ import {
   folderSelectOpen,
   folderCreateStart,
   folderDelete,
+  folderInit,
 } from './tree/folderController';
 import {
   fileSelectStart,
@@ -21,7 +22,7 @@ import {
   fileCreateStart,
   fileDelete,
 } from './tree/fileController';
-import init, {dataTree} from '@/data/tree';
+import init from '@/data/tree';
 
 Vue.use(Vuex);
 
@@ -33,15 +34,15 @@ export interface State {
   renameTree: Tree | null;
 }
 
-/**
- * file tree
- */
 export interface Tree {
-  readonly id: string;
+  id: string;
   name: string;
   open?: boolean;
   parent: Tree | null;
   children?: Tree[];
+  value?: string;
+
+  read?(path: string, id: string): Promise<string>;
 }
 
 export interface TreeSelect extends Tree {
@@ -58,6 +59,7 @@ export const enum Commit {
   folderSelectOpen = 'folderSelectOpen',
   folderCreateStart = 'folderCreateStart',
   folderDelete = 'folderDelete',
+  folderInit = 'folderInit',
   fileSelectStart = 'fileSelectStart',
   fileSelectEnd = 'fileSelectEnd',
   fileSelectMove = 'fileSelectMove',
@@ -70,7 +72,7 @@ export const enum Commit {
 
 export default new Vuex.Store({
   state: {
-    container: dataTree,
+    container: init,
     selects: [],
     folder: null,
     currentTree: null,
@@ -88,6 +90,7 @@ export default new Vuex.Store({
     folderSelectOpen,
     folderCreateStart,
     folderDelete,
+    folderInit,
     fileSelectStart,
     fileSelectEnd,
     fileSelectMove,

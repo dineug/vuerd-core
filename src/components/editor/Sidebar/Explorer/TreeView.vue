@@ -58,7 +58,7 @@
 <script lang="ts">
   import {SIZE_TREE_HEIGHT, SIZE_SCROLLBAR} from '@/ts/layout';
   import {log, eventBus, getData, validFileName} from '@/ts/util';
-  import {findById, childrenCount} from '@/store/tree/recursionTree';
+  import {findById, childrenCount, path} from '@/store/tree/treeHandler';
   import treeStore, {Tree, Commit} from '@/store/tree';
   import viewStore, {Commit as ViewCommit} from '@/store/view';
   import EventBus from '@/models/EventBus';
@@ -141,6 +141,14 @@
         tree.open = !tree.open;
       } else if (!tree.children) {
         log.debug('############# TreeView editor module loaded #############');
+        if (tree.read && !tree.value) {
+          tree.read(path(tree), tree.id).then((value) => {
+            log.debug(value);
+            tree.value = value;
+          });
+        } else {
+          log.debug(tree.value);
+        }
         viewStore.commit(ViewCommit.tabAddPreviewStart, tree);
       }
       treeStore.commit(Commit.fileSelectStart, {event, tree});
@@ -150,6 +158,14 @@
       log.debug('TreeView onOpenFile');
       if (!tree.children) {
         log.debug('############# TreeView editor module loaded #############');
+        if (tree.read && !tree.value) {
+          tree.read(path(tree), tree.id).then((value) => {
+            log.debug(value);
+            tree.value = value;
+          });
+        } else {
+          log.debug(tree.value);
+        }
         viewStore.commit(ViewCommit.tabAdd, tree);
       }
     }

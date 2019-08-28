@@ -1,88 +1,94 @@
 import {Tree} from '@/store/tree';
-import {uuid, setParent} from '@/ts/util';
+import {Tree as TreeModel} from '@/components';
+import {uuid} from '@/ts/util';
 
-const dataTree: Tree = {
-  id: uuid(),
-  name: '',
+function randomStr(length: number) {
+  const buffer = [];
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const size = characters.length;
+  for (let i = 0; i < length; i++) {
+    buffer.push(characters.charAt(Math.floor(Math.random() * size)));
+  }
+  return buffer.join('');
+}
+
+const data = new Proxy<any>({}, {
+  get(target: any, p: string | number | symbol, receiver: any): any {
+    if (target[p]) {
+      return target[p];
+    } else {
+      target[p] = randomStr(1000);
+      return target[p];
+    }
+  },
+});
+
+function read(path: string, id: string) {
+  return new Promise<string>((resolve, reject) => {
+    if (data[path]) {
+      resolve(data[path]);
+    } else {
+      reject();
+    }
+  });
+}
+
+const dataTree: TreeModel = {
+  name: 'vuerd-core',
   open: true,
-  parent: null,
   children: [
     {
-      id: uuid(),
-      name: 'vuerd-core',
+      name: '.git',
+      open: false,
+      children: [],
+    },
+    {
+      name: 'node_modules',
+      open: false,
+      children: [],
+    },
+    {
+      name: 'public',
       open: true,
-      parent: null,
       children: [
         {
-          id: uuid(),
-          name: '.git',
+          name: 'static',
           open: false,
-          parent: null,
-          children: [],
-        },
-        {
-          id: uuid(),
-          name: 'node_modules',
-          open: false,
-          parent: null,
-          children: [],
-        },
-        {
-          id: uuid(),
-          name: 'public',
-          open: true,
-          parent: null,
           children: [
             {
-              id: uuid(),
-              name: 'static',
-              open: false,
-              parent: null,
-              children: [
-                {
-                  id: uuid(),
-                  name: 'logo.png',
-                  parent: null,
-                },
-              ],
-            },
-            {
-              id: uuid(),
-              name: 'index.html',
-              parent: null,
+              name: 'logo.png',
+              read,
             },
           ],
         },
         {
-          id: uuid(),
-          name: '.gitignore',
-          parent: null,
-        },
-        {
-          id: uuid(),
-          name: 'README.md',
-          parent: null,
-        },
-        {
-          id: uuid(),
-          name: 'package.json',
-          parent: null,
-        },
-        {
-          id: uuid(),
-          name: 'vue.config.js',
-          parent: null,
-        },
-        {
-          id: uuid(),
-          name: 'yarn.lock',
-          parent: null,
+          name: 'index.html',
+          read,
         },
       ],
     },
+    {
+      name: '.gitignore',
+      read,
+    },
+    {
+      name: 'README.md',
+      read,
+    },
+    {
+      name: 'package.json',
+      read,
+    },
+    {
+      name: 'vue.config.js',
+      read,
+    },
+    {
+      name: 'yarn.lock',
+      read,
+    },
   ],
 };
-setParent<Tree>(dataTree, dataTree.children);
 
 export {
   dataTree,

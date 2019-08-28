@@ -1,5 +1,5 @@
 import {State, View} from '@/store/view';
-import {tabGroups} from './recursionView';
+import {tabGroups} from './viewHandler';
 import {tabAddPreviewEnd} from './tabController';
 import {log} from '@/ts/util';
 

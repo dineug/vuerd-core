@@ -16,6 +16,7 @@ export interface ActivityMenu {
   readonly id: string;
   icon: string;
   iconType: IconType;
+
   execute(): void;
 }
 

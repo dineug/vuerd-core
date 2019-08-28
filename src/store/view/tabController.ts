@@ -1,6 +1,6 @@
 import {State, View, Tab, TabView} from '@/store/view';
 import {Tree} from '@/store/tree';
-import {addView, deleteByView, resetSize, tabGroups} from './recursionView';
+import {addView, deleteByView, resetSize, tabGroups} from './viewHandler';
 import {log, isData, getDataIndex, getData} from '@/ts/util';
 import TreeToTab from '@/models/TreeToTab';
 import {viewFocusStart} from './viewController';

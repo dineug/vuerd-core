@@ -22,8 +22,10 @@
   import * as layout from '@/ts/layout';
   import {addSpanText, removeSpanText, eventBus, log} from '@/ts/util';
   import EventBus from '@/models/EventBus';
-  import {minVertical, minHorizontal} from '@/store/view/recursionView';
+  import {minVertical, minHorizontal} from '@/store/view/viewHandler';
   import viewStore from '@/store/view';
+  import treeStore, {Tree, Commit} from '@/store/tree';
+  import {Tree as TreeModel} from '@/components';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Titlebar from './Titlebar.vue';
   import Activitybar from './Activitybar.vue';
@@ -38,6 +40,10 @@
   enum Horizon {
     horizontal = 'horizontal',
     vertical = 'vertical',
+  }
+
+  enum Emit {
+    changeTree = 'changeTree',
   }
 
   interface ResizeMovement {
@@ -59,6 +65,9 @@
     },
   })
   export default class VuerdCore extends Vue {
+    @Prop({type: Object, default: () => ({name: 'unnamed', open: false, children: []})})
+    private tree!: TreeModel;
+
     private sidebarWidth: number = 200;
     private sidebarWidthOld: number = 200;
     private mainWidth: number = 2000;
@@ -94,6 +103,7 @@
     }
 
     private onResize() {
+      log.debug('VuerdCore onResize');
       const main = this.$refs.main as HTMLElement;
       const workspace = this.$refs.workspace as HTMLElement;
       this.editorHeight = main.clientHeight - this.editorBottomHeight;
@@ -158,7 +168,7 @@
     }
 
     private onExplorerStart() {
-      log.debug('VuerdCore onActivitybarStart');
+      log.debug('VuerdCore onExplorerStart');
       this.sidebarWidth = this.sidebarWidthOld;
       if (this.sidebarWidth < 50) {
         this.sidebarWidth = 200;
@@ -167,18 +177,25 @@
     }
 
     private onExplorerEnd() {
-      log.debug('VuerdCore onActivitybarEnd');
+      log.debug('VuerdCore onExplorerEnd');
       this.sidebarWidthOld = this.sidebarWidth;
       this.sidebarWidth = 0;
       this.onResize();
+    }
+
+    private onChangeTree() {
+      log.debug('VuerdCore onChangeTree');
+      this.$emit(Emit.changeTree);
     }
 
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
     private created() {
+      treeStore.commit(Commit.folderInit, this.tree);
       eventBus.$on(EventBus.VuerdCore.explorerStart, this.onExplorerStart);
       eventBus.$on(EventBus.VuerdCore.explorerEnd, this.onExplorerEnd);
+      eventBus.$on(EventBus.VuerdCore.changeTree, this.onChangeTree);
     }
 
     private mounted() {
@@ -194,6 +211,7 @@
       removeSpanText();
       eventBus.$off(EventBus.VuerdCore.explorerStart, this.onExplorerStart);
       eventBus.$off(EventBus.VuerdCore.explorerEnd, this.onExplorerEnd);
+      eventBus.$off(EventBus.VuerdCore.changeTree, this.onChangeTree);
     }
 
     // ==================== Life Cycle END ====================

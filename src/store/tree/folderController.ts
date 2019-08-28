@@ -1,13 +1,17 @@
 import {State, Tree} from '@/store/tree';
-import {lastSelect, move, orderByNameASC, childrenArray, deleteByTree, treeToSelect} from './recursionTree';
+import {Tree as TreeModel} from '@/components';
+import {lastSelect, move, orderByNameASC,
+  childrenArray, deleteByTree, treeToSelect, modelToTree} from './treeHandler';
 import {fileSelectEnd, fileDelete, fileRenameStart} from './fileController';
-import {log, uuid} from '@/ts/util';
+import {log, uuid, eventBus} from '@/ts/util';
+import EventBus from '@/models/EventBus';
 import Key from '@/models/Key';
 
 export function folderMove(state: State) {
   log.debug('folderController folderMove');
   if (state.folder && state.currentTree) {
     state.selects = move(state.container, state.selects, state.folder, state.currentTree);
+    eventBus.$emit(EventBus.VuerdCore.changeTree);
   }
 }
 
@@ -105,4 +109,11 @@ export function folderDelete(state: State, folder: Tree) {
   } else {
     deleteByTree(folder);
   }
+}
+
+export function folderInit(state: State, rootTree: TreeModel) {
+  log.debug('folderController folderInit');
+  const root = modelToTree(rootTree);
+  root.parent = state.container;
+  state.container.children = [root];
 }

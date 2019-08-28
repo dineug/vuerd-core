@@ -1,7 +1,8 @@
 import {Menu} from '@/store/contextmenu';
 import treeStore, {TreeSelect, Commit} from '@/store/tree';
-import {lastSelect} from '@/store/tree/recursionTree';
-import {uuid} from '@/ts/util';
+import {lastSelect} from '@/store/tree/treeHandler';
+import {eventBus, uuid} from '@/ts/util';
+import EventBus from '@/models/EventBus';
 
 const init: Array<Menu<TreeSelect[]>> = [
   {
@@ -54,6 +55,7 @@ const init: Array<Menu<TreeSelect[]>> = [
             treeStore.commit(Commit.fileDelete, tree);
           }
         });
+        eventBus.$emit(EventBus.VuerdCore.changeTree);
       }
     },
     option: {

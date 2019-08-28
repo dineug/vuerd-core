@@ -1,6 +1,7 @@
 import {SIZE_TREE_HEIGHT} from '@/ts/layout';
 import {Tree, TreeSelect} from '@/store/tree';
-import {log, isData, getData} from '@/ts/util';
+import {Tree as TreeModel} from '@/components';
+import {log, isData, getData, uuid, setParent} from '@/ts/util';
 
 export function findById(container: Tree, id: string): Tree | null {
   if (container.id === id) {
@@ -46,12 +47,12 @@ export function childrenCount(tree: Tree, count: number = 0): number {
   return sum;
 }
 
-export function path(tree: Tree, buffer: string[] = []): string[] {
+export function path(tree: Tree, buffer: string[] = []): string {
   if (tree.parent) {
     buffer.unshift(tree.name);
-    return path(tree.parent, buffer);
+    path(tree.parent, buffer);
   }
-  return buffer;
+  return buffer.join('/');
 }
 
 export function select(container: Tree, selects: TreeSelect[], tree: Tree, event: MouseEvent): TreeSelect[] {
@@ -191,7 +192,7 @@ export function move(container: Tree, selects: TreeSelect[], folder: Tree, curre
 }
 
 export function deleteByTree(tree: Tree) {
-  log.debug('recursionTree deleteByTree');
+  log.debug('treeHandler deleteByTree');
   if (tree && tree.parent) {
     const parent = tree.parent;
     if (parent.children) {
@@ -240,6 +241,18 @@ export function treeToSelect(tree: Tree, top: number = 0, order: number = 0): Tr
   treeSelect.top = top;
   treeSelect.order = order;
   return treeSelect;
+}
+
+export function modelToTree(treeModel: TreeModel): Tree {
+  const tree = treeModel as Tree;
+  if (!tree.id) {
+    tree.id = uuid();
+  }
+  if (treeModel.children) {
+    treeModel.children.forEach((value: TreeModel) => modelToTree(value));
+  }
+  setParent(tree, tree.children);
+  return tree;
 }
 
 

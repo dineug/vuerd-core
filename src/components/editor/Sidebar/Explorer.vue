@@ -30,7 +30,7 @@
   import treeStore, {Commit, Tree, TreeSelect} from '@/store/tree';
   import viewStore, {View} from '@/store/view';
   import contextmenuStore, {Menu, Scope} from '@/store/contextmenu';
-  import {findById} from '@/store/tree/recursionTree';
+  import {findById} from '@/store/tree/treeHandler';
   import Key from '@/models/Key';
   import EventBus from '@/models/EventBus';
   import {eventBus, log} from '@/ts/util';
@@ -67,8 +67,8 @@
     private subContextmenu!: Subscription;
     private subResize!: Subscription;
 
-    private windowWidth: number = 0;
-    private windowHeight: number = 0;
+    private windowWidth: number = window.innerWidth;
+    private windowHeight: number = window.innerHeight;
     private contextmenu: boolean = false;
     private contextmenuX: number = 0;
     private contextmenuY: number = 0;
@@ -196,6 +196,7 @@
             treeStore.commit(Commit.fileDelete, tree);
           }
         });
+        eventBus.$emit(EventBus.VuerdCore.changeTree);
       } else if (!this.renameTree
         && (event.key === Key.ArrowUp
           || event.key === Key.ArrowDown)) {

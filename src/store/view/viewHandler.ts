@@ -37,20 +37,6 @@ export function resetHeight(container: View) {
   });
 }
 
-// #  비율 초기화
-// #  this.container.vertical ? 1 / this.container.views.length : 1;
-// #  ratio - 비율
-// #  vertical, horizontal 비율 분기
-// #  1 / current.px = current.%
-// #  1 / this.container.views.length
-// #  current.% * parent.px = current.px
-// #  current.px / parent.px = current.%
-
-// next step
-// 1. minWidth 보다 작으면 width 수정
-// 2. 같은 레벨 view width 감소처리
-// 3. views로 minWidth 체크
-// 4. views중에 감소시 괜찮은녀석으로 감소처리 추가
 export function resetWidthRatio(container: View) {
   container.children.forEach((view: View) => {
     view.width = container.width * view.widthRatio;
@@ -110,7 +96,7 @@ export function minHorizontal(container: View): number {
 }
 
 export function deleteByView(view: View) {
-  log.debug('recursionView deleteByView');
+  log.debug('viewHandler deleteByView');
   if (view && view.parent) {
     const parent = view.parent;
     const currentIndex = parent.children.indexOf(view);
@@ -123,7 +109,7 @@ export function deleteByView(view: View) {
 }
 
 export function split(container: View, direction: Direction, tab: Tab, tabView: View, targetView: View) {
-  log.debug('recursionView split');
+  log.debug('viewHandler split');
   if (direction !== Direction.all) {
     if (targetView.parent) {
       const parentView = targetView.parent;
