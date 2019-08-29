@@ -1,5 +1,4 @@
 import {Tree} from '@/store/tree';
-import {Tree as TreeModel} from '@/components';
 import {uuid} from '@/ts/util';
 
 function randomStr(length: number) {
@@ -23,75 +22,16 @@ const data = new Proxy<any>({}, {
   },
 });
 
-function read(path: string, id: string) {
-  return new Promise<string>((resolve, reject) => {
-    if (data[path]) {
-      resolve(data[path]);
-    } else {
-      reject();
-    }
-  });
+async function read(path: string, id: string): Promise<string> {
+  if (data[id]) {
+    return data[id];
+  } else {
+    throw new Error('not found');
+  }
 }
 
-const dataTree: TreeModel = {
-  name: 'vuerd-core',
-  open: true,
-  children: [
-    {
-      name: '.git',
-      open: false,
-      children: [],
-    },
-    {
-      name: 'node_modules',
-      open: false,
-      children: [],
-    },
-    {
-      name: 'public',
-      open: true,
-      children: [
-        {
-          name: 'static',
-          open: false,
-          children: [
-            {
-              name: 'logo.png',
-              read,
-            },
-          ],
-        },
-        {
-          name: 'index.html',
-          read,
-        },
-      ],
-    },
-    {
-      name: '.gitignore',
-      read,
-    },
-    {
-      name: 'README.md',
-      read,
-    },
-    {
-      name: 'package.json',
-      read,
-    },
-    {
-      name: 'vue.config.js',
-      read,
-    },
-    {
-      name: 'yarn.lock',
-      read,
-    },
-  ],
-};
-
 export {
-  dataTree,
+  read,
 };
 
 const init: Tree = {

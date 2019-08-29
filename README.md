@@ -1,34 +1,20 @@
 # vuerd-core
+Editor Common UI
 
-## Project setup
+## install
+```bash
+$ yarn add vuerd-core
+or
+$ npm install vuerd-core
 ```
-yarn install
+### use
+```js
+// main.js or main.ts
+import VuerdCore from 'vuerd-core';
+Vue.use(VuerdCore);
 ```
-
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
-
-### Compiles and minifies for production
-```
-yarn run build
-```
-
-### Run your tests
-```
-yarn run test
+```html
+<VuerdCore/>
 ```
 
-### Lints and fixes files
-```
-yarn run lint
-```
-
-### Run your unit tests
-```
-yarn run test:unit
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Development Status Prototype

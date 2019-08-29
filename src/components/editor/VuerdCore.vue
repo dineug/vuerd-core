@@ -42,10 +42,6 @@
     vertical = 'vertical',
   }
 
-  enum Emit {
-    changeTree = 'changeTree',
-  }
-
   interface ResizeMovement {
     x: number;
     y: number;
@@ -66,7 +62,7 @@
   })
   export default class VuerdCore extends Vue {
     @Prop({type: Object, default: () => ({name: 'unnamed', open: false, children: []})})
-    private tree!: TreeModel;
+    private value!: TreeModel;
 
     private sidebarWidth: number = 200;
     private sidebarWidthOld: number = 200;
@@ -185,14 +181,14 @@
 
     private onChangeTree() {
       log.debug('VuerdCore onChangeTree');
-      this.$emit(Emit.changeTree);
+      this.$emit('input', {...this.value});
     }
 
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
     private created() {
-      treeStore.commit(Commit.folderInit, this.tree);
+      treeStore.commit(Commit.folderInit, this.value);
       eventBus.$on(EventBus.VuerdCore.explorerStart, this.onExplorerStart);
       eventBus.$on(EventBus.VuerdCore.explorerEnd, this.onExplorerEnd);
       eventBus.$on(EventBus.VuerdCore.changeTree, this.onChangeTree);

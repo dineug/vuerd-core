@@ -145,6 +145,8 @@
           tree.read(path(tree), tree.id).then((value) => {
             log.debug(value);
             tree.value = value;
+          }).catch((err) => {
+            log.error(err);
           });
         } else {
           log.debug(tree.value);
@@ -162,6 +164,8 @@
           tree.read(path(tree), tree.id).then((value) => {
             log.debug(value);
             tree.value = value;
+          }).catch((err) => {
+            log.error(err);
           });
         } else {
           log.debug(tree.value);

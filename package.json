@@ -1,16 +1,19 @@
 {
   "name": "vuerd-core",
   "version": "0.1.0",
-  "repository": "https://github.com/vuerd/vuerd-core.git",
-  "author": "dineug <dineug2@gmail.com>",
-  "license": "MIT",
-  "private": true,
+  "description": "Editor Common UI",
+  "main": "dist/vuerd-core.common.js",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --target lib --inline-vue --name vuerd-core src/components/index.ts",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit"
   },
+  "author": "dineug <dineug2@gmail.com>",
+  "homepage": "https://github.com/vuerd/vuerd-core",
+  "bugs": "https://github.com/vuerd/vuerd-core/issues",
+  "repository": "https://github.com/vuerd/vuerd-core.git",
+  "license": "MIT",
   "dependencies": {
     "core-js": "^2.6.5",
     "rxjs": "^6.5.2",
@@ -49,5 +52,17 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
+  ],
+  "files": [
+    "dist/*",
+    "src/*",
+    "*.json",
+    "*.js"
+  ],
+  "keywords": [
+    "vue",
+    "vuejs",
+    "vuerd",
+    "editor"
   ]
 }

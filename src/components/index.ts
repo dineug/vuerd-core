@@ -4,10 +4,10 @@ import VuerdCore from './editor/VuerdCore.vue';
 export interface Tree {
   readonly id?: string;
   readonly parent?: Tree;
+  readonly value?: string;
   name: string;
   open?: boolean;
   children?: Tree[];
-  value?: string;
 
   read?(path: string, id: string): Promise<string>;
 }
