@@ -10,10 +10,8 @@
 
   @Component
   export default class ImagePreview extends Vue {
-    @Prop({type: String, default: ''})
-    private value!: string;
-    @Prop({type: String, default: ''})
-    private scope!: string;
+    private value: string = '';
+    private scope: string = '';
   }
 </script>
 

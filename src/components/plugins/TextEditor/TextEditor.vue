@@ -12,8 +12,7 @@
 
   @Component
   export default class TextEditor extends Vue {
-    @Prop({type: String, default: ''})
-    private value!: string;
+    private value: string = '';
 
     private onChange(event: Event) {
       const textarea = event.target as HTMLTextAreaElement;

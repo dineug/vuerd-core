@@ -22,6 +22,9 @@ Vue.use(VuerdCore);
 <VuerdCore/>
 ```
 
+## Plugin
+- [vuerd-plugin-tui.editor](https://github.com/vuerd/vuerd-plugin-tui.editor)
+
 ## Development Status Prototype
 ### TODO
 - [ ] Usage Event

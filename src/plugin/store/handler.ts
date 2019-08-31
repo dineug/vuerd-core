@@ -87,26 +87,7 @@ export function loaded(component: Component, editors: Editor[], tabView: TabView
     }
   }
 
-  const parent = new Vue({
-    props: {
-      value: {
-        type: String,
-        default: '',
-      },
-      scope: {
-        type: String,
-        default: '',
-      },
-    },
-    render(h) {
-      return h(component, {
-        props: {
-          value: this.value,
-          scope: this.scope,
-        },
-      });
-    },
-  });
+  const parent = new Vue({render: (h) => h(component)});
   const selector = `.editor-${tabView.view.id}`;
   instanceReset(component, selector);
   parent.$mount(`${selector} > div`);
@@ -122,12 +103,12 @@ export function loaded(component: Component, editors: Editor[], tabView: TabView
   if (tabView.name.lastIndexOf('.') !== -1) {
     scope = tabView.name.substr(tabView.name.lastIndexOf('.') + 1);
   }
-  editor.parent.$props.scope = scope;
-  editor.parent.$props.value = tabView.value;
+  editor.node.$data.scope = scope;
+  editor.node.$data.value = tabView.value;
   editor.node.$on('change', (value: string) => {
     editors.forEach((target) => {
       if (target.tab.id === tabView.id) {
-        target.parent.$props.value = value;
+        target.node.$data.value = value;
         target.tab.value = value;
       }
     });
@@ -136,7 +117,7 @@ export function loaded(component: Component, editors: Editor[], tabView: TabView
   editor.node.$on('input', (value: string) => {
     editors.forEach((target) => {
       if (target.tab.id === tabView.id) {
-        target.parent.$props.value = value;
+        target.node.$data.value = value;
         target.tab.value = value;
       }
     });

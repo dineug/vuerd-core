@@ -3,8 +3,6 @@ import {Store} from 'vuex';
 import {Commit, State} from './store';
 import {View, Tab} from '@/store/view';
 import {getEditor} from './store/handler';
-import EventBus from '@/models/EventBus';
-import {eventBus} from '@/ts/util';
 
 class PluginManagement {
   private readonly plugins: Array<Store<State>> = [];

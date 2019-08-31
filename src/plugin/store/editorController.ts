@@ -1,5 +1,5 @@
 import {State} from '../store';
-import {EditorOption} from '@/plugin/Command';
+import {EditorOption} from '@/types';
 import {View, Tab, TabView} from '@/store/view';
 import {loaded} from './handler';
 import {log} from '@/ts/util';
@@ -19,7 +19,7 @@ export function editorLoad(state: State, payload: { view: View, tab: Tab }) {
   const tabView = tab as TabView;
   tabView.view = view;
 
-  if (tabView.read && !tabView.value) {
+  if (tabView.read && tabView.value === undefined) {
     tabView.read(tabView.path, tabView.id).then((value) => {
       tabView.value = value;
       if (state.component) {
@@ -28,7 +28,7 @@ export function editorLoad(state: State, payload: { view: View, tab: Tab }) {
     }).catch((err) => {
       log.error(err);
     });
-  } else if (state.component && tabView.value) {
+  } else if (state.component && tabView.value !== undefined) {
     loaded(state.component, state.editors, tabView);
   }
 }

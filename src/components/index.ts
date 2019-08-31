@@ -1,6 +1,7 @@
 import _Vue from 'vue';
 import _VuerdCore from './editor/VuerdCore.vue';
-import Command, {Plugin} from '@/plugin/Command';
+import {Plugin} from '@/types';
+import Command from '@/plugin/Command';
 import TextEditor from './plugins/TextEditor';
 import ImagePreview from './plugins/ImagePreview';
 

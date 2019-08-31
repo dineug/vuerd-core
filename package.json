@@ -1,6 +1,6 @@
 {
   "name": "vuerd-core",
-  "version": "0.1.3",
+  "version": "0.1.8",
   "description": "Editor Common UI",
   "main": "dist/vuerd-core.common.js",
   "typings": "src/types/index.d.ts",
@@ -56,9 +56,7 @@
   ],
   "files": [
     "dist/*",
-    "src/*",
-    "*.json",
-    "*.js"
+    "src/*"
   ],
   "keywords": [
     "vue",
