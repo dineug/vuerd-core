@@ -1,18 +1,8 @@
-import {Component} from 'vue';
 import {Store} from 'vuex';
 import pluginManagement from '@/plugin/PluginManagement';
 import {createStore, Commit, State} from '@/plugin/store';
 import {log} from '@/ts/util';
-
-export interface EditorOption {
-  component: Component;
-  scope: Array<string | RegExp>;
-  exclude?: Array<string | RegExp>;
-}
-
-export interface Plugin {
-  install(command: Command): void;
-}
+import {EditorOption} from '@/types';
 
 export default class Command {
   private readonly store: Store<State>;

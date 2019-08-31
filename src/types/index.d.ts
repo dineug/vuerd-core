@@ -1,5 +1,4 @@
-import _Vue from 'vue';
-import {Plugin, EditorOption} from '@/plugin/Command';
+import _Vue, {Component} from 'vue';
 
 export interface Tree {
   readonly id?: string;
@@ -10,6 +9,16 @@ export interface Tree {
   children?: Tree[];
 
   read?(path: string, id: string): Promise<string>;
+}
+
+export interface Plugin {
+  install(command: Command): void;
+}
+
+export interface EditorOption {
+  component: Component;
+  scope: Array<string | RegExp>;
+  exclude?: Array<string | RegExp>;
 }
 
 export declare class Command {
