@@ -1,7 +1,8 @@
 import {State, View, Tab, TabView} from '@/store/view';
 import {Tree} from '@/store/tree';
 import {addView, deleteByView, resetSize, tabGroups} from './viewHandler';
-import {log, isData, getDataIndex, getData} from '@/ts/util';
+import EventBus from '@/models/EventBus';
+import {log, isData, getDataIndex, getData, eventBus} from '@/ts/util';
 import TreeToTab from '@/models/TreeToTab';
 import {viewFocusStart} from './viewController';
 
@@ -17,14 +18,25 @@ export function tabActive(state: State, payload: { view: View, tab?: Tab }) {
   log.debug('tabController tabActive');
   const {view, tab} = payload;
   if (tab) {
-    view.tabs.forEach((value: Tab) => value.active = value.id === tab.id);
+    let oldTab = null;
+    for (const target of view.tabs) {
+      if (target.active) {
+        oldTab = target;
+        break;
+      }
+    }
+    if (!oldTab || tab.id !== oldTab.id) {
+      view.tabs.forEach((value: Tab) => value.active = value.id === tab.id);
+      eventBus.$emit(EventBus.ViewView.editorLoad, view.id);
+    }
   } else {
     const targetTab = view.tabs[0];
     view.tabs.forEach((value: Tab) => value.active = value.id === targetTab.id);
+    eventBus.$emit(EventBus.ViewView.editorLoad, view.id);
   }
 }
 
-export function tabsActive(state: State) {
+export function tabActiveAll(state: State) {
   log.debug('tabController tabsActive');
   const views = tabGroups(state.container);
   views.forEach((view: View) => {
@@ -128,6 +140,9 @@ export function tabAddPreviewStart(state: State, tree: Tree) {
     tabPreview.view = view;
     state.tabPreview = tabPreview;
     resetSize(state.container);
+  }
+  if (state.tabPreview) {
+    eventBus.$emit(EventBus.ViewView.editorLoad, state.tabPreview.view.id);
   }
 }
 

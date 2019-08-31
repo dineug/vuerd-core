@@ -1,6 +1,6 @@
 import {SIZE_TREE_HEIGHT} from '@/ts/layout';
 import {Tree, TreeSelect} from '@/store/tree';
-import {Tree as TreeModel} from '@/components';
+import {Tree as TreeModel} from '@/types';
 import {log, isData, getData, uuid, setParent} from '@/ts/util';
 
 export function findById(container: Tree, id: string): Tree | null {
@@ -133,6 +133,16 @@ export function select(container: Tree, selects: TreeSelect[], tree: Tree, event
   return selects;
 }
 
+function nextOrder(selects: TreeSelect[]): number {
+  let max = 0;
+  selects.forEach((treeSelect: TreeSelect) => {
+    if (max < treeSelect.order) {
+      max = treeSelect.order;
+    }
+  });
+  return max + 1;
+}
+
 export function childrenOpenArray(container: Tree, stack?: Tree[]): Tree[] {
   if (!stack) {
     stack = [];
@@ -222,6 +232,10 @@ export function orderByNameASC(folder: Tree) {
   }
 }
 
+function nameASC(a: Tree, b: Tree): number {
+  return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+}
+
 export function lastSelect(selects: TreeSelect[]): TreeSelect | null {
   if (selects.length === 0) {
     return null;
@@ -253,19 +267,4 @@ export function modelToTree(treeModel: TreeModel): Tree {
   }
   setParent(tree, tree.children);
   return tree;
-}
-
-
-function nextOrder(selects: TreeSelect[]): number {
-  let max = 0;
-  selects.forEach((treeSelect: TreeSelect) => {
-    if (max < treeSelect.order) {
-      max = treeSelect.order;
-    }
-  });
-  return max + 1;
-}
-
-function nameASC(a: Tree, b: Tree): number {
-  return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
 }

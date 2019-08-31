@@ -8,6 +8,7 @@ enum ViewView {
   dropEnd = 'ViewView.dropEnd',
   dropViewStart = 'ViewView.dropViewStart',
   dropViewEnd = 'ViewView.dropViewEnd',
+  editorLoad = 'editorLoad',
 }
 
 enum Editor {

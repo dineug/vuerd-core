@@ -77,7 +77,7 @@ export function fileRenameEnd(state: State) {
             folders.push(tree);
           } else {
             files.push(tree);
-          }
+          }fileSelectTabAddPreview
         });
         if (state.renameTree.children) {
           state.renameTree.name = autoName(folders, state.renameTree.id, state.renameTree.name);

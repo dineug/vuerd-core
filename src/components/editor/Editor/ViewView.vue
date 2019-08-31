@@ -8,7 +8,9 @@
     .split-view-editor(
       ref="view"
       :style="`height: ${height}px; top: ${SIZE_VIEW_TAB_HEIGHT}px;`"
+      :class="`editor-${view.id}`"
     )
+      .split-view-editor-instance
     ViewDrop(
       v-if="dropView"
       :width="width"
@@ -25,6 +27,7 @@
   import {split} from '@/store/view/viewHandler';
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
   import EventBus from '@/models/EventBus';
+  import pluginManagement from '@/plugin/PluginManagement';
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
   import ViewTab from './ViewTab.vue';
   import ViewDrop from './ViewDrop.vue';
@@ -53,6 +56,21 @@
     private width: number = 0;
     private height: number = 0;
     private direction: Direction = Direction.all;
+
+    get activeTab(): Tab | null {
+      if (this.view.tabs.length === 0) {
+        return null;
+      } else {
+        let target = this.view.tabs[0];
+        for (const tab of this.view.tabs) {
+          if (tab.active) {
+            target = tab;
+            break;
+          }
+        }
+        return target;
+      }
+    }
 
     @Watch('view.width')
     private watchWidth(width: number) {
@@ -91,7 +109,7 @@
                 this.view,
               );
             }
-            viewStore.commit(Commit.tabsActive);
+            viewStore.commit(Commit.tabActiveAll);
             break;
         }
       }
@@ -190,6 +208,18 @@
       this.dropView = false;
     }
 
+    private onEditorLoad(viewId?: string) {
+      log.debug('ViewView onEditorLoad');
+      if (!viewId || viewId === this.view.id) {
+        this.$nextTick(() => {
+          const tab = this.activeTab;
+          if (tab) {
+            pluginManagement.editorLoad(this.view, tab);
+          }
+        });
+      }
+    }
+
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
@@ -198,6 +228,7 @@
       eventBus.$on(EventBus.ViewView.dropEnd, this.onDropEnd);
       eventBus.$on(EventBus.ViewView.dropViewStart, this.onDropViewStart);
       eventBus.$on(EventBus.ViewView.dropViewEnd, this.onDropViewEnd);
+      eventBus.$on(EventBus.ViewView.editorLoad, this.onEditorLoad);
       this.width = this.view.width;
       this.height = this.view.height - SIZE_VIEW_TAB_HEIGHT;
       this.onActive();
@@ -213,6 +244,7 @@
       eventBus.$off(EventBus.ViewView.dropEnd, this.onDropEnd);
       eventBus.$off(EventBus.ViewView.dropViewStart, this.onDropViewStart);
       eventBus.$off(EventBus.ViewView.dropViewEnd, this.onDropViewEnd);
+      eventBus.$off(EventBus.ViewView.editorLoad, this.onEditorLoad);
     }
 
     // ==================== Life Cycle END ====================

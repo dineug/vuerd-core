@@ -5,7 +5,7 @@ import {Tree} from './tree';
 import {
   tabClose,
   tabActive,
-  tabsActive,
+  tabActiveAll,
   tabViewDelete,
   tabDraggableStart,
   tabDraggableEnd,
@@ -54,8 +54,10 @@ export interface Tab {
   readonly path: string;
   name: string;
   active: boolean;
+  value?: string;
 
   setTree(tree: Tree): void;
+  read?(path: string, id: string): Promise<string>;
 }
 
 export interface TabView extends Tab {
@@ -65,7 +67,7 @@ export interface TabView extends Tab {
 export const enum Commit {
   tabClose = 'tabClose',
   tabActive = 'tabActive',
-  tabsActive = 'tabsActive',
+  tabActiveAll = 'tabActiveAll',
   tabViewDelete = 'tabViewDelete',
   tabDraggableStart = 'tabDraggableStart',
   tabDraggableEnd = 'tabDraggableEnd',
@@ -91,7 +93,7 @@ export default new Vuex.Store({
   mutations: {
     tabClose,
     tabActive,
-    tabsActive,
+    tabActiveAll,
     tabViewDelete,
     tabDraggableStart,
     tabDraggableEnd,

@@ -25,5 +25,5 @@ Vue.use(VuerdCore);
 ## Development Status Prototype
 ### TODO
 - [ ] Usage Event
-- [ ] Plugin API
+- [x] Plugin API
 

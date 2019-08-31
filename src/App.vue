@@ -1,11 +1,12 @@
 <template lang="pug">
-  VuerdCore(
-    v-model="tree"
-  )
+  div
+    VuerdCore(
+      v-model="tree"
+    )
 </template>
 
 <script lang="ts">
-  import {Tree} from './components';
+  import {Tree} from './types';
   import {read} from './data/tree';
   import {log} from './ts/util';
   import {Component, Watch, Vue} from 'vue-property-decorator';

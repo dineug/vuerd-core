@@ -1,19 +1,19 @@
 import _Vue from 'vue';
-import VuerdCore from './editor/VuerdCore.vue';
+import _VuerdCore from './editor/VuerdCore.vue';
+import Command, {Plugin} from '@/plugin/Command';
+import TextEditor from './plugins/TextEditor';
+import ImagePreview from './plugins/ImagePreview';
 
-export interface Tree {
-  readonly id?: string;
-  readonly parent?: Tree;
-  readonly value?: string;
-  name: string;
-  open?: boolean;
-  children?: Tree[];
-
-  read?(path: string, id: string): Promise<string>;
-}
-
-export default {
+const VuerdCore = {
   install: (Vue: typeof _Vue) => {
-    Vue.component('VuerdCore', VuerdCore);
+    Vue.component('VuerdCore', _VuerdCore);
+  },
+  use: (plugin: Plugin) => {
+    plugin.install(new Command());
   },
 };
+
+VuerdCore.use(TextEditor);
+VuerdCore.use(ImagePreview);
+
+export default VuerdCore;

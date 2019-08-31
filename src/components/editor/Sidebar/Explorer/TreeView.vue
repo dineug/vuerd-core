@@ -140,17 +140,6 @@
       if (tree.children && !event.ctrlKey && !event.shiftKey) {
         tree.open = !tree.open;
       } else if (!tree.children) {
-        log.debug('############# TreeView editor module loaded #############');
-        if (tree.read && !tree.value) {
-          tree.read(path(tree), tree.id).then((value) => {
-            log.debug(value);
-            tree.value = value;
-          }).catch((err) => {
-            log.error(err);
-          });
-        } else {
-          log.debug(tree.value);
-        }
         viewStore.commit(ViewCommit.tabAddPreviewStart, tree);
       }
       treeStore.commit(Commit.fileSelectStart, {event, tree});
@@ -159,17 +148,6 @@
     private onOpenFile(event: MouseEvent, tree: Tree) {
       log.debug('TreeView onOpenFile');
       if (!tree.children) {
-        log.debug('############# TreeView editor module loaded #############');
-        if (tree.read && !tree.value) {
-          tree.read(path(tree), tree.id).then((value) => {
-            log.debug(value);
-            tree.value = value;
-          }).catch((err) => {
-            log.error(err);
-          });
-        } else {
-          log.debug(tree.value);
-        }
         viewStore.commit(ViewCommit.tabAdd, tree);
       }
     }
@@ -250,7 +228,7 @@
       el.style.height = '0';
     }
 
-    private onEnter(el: HTMLElement, done: () => {}) {
+    private onEnter(el: HTMLElement, done: () => void) {
       if (el.dataset.id) {
         const tree = findById(treeStore.state.container, el.dataset.id);
         if (tree) {
@@ -269,7 +247,7 @@
       }
     }
 
-    private onLeave(el: HTMLElement, done: () => {}) {
+    private onLeave(el: HTMLElement, done: () => void) {
       window.Velocity(
         el,
         {opacity: 0, height: 0},

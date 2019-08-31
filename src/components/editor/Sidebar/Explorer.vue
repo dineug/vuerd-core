@@ -173,8 +173,6 @@
           if (tree) {
             treeStore.commit(Commit.fileSelectStart, {event, tree});
           }
-        } else if (this.contextmenu) {
-          treeStore.commit(Commit.fileSelectEnd);
         }
       }
     }

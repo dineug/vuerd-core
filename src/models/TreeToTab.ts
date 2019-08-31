@@ -18,10 +18,21 @@ export default class TreeToTab implements Tab {
   set name(name: string) {
     this.tree.name = name;
   }
+  get value(): string | undefined {
+    return this.tree.value;
+  }
+  set value(value: string | undefined) {
+    if (value) {
+      this.tree.value = value;
+    }
+  }
   get path(): string {
     return path(this.tree);
   }
   public setTree(tree: Tree) {
     this.tree = tree;
+  }
+  get read() {
+    return this.tree.read;
   }
 }

@@ -1,5 +1,5 @@
 import {State, Tree} from '@/store/tree';
-import {Tree as TreeModel} from '@/components';
+import {Tree as TreeModel} from '@/types';
 import {lastSelect, move, orderByNameASC,
   childrenArray, deleteByTree, treeToSelect, modelToTree} from './treeHandler';
 import {fileSelectEnd, fileDelete, fileRenameStart} from './fileController';
