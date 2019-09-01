@@ -82,7 +82,7 @@
   .split-view-drop {
     position: absolute;
     z-index: 150;
-    opacity: 0.1;
+    opacity: 0.3;
     background-color: $color-drop;
   }
 </style>

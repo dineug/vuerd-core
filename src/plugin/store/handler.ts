@@ -88,7 +88,8 @@ export function loaded(component: Component, editors: Editor[], tabView: TabView
   }
 
   const parent = new Vue({render: (h) => h(component)});
-  const selector = `.editor-${tabView.view.id}`;
+  const selector = `#editor-${tabView.view.id}`;
+  const dataset = getDataset(selector);
   instanceReset(component, selector);
   parent.$mount(`${selector} > div`);
   const node = parent.$children[0];
@@ -99,6 +100,10 @@ export function loaded(component: Component, editors: Editor[], tabView: TabView
   };
   editors.push(editor);
 
+  if (dataset) {
+    editor.node.$data.width = dataset.width;
+    editor.node.$data.height = dataset.height;
+  }
   editor.node.$data.scope = tabView.name.substr(tabView.name.lastIndexOf('.') + 1);
   editor.node.$data.value = tabView.value;
   editor.node.$on('change', (value: string) => {
@@ -136,4 +141,25 @@ function instanceReset(component: Component, selector: string) {
     el.childNodes[0].remove();
     el.append(document.createElement('div'));
   }
+}
+
+interface Dataset {
+  editor: string | null;
+  width: number;
+  height: number;
+}
+function getDataset(selector: string): Dataset | null {
+  const el = document.querySelector(selector) as HTMLElement;
+  let dataset: Dataset | null = null;
+  if (el && el.dataset.width && el.dataset.height) {
+    dataset = {
+      editor: null,
+      width: Number(el.dataset.width),
+      height: Number(el.dataset.height),
+    };
+    if (el.dataset.editor) {
+      dataset.editor = el.dataset.editor;
+    }
+  }
+  return dataset;
 }

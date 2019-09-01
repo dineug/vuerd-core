@@ -8,7 +8,9 @@
     .split-view-editor(
       ref="view"
       :style="`height: ${height}px; top: ${SIZE_VIEW_TAB_HEIGHT}px;`"
-      :class="`editor-${view.id}`"
+      :id="`editor-${view.id}`"
+      :data-width="width"
+      :data-height="height"
     )
       .split-view-editor-instance
     ViewDrop(
@@ -53,9 +55,15 @@
     private subDragenter: Subscription | null = null;
 
     private dropView: boolean = false;
-    private width: number = 0;
-    private height: number = 0;
     private direction: Direction = Direction.all;
+
+    get width(): number {
+     return this.view.width;
+    }
+
+    get height(): number {
+     return this.view.height - SIZE_VIEW_TAB_HEIGHT;
+    }
 
     get activeTab(): Tab | null {
       if (this.view.tabs.length === 0) {
@@ -70,16 +78,6 @@
         }
         return target;
       }
-    }
-
-    @Watch('view.width')
-    private watchWidth(width: number) {
-      this.width = width;
-    }
-
-    @Watch('view.height')
-    private watchHeight(height: number) {
-      this.height = height - SIZE_VIEW_TAB_HEIGHT;
     }
 
     private splitView(tabDraggable: TabView) {
@@ -229,8 +227,6 @@
       eventBus.$on(EventBus.ViewView.dropViewStart, this.onDropViewStart);
       eventBus.$on(EventBus.ViewView.dropViewEnd, this.onDropViewEnd);
       eventBus.$on(EventBus.ViewView.editorLoad, this.onEditorLoad);
-      this.width = this.view.width;
-      this.height = this.view.height - SIZE_VIEW_TAB_HEIGHT;
       this.onActive();
     }
 
