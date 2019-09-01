@@ -4,6 +4,7 @@ import {Plugin} from '@/types';
 import Command from '@/plugin/Command';
 import TextEditor from './plugins/TextEditor';
 import ImagePreview from './plugins/ImagePreview';
+import VideoPreview from './plugins/VideoPreview';
 
 const VuerdCore = {
   install: (Vue: typeof _Vue) => {
@@ -16,5 +17,6 @@ const VuerdCore = {
 
 VuerdCore.use(TextEditor);
 VuerdCore.use(ImagePreview);
+VuerdCore.use(VideoPreview);
 
 export default VuerdCore;

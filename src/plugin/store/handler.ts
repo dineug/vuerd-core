@@ -99,11 +99,7 @@ export function loaded(component: Component, editors: Editor[], tabView: TabView
   };
   editors.push(editor);
 
-  let scope = '';
-  if (tabView.name.lastIndexOf('.') !== -1) {
-    scope = tabView.name.substr(tabView.name.lastIndexOf('.') + 1);
-  }
-  editor.node.$data.scope = scope;
+  editor.node.$data.scope = tabView.name.substr(tabView.name.lastIndexOf('.') + 1);
   editor.node.$data.value = tabView.value;
   editor.node.$on('change', (value: string) => {
     editors.forEach((target) => {

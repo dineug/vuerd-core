@@ -9,7 +9,7 @@ export default {
         '*',
       ],
       exclude: [
-        /\.(jpe?g|png|gif)$/i,
+        /\.(jpe?g|png|gif|ico)$/i,
       ],
     });
   },
