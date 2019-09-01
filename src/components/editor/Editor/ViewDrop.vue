@@ -1,5 +1,7 @@
 <template lang="pug">
   .split-view-drop
+    .split-view-dragover(ref="dragover")
+    .split-view-drop-ghost(ref="ghost")
 </template>
 
 <script lang="ts">
@@ -42,8 +44,9 @@
           break;
       }
 
+      const el = this.$refs.ghost as HTMLElement;
       window.Velocity(
-        this.$el,
+        el,
         {
           width,
           height,
@@ -64,8 +67,9 @@
 
     // ==================== Life Cycle ====================
     private mounted() {
-      this.subDragover = fromEvent<DragEvent>(this.$el, 'dragover').pipe(
-        throttleTime(200),
+      const el = this.$refs.dragover as HTMLElement;
+      this.subDragover = fromEvent<DragEvent>(el, 'dragover').pipe(
+        throttleTime(100),
       ).subscribe(this.onDragover);
       this.watchDirection(this.direction);
     }
@@ -80,9 +84,20 @@
 
 <style scoped lang="scss">
   .split-view-drop {
-    position: absolute;
-    z-index: 150;
-    opacity: 0.3;
-    background-color: $color-drop;
+
+    .split-view-dragover {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      z-index: 9000;
+      opacity: 0;
+    }
+
+    .split-view-drop-ghost {
+      position: absolute;
+      z-index: 8000;
+      opacity: 0.3;
+      background-color: $color-drop;
+    }
   }
 </style>

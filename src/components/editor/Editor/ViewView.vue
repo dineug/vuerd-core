@@ -18,7 +18,7 @@
       :width="width"
       :height="height"
       :direction="direction"
-      @dragover="onDragover($event, true)"
+      @dragover="onDragover"
     )
 </template>
 
@@ -30,7 +30,7 @@
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
   import EventBus from '@/models/EventBus';
   import pluginManagement from '@/plugin/PluginManagement';
-  import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
+  import {Component, Prop, Vue} from 'vue-property-decorator';
   import ViewTab from './ViewTab.vue';
   import ViewDrop from './ViewDrop.vue';
 
@@ -139,20 +139,10 @@
       eventBus.$emit(EventBus.ViewView.dropViewStart, this.view.id);
     }
 
-    private onDragover(event: DragEvent, drop: boolean = false) {
+    private onDragover(event: DragEvent) {
       log.debug('ViewView onDragover');
-      let x = event.offsetX;
-      let y = event.offsetY;
-      if (drop) {
-        switch (this.direction) {
-          case Direction.bottom:
-            y = event.offsetY + this.height / 2;
-            break;
-          case Direction.right:
-            x = event.offsetX + this.width / 2;
-            break;
-        }
-      }
+      const x = event.offsetX;
+      const y = event.offsetY;
       const minWidth = this.width * 0.2;
       const minHeight = this.height * 0.2;
       // left
@@ -176,7 +166,7 @@
       log.debug('ViewView onDropStart');
       this.subDragenter = this.dragenter$.subscribe(this.onDragenter);
       this.subDragover = this.dragover$.pipe(
-        throttleTime(200),
+        throttleTime(100),
       ).subscribe(this.onDragover);
     }
 
