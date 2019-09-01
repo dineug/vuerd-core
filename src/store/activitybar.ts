@@ -14,6 +14,7 @@ export interface State {
 
 export interface ActivityMenu {
   readonly id: string;
+  name: string;
   icon: string;
   iconType: IconType;
 

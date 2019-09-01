@@ -4,6 +4,7 @@ import {uuid} from '@/ts/util';
 
 const explorer: ActivityMenu = {
   id: uuid(),
+  name: 'explorer',
   icon: 'mdi-file-multiple',
   iconType: IconType.mdi,
   execute(): void {

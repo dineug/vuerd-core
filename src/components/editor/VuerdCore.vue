@@ -24,7 +24,7 @@
   import EventBus from '@/models/EventBus';
   import {minVertical, minHorizontal} from '@/store/view/viewHandler';
   import viewStore from '@/store/view';
-  import treeStore, {Tree, Commit} from '@/store/tree';
+  import treeStore, {Commit} from '@/store/tree';
   import {Tree as TreeModel} from '@/types';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Titlebar from './Titlebar.vue';

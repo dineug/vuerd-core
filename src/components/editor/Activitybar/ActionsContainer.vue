@@ -4,6 +4,7 @@
       v-for="menu in menus"
       :key="menu.id"
       :class="{active: activeMenu && menu.id === activeMenu.id}"
+      :title="menu.name"
       @click="menu.execute"
     )
       MDIcon {{menu.icon}}

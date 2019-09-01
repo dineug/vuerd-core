@@ -27,6 +27,13 @@ Vue.use(VuerdCore);
 
 ## Development Status Prototype
 ### TODO
-- [ ] Usage Event
-- [x] Plugin API
-
+- Plugin API
+- [X] editor
+- Usage API
+- [ ] Event
+- [ ] Titlebar
+- [ ] Sidebar
+- [ ] Statusbar
+- [ ] Activitybar
+- [ ] EditorBottom
+- [ ] Contextmenu
