@@ -1,6 +1,6 @@
 <template lang="pug">
   .editor(
-    :style="{ width: `${width}px`, height: `${height}px` }"
+    :style="`width: ${width}px; height: ${height}px; background-color: ${theme.editor};`"
     @dragover="onDragover"
     @drop="onDrop"
   )
@@ -9,6 +9,7 @@
 
 <script lang="ts">
   import {SIZE_TITLEBAR_HEIGHT, SIZE_ACTIVITYBAR_WIDTH} from '@/ts/layout';
+  import themeStore, {State as ThemeState} from '@/store/theme';
   import viewStore, {View} from '@/store/view';
   import {resetSize, resetWidthRatio, resetHeightRatio} from '@/store/view/viewHandler';
   import {log, eventBus} from '@/ts/util';
@@ -37,6 +38,10 @@
 
     get container(): View {
       return viewStore.state.container;
+    }
+
+    get theme(): ThemeState {
+      return themeStore.state;
     }
 
     @Watch('width')
@@ -109,6 +114,5 @@
   .editor {
     position: absolute;
     overflow: hidden;
-    background-color: $color-editor;
   }
 </style>

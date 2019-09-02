@@ -1,5 +1,5 @@
 <template lang="pug">
-  .statusbar(:style="`color: ${theme.font}; background-color: ${theme.statusbar};`")
+  .titlebar(:style="`color: ${theme.font}; background-color: ${theme.titleBar};`")
 </template>
 
 <script lang="ts">
@@ -7,7 +7,7 @@
   import { Component, Prop, Vue } from 'vue-property-decorator';
 
   @Component
-  export default class Statusbar extends Vue {
+  export default class TitleBar extends Vue {
     get theme(): ThemeState {
       return themeStore.state;
     }
@@ -15,13 +15,8 @@
 </script>
 
 <style scoped lang="scss">
-  .statusbar {
+  .titlebar {
     width: 100%;
-    height: $size-statusbar-height;
-    position: absolute;
-    bottom: 0;
-    box-sizing: border-box;
-    font-size: $size-font;
-    z-index: 300;
+    height: $size-titlebar-height;
   }
 </style>

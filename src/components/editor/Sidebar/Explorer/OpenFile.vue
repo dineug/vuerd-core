@@ -21,7 +21,8 @@
             span.arrow(@click="onClose($event, tabGroup, tab)")
               MDIcon(:size="12") mdi-close
             span.node(
-              :class="{active: tab.active, draggable: tabDraggable && tabDraggable.view.id === tabGroup.id && tabDraggable.id === tab.id}"
+              :class="{draggable: tabDraggable && tabDraggable.view.id === tabGroup.id && tabDraggable.id === tab.id}"
+              :style="tab.active ? `color: ${theme.fontActive};` : ''"
               draggable="true"
               @click="onActive(tabGroup, tab)"
               @mousedown="onMousedown"
@@ -34,6 +35,7 @@
 </template>
 
 <script lang="ts">
+  import themeStore, {State as ThemeState} from '@/store/theme';
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
   import {log, getData, findParentLiByElement, eventBus} from '@/ts/util';
   import EventBus from '@/models/EventBus';
@@ -58,6 +60,10 @@
 
     get tabDraggable(): TabView | null {
       return viewStore.state.tabDraggable;
+    }
+
+    get theme(): ThemeState {
+      return themeStore.state;
     }
 
     // ==================== Event Handler ===================
@@ -200,10 +206,6 @@
           cursor: pointer;
           display: inline-flex;
           align-items: center;
-
-          &.active {
-            color: white;
-          }
 
           &.draggable {
             opacity: 0.5;

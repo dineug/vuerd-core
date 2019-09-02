@@ -1,5 +1,5 @@
 <template lang="pug">
-  .title
+  .title(:style="`border-top-color: ${theme.sash};`")
     .title-tab
       ul
         li 도메인
@@ -11,6 +11,7 @@
 </template>
 
 <script lang="ts">
+  import themeStore, {State as ThemeState} from '@/store/theme';
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import MDIcon from '@/components/editor/MDIcon.vue';
 
@@ -20,6 +21,9 @@
     },
   })
   export default class Title extends Vue {
+    get theme(): ThemeState {
+      return themeStore.state;
+    }
   }
 </script>
 
@@ -29,7 +33,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    border-top: solid 1px $color-sash;
+    border-top: solid 1px;
 
     .title-tab {
       height: $size-title-height;

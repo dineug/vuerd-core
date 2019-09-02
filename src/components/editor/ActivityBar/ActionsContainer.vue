@@ -3,7 +3,7 @@
     li(
       v-for="menu in menus"
       :key="menu.id"
-      :class="{active: activeMenu && menu.id === activeMenu.id}"
+      :style="activeMenu && menu.id === activeMenu.id ? `color: ${theme.fontActive};` : ''"
       :title="menu.name"
       @click="menu.execute"
     )
@@ -11,7 +11,8 @@
 </template>
 
 <script lang="ts">
-  import activitybarStore, {ActivityMenu} from '@/store/activitybar';
+  import themeStore, {State as ThemeState} from '@/store/theme';
+  import activitybarStore, {ActivityMenu} from '@/store/activityBar';
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import MDIcon from '@/components/editor/MDIcon.vue';
 
@@ -30,6 +31,9 @@
       return activitybarStore.state.activeMenu;
     }
 
+    get theme(): ThemeState {
+      return themeStore.state;
+    }
   }
 </script>
 
@@ -40,11 +44,7 @@
     cursor: pointer;
 
     li {
-      padding: 5px 0;
-
-      &.active {
-        color: white;
-      }
+      padding: 10px 0;
     }
   }
 

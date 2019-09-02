@@ -5,6 +5,8 @@ import Command from '@/plugin/Command';
 import TextEditor from './plugins/TextEditor';
 import ImagePreview from './plugins/ImagePreview';
 import VideoPreview from './plugins/VideoPreview';
+import AtomOneDarkTheme from './plugins/AtomOneDarkTheme';
+import AtomOneLightTheme from './plugins/AtomOneLightTheme';
 
 const VuerdCore = {
   install: (Vue: typeof _Vue) => {
@@ -18,5 +20,7 @@ const VuerdCore = {
 VuerdCore.use(TextEditor);
 VuerdCore.use(ImagePreview);
 VuerdCore.use(VideoPreview);
+VuerdCore.use(AtomOneDarkTheme);
+VuerdCore.use(AtomOneLightTheme);
 
 export default VuerdCore;

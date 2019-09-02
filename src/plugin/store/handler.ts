@@ -5,6 +5,7 @@ import {TabView} from '@/store/view';
 import {isData} from '@/ts/util';
 import {tabGroups} from '@/store/view/viewHandler';
 import viewStore, {Commit as ViewCommit} from '@/store/view';
+import themeStore from '@/store/theme';
 
 export function getEditor(name: string, plugins: Array<Store<State>>): Store<State> {
   const editors = getScopeEditors(name, plugins);
@@ -104,6 +105,7 @@ export function loaded(component: Component, editors: Editor[], tabView: TabView
     editor.node.$data.width = dataset.width;
     editor.node.$data.height = dataset.height;
   }
+  editor.node.$data.color = themeStore.getters.color;
   editor.node.$data.scope = tabView.name.substr(tabView.name.lastIndexOf('.') + 1);
   editor.node.$data.value = tabView.value;
   editor.node.$on('change', (value: string) => {

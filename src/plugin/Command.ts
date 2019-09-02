@@ -2,7 +2,7 @@ import {Store} from 'vuex';
 import pluginManagement from '@/plugin/PluginManagement';
 import {createStore, Commit, State} from '@/plugin/store';
 import {log} from '@/ts/util';
-import {EditorOption} from '@/types';
+import {EditorOption, Theme} from '@/types';
 
 export default class Command {
   private readonly store: Store<State>;
@@ -18,6 +18,11 @@ export default class Command {
     } else {
       log.warn('Command editorAdd: component duplication');
     }
+    return this;
+  }
+
+  public themeAdd(theme: Theme): Command {
+    this.store.commit(Commit.themeAdd, theme);
     return this;
   }
 }

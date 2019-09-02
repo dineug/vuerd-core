@@ -3,7 +3,7 @@
     :style="`width: ${view.width}px;`"
   )
     transition-group(
-      :style="`min-width: ${minWidth}px; height: ${SIZE_VIEW_TAB_HEIGHT}px;`"
+      :style="`min-width: ${minWidth}px; height: ${SIZE_VIEW_TAB_HEIGHT}px; background-color: ${theme.tabBar};`"
       name="tab"
       tag="ul"
       :css="false"
@@ -13,7 +13,8 @@
         v-for="tab in view.tabs"
         :key="tab.id"
         :data-id="tab.id"
-        :class="{active: tab.active, draggable: tabDraggable && tabDraggable.view.id === view.id && tabDraggable.id === tab.id}"
+        :class="{draggable: tabDraggable && tabDraggable.view.id === view.id && tabDraggable.id === tab.id}"
+        :style="`color: ${tab.active ? theme.fontActive : theme.font}; background-color: ${tab.active ? theme.tabActive : theme.tab};`"
         :title="tab.path"
         @click="onActive(tab)"
         @mousedown="onMousedown"
@@ -30,6 +31,7 @@
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
   import {log, eventBus, getData, getTextWidth, findParentLiByElement} from '@/ts/util';
+  import themeStore, {State as ThemeState} from '@/store/theme';
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
   import EventBus from '@/models/EventBus';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
@@ -61,6 +63,10 @@
 
     get tabDraggable(): TabView | null {
       return viewStore.state.tabDraggable;
+    }
+
+    get theme(): ThemeState {
+      return themeStore.state;
     }
 
     @Watch('view.tabs')
@@ -224,20 +230,13 @@
     }
 
     ul {
-      background-color: $color-sidebar;
       overflow-y: hidden;
 
       li {
         padding: 5px;
         cursor: pointer;
-        background-color: $color-tab;
         display: inline-flex;
         align-items: center;
-
-        &.active {
-          color: white;
-          background-color: $color-editor;
-        }
 
         &.draggable {
           opacity: 0.5;

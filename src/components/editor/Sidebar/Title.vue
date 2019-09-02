@@ -1,16 +1,20 @@
 <template lang="pug">
   .title
     .title-label
-      span {{name}}
+      span(:style="`color: ${theme.font};`") {{name}}
 </template>
 
 <script lang="ts">
+  import themeStore, {State as ThemeState} from '@/store/theme';
   import { Component, Prop, Vue } from 'vue-property-decorator';
 
   @Component
   export default class Title extends Vue {
     @Prop({type: String, default: ''})
     private name!: string;
+    get theme(): ThemeState {
+      return themeStore.state;
+    }
   }
 </script>
 
@@ -31,7 +35,6 @@
       padding-left: 12px;
 
       span {
-        color: $color-title;
         font-size: $size-font + 2;
         overflow: hidden;
       }

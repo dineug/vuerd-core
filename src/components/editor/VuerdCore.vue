@@ -1,7 +1,7 @@
 <template lang="pug">
-  .vuerd-core
-    Titlebar
-    Activitybar
+  .vuerd-core(:style="`color: ${theme.font};`")
+    TitleBar
+    ActivityBar
     .workspace(ref="workspace")
       Sidebar(:width="sidebarWidth")
       .main(ref="main" :style="{ left: `${sidebarWidth}px`, width: `${mainWidth}px` }")
@@ -12,7 +12,12 @@
         )
         EditorBottom(:height="editorBottomHeight")
           Sash(horizontal @mousemove="onMousemoveSash($event, 'horizontal')")
-        Sash(vertical @mousemove="onMousemoveSash($event, 'vertical')")
+        Sash(
+          v-if="activeMenu !== null"
+          vertical
+          @mousemove="onMousemoveSash($event, 'vertical')"
+          @mouseup="onMouseupSash"
+        )
     Statusbar
 </template>
 
@@ -25,10 +30,13 @@
   import {minVertical, minHorizontal} from '@/store/view/viewHandler';
   import viewStore from '@/store/view';
   import treeStore, {Commit} from '@/store/tree';
+  import themeStore, {State as ThemeState} from '@/store/theme';
+  import activityBarStore, {ActivityMenu, Commit as ActivityBarCommit} from '@/store/activityBar';
+  import pluginManagement from '@/plugin/PluginManagement';
   import {Tree as TreeModel} from '@/types';
   import {Component, Prop, Vue} from 'vue-property-decorator';
-  import Titlebar from './Titlebar.vue';
-  import Activitybar from './Activitybar.vue';
+  import TitleBar from './TitleBar.vue';
+  import ActivityBar from './ActivityBar.vue';
   import Sidebar from './Sidebar.vue';
   import Editor from './Editor.vue';
   import EditorBottom from './EditorBottom.vue';
@@ -51,8 +59,8 @@
 
   @Component({
     components: {
-      Titlebar,
-      Activitybar,
+      TitleBar,
+      ActivityBar,
       Sidebar,
       Editor,
       EditorBottom,
@@ -79,6 +87,14 @@
     private resize$: Observable<Event> = fromEvent(window, 'resize');
     private subResize!: Subscription;
     private subResizeMovement!: Subscription;
+
+    get theme(): ThemeState {
+      return themeStore.state;
+    }
+
+    get activeMenu(): ActivityMenu | null {
+      return activityBarStore.state.activeMenu;
+    }
 
     // ==================== Event Handler ===================
     private onResizeMovement() {
@@ -163,8 +179,15 @@
       }
     }
 
-    private onExplorerStart() {
-      log.debug('VuerdCore onExplorerStart');
+    private onMouseupSash() {
+      log.debug('VuerdCore onMouseupSash');
+      if (this.sidebarWidth === 0) {
+        activityBarStore.commit(ActivityBarCommit.close);
+      }
+    }
+
+    private onSidebarStart() {
+      log.debug('VuerdCore onSidebarStart');
       this.sidebarWidth = this.sidebarWidthOld;
       if (this.sidebarWidth < 50) {
         this.sidebarWidth = 200;
@@ -172,8 +195,8 @@
       this.onResize();
     }
 
-    private onExplorerEnd() {
-      log.debug('VuerdCore onExplorerEnd');
+    private onSidebarEnd() {
+      log.debug('VuerdCore onSidebarEnd');
       this.sidebarWidthOld = this.sidebarWidth;
       this.sidebarWidth = 0;
       this.onResize();
@@ -188,9 +211,16 @@
 
     // ==================== Life Cycle ====================
     private created() {
+      const themes = pluginManagement.themes();
+      for (const theme of themes) {
+        if (theme.name === 'AtomOneDark') {
+          pluginManagement.themeLoad(theme);
+          break;
+        }
+      }
       treeStore.commit(Commit.folderInit, this.value);
-      eventBus.$on(EventBus.VuerdCore.explorerStart, this.onExplorerStart);
-      eventBus.$on(EventBus.VuerdCore.explorerEnd, this.onExplorerEnd);
+      eventBus.$on(EventBus.VuerdCore.sidebarStart, this.onSidebarStart);
+      eventBus.$on(EventBus.VuerdCore.sidebarEnd, this.onSidebarEnd);
       eventBus.$on(EventBus.VuerdCore.changeTree, this.onChangeTree);
     }
 
@@ -205,8 +235,8 @@
       this.subResize.unsubscribe();
       this.subResizeMovement.unsubscribe();
       removeSpanText();
-      eventBus.$off(EventBus.VuerdCore.explorerStart, this.onExplorerStart);
-      eventBus.$off(EventBus.VuerdCore.explorerEnd, this.onExplorerEnd);
+      eventBus.$off(EventBus.VuerdCore.sidebarStart, this.onSidebarStart);
+      eventBus.$off(EventBus.VuerdCore.sidebarEnd, this.onSidebarEnd);
       eventBus.$off(EventBus.VuerdCore.changeTree, this.onChangeTree);
     }
 
@@ -221,7 +251,6 @@
     height: 100vh;
     position: relative;
     overflow: hidden;
-    color: $color-font;
     min-width: $size-min-width;
 
     .workspace {
@@ -259,7 +288,7 @@
 
     /* Handle : hover*/
     ::-webkit-scrollbar-thumb:hover {
-      background: $color-sash;
+      background: $color-scrollbar-thumb-active;
     }
 
     /* firefox */

@@ -28,6 +28,7 @@
   import {eventBus, log} from '@/ts/util';
   import {split} from '@/store/view/viewHandler';
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
+  import themeStore, {State as ThemeState} from '@/store/theme';
   import EventBus from '@/models/EventBus';
   import pluginManagement from '@/plugin/PluginManagement';
   import {Component, Prop, Vue} from 'vue-property-decorator';
@@ -78,6 +79,10 @@
         }
         return target;
       }
+    }
+
+    get theme(): ThemeState {
+      return themeStore.state;
     }
 
     private splitView(tabDraggable: TabView) {

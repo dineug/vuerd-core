@@ -31,8 +31,8 @@ enum Explorer {
 }
 
 enum VuerdCore {
-  explorerStart = 'VuerdCore.explorerStart',
-  explorerEnd = 'VuerdCore.explorerEnd',
+  sidebarStart = 'VuerdCore.sidebarStart',
+  sidebarEnd = 'VuerdCore.sidebarEnd',
   changeTree = 'VuerdCore.changeTree',
 }
 

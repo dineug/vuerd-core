@@ -21,8 +21,33 @@ export interface EditorOption {
   exclude?: Array<string | RegExp>;
 }
 
+export interface Theme {
+  name: string;
+  color: Color;
+}
+
+export interface Color {
+  drop: string;
+  sash: string;
+  active: string;
+  editor: string;
+  titleBar: string;
+  activity: string;
+  statusbar: string;
+  font: string;
+  fontActive: string;
+  contextmenu: string;
+  contextmenuActive: string;
+  sidebar: string;
+  sidebarActive: string;
+  tabBar: string;
+  tab: string;
+  tabActive: string;
+}
+
 export declare class Command {
   editorAdd(option: EditorOption): Command;
+  themeAdd(theme: Theme): Command;
 }
 
 export declare function use(plugin: Plugin): void;

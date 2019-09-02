@@ -1,5 +1,6 @@
 <template lang="pug">
   textarea.text-editor(
+    :style="`color: ${color.font}; background-color: ${color.editor};`"
     :value="value"
     @change="onChange"
     @input="onInput"
@@ -9,10 +10,12 @@
 
 <script lang="ts">
   import {Component, Prop, Vue} from 'vue-property-decorator';
+  import {Color} from '@/types';
 
   @Component
   export default class TextEditor extends Vue {
     private value: string = '';
+    private color: Color | any = {};
 
     private onChange(event: Event) {
       const textarea = event.target as HTMLTextAreaElement;
@@ -35,8 +38,5 @@
     border: none;
     resize: none;
     outline: none;
-
-    color: #cccccc;
-    background-color: #282c34;
   }
 </style>

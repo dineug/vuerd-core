@@ -1,11 +1,12 @@
 <template lang="pug">
   .split-view-drop
-    .split-view-dragover(ref="dragover")
     .split-view-drop-ghost(ref="ghost")
+    .split-view-drop-split(ref="split" :style="`background-color: ${theme.drop};`")
 </template>
 
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
+  import themeStore, {State as ThemeState} from '@/store/theme';
   import Direction from '@/models/Direction';
   import {log} from '@/ts/util';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
@@ -23,6 +24,10 @@
     private direction!: Direction;
 
     private subDragover!: Subscription;
+
+    get theme(): ThemeState {
+      return themeStore.state;
+    }
 
     @Watch('direction')
     private watchDirection(direction: Direction) {
@@ -44,7 +49,7 @@
           break;
       }
 
-      const el = this.$refs.ghost as HTMLElement;
+      const el = this.$refs.split as HTMLElement;
       window.Velocity(
         el,
         {
@@ -67,7 +72,7 @@
 
     // ==================== Life Cycle ====================
     private mounted() {
-      const el = this.$refs.dragover as HTMLElement;
+      const el = this.$refs.ghost as HTMLElement;
       this.subDragover = fromEvent<DragEvent>(el, 'dragover').pipe(
         throttleTime(100),
       ).subscribe(this.onDragover);
@@ -85,7 +90,7 @@
 <style scoped lang="scss">
   .split-view-drop {
 
-    .split-view-dragover {
+    .split-view-drop-ghost {
       width: 100%;
       height: 100%;
       position: absolute;
@@ -93,11 +98,10 @@
       opacity: 0;
     }
 
-    .split-view-drop-ghost {
+    .split-view-drop-split {
       position: absolute;
       z-index: 8000;
       opacity: 0.3;
-      background-color: $color-drop;
     }
   }
 </style>

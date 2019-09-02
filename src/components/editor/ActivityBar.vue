@@ -1,20 +1,23 @@
 <template lang="pug">
-  .activitybar
+  .activitybar(:style="`background-color: ${theme.activity};`")
     .content
       ActionsContainer
 </template>
 
 <script lang="ts">
+  import themeStore, {State as ThemeState} from '@/store/theme';
   import { Component, Prop, Vue } from 'vue-property-decorator';
-  import ActionsContainer from './Activitybar/ActionsContainer.vue';
+  import ActionsContainer from './ActivityBar/ActionsContainer.vue';
 
   @Component({
     components: {
       ActionsContainer,
     },
   })
-  export default class Activitybar extends Vue {
-
+  export default class ActivityBar extends Vue {
+    get theme(): ThemeState {
+      return themeStore.state;
+    }
   }
 </script>
 
@@ -23,7 +26,6 @@
     width: $size-activitybar-width;
     height: 100%;
     position: absolute;
-    background-color: $color-activity;
 
     .content {
       display: flex;

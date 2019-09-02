@@ -6,7 +6,7 @@
     .split-view-view(
       v-for="(node, i) in container.children"
       :key="node.id"
-      :style="{ width: `${node.width}px`, height: `${node.height}px` }"
+      :style="`width: ${node.width}px; height: ${node.height}px; ${container.vertical && i !== 0 ? `border-left-color: ${theme.sash};` : ''} ${container.horizontal && i !== 0 ? `border-top-color: ${theme.sash};` : ''}`"
       :class="{ vertical: container.vertical && i !== 0, horizontal: container.horizontal && i !== 0 }"
     )
       Sash(
@@ -24,6 +24,7 @@
 </template>
 
 <script lang="ts">
+  import themeStore, {State as ThemeState} from '@/store/theme';
   import {View} from '@/store/view';
   import Direction from '@/models/Direction';
   import {log} from '@/ts/util';
@@ -58,6 +59,10 @@
       top: false,
       bottom: false,
     };
+
+    get theme(): ThemeState {
+      return themeStore.state;
+    }
 
     private moveWidth(event: MouseEvent, view1: View, view2: View) {
       const direction: Direction = event.movementX < 0 ? Direction.left : Direction.right;
@@ -170,11 +175,11 @@
       position: relative;
 
       &.vertical {
-        border-left: solid 1px $color-sash;
+        border-left: solid 1px;
       }
 
       &.horizontal {
-        border-top: solid 1px $color-sash;
+        border-top: solid 1px;
       }
     }
   }

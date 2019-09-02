@@ -1,9 +1,9 @@
 <template lang="pug">
-  .explorer(:class="{active: subKeydown !== null}" :style="`height: ${height}px;`")
-    Title(name="탐색기")
+  .explorer(:style="`height: ${height}px; border-color: ${subKeydown !== null ? theme.active : theme.sidebar};`")
+    Title(name="Explorer")
     Title(name="OPEN FILES")
     .content
-      OpenFile.file(:tab-groups="tabGroups")
+      OpenFile.file.scrollbar(:tab-groups="tabGroups")
     Title(name="WORKSPACE")
     .content.tree-view.scrollbar(:style="`height: ${treeHeight}px;`")
       TreeView.file(
@@ -14,7 +14,7 @@
         .active(
           v-for="select in selects"
           :key="select.id"
-          :style="`top: ${select.top}px;`"
+          :style="`top: ${select.top}px; background-color: ${theme.sidebarActive};`"
         )
     Contextmenu.contextmenu-explorer(
       v-if="contextmenu"
@@ -29,6 +29,7 @@
   import {SIZE_STATUSBAR_HEIGHT, SIZE_TITLEBAR_HEIGHT, SIZE_TREE_HEIGHT} from '@/ts/layout';
   import treeStore, {Commit, Tree, TreeSelect} from '@/store/tree';
   import viewStore, {View} from '@/store/view';
+  import themeStore, {State as ThemeState} from '@/store/theme';
   import contextmenuStore, {Menu, Scope} from '@/store/contextmenu';
   import {findById} from '@/store/tree/treeHandler';
   import Key from '@/models/Key';
@@ -129,6 +130,10 @@
         });
       }
       return menus;
+    }
+
+    get theme(): ThemeState {
+      return themeStore.state;
     }
 
     // ==================== Event Handler ===================
@@ -248,11 +253,7 @@
 <style scoped lang="scss">
   .explorer {
     height: 100%;
-    border: solid 1px $color-sidebar;
-
-    &.active {
-      border: solid 1px $color-active;
-    }
+    border: solid 1px;
 
     .content {
       position: relative;
@@ -266,7 +267,6 @@
       }
 
       .active {
-        background-color: $color-sidebar-hover;
         height: $size-tree-height;
         position: absolute;
         width: 100%;

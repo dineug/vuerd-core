@@ -12,7 +12,7 @@
         .none-arrow(v-else)
       span.node(
         draggable="true"
-        :class="{'folder-active': folder && node.id === folder.id}"
+        :style="folder && node.id === folder.id ? `color: ${theme.fontActive}; background-color: ${theme.active};` : ''"
         :data-id="node.id"
         :data-folder="node.children !== undefined"
         @mousedown="onMousedown"
@@ -61,6 +61,7 @@
   import {findById, childrenCount, path} from '@/store/tree/treeHandler';
   import treeStore, {Tree, Commit} from '@/store/tree';
   import viewStore, {Commit as ViewCommit} from '@/store/view';
+  import themeStore, {State as ThemeState} from '@/store/theme';
   import EventBus from '@/models/EventBus';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import MDIcon from '@/components/editor/MDIcon.vue';
@@ -108,6 +109,10 @@
 
     get editWidth(): number {
       return this.width - PADDING_LEFT - (this.depth * PADDING_DEPTH);
+    }
+
+    get theme(): ThemeState {
+      return themeStore.state;
     }
 
     private findNodeByElement(el: HTMLElement | null): HTMLElement | null {
@@ -305,11 +310,6 @@
 
         .name {
           font-size: $size-font + 2;
-        }
-
-        &.folder-active {
-          color: white;
-          background-color: $color-active;
         }
       }
     }

@@ -1,11 +1,13 @@
 <template lang="pug">
   .contextmenu
-    ul(:style="`top: ${y}px; left: ${x}px`" ref="ul")
+    ul(:style="`top: ${y}px; left: ${x}px; background-color: ${theme.contextmenu};`" ref="ul")
       li(
         v-for="menu in getMenus"
         :key="menu.id"
         @click="onExecute(menu)"
         @mouseover="onMouseover(menu)"
+        @mouseenter="onMouseenter"
+        @mouseleave="onMouseleave"
       )
         span.name {{menu.name}}
         span.keymap {{menu.keymap}}
@@ -21,6 +23,7 @@
 </template>
 
 <script lang="ts">
+  import themeStore, {State as ThemeState} from '@/store/theme';
   import {Menu, Scope} from '@/store/contextmenu';
   import treeStore from '@/store/tree';
   import EventBus from '@/models/EventBus';
@@ -78,6 +81,10 @@
       }
     }
 
+    get theme(): ThemeState {
+      return themeStore.state;
+    }
+
     private onExecute(menu: Menu<any>) {
       log.debug('Contextmenu onExecute');
       if (!menu.children && menu.execute && typeof menu.execute === 'function') {
@@ -98,6 +105,18 @@
       this.currentMenu = menu;
     }
 
+    private onMouseenter(event: MouseEvent) {
+      const el = event.target as HTMLElement;
+      el.style.color = this.theme.fontActive;
+      el.style.backgroundColor = this.theme.contextmenuActive;
+    }
+
+    private onMouseleave(event: MouseEvent) {
+      const el = event.target as HTMLElement;
+      el.style.color = this.theme.font;
+      el.style.backgroundColor = this.theme.contextmenu;
+    }
+
   }
 </script>
 
@@ -107,18 +126,12 @@
     ul {
       position: fixed;
       z-index: 9000;
-      background-color: $color-contextmenu;
 
       li {
         padding: 10px;
         cursor: pointer;
         font-size: $size-font + 2;
         white-space: nowrap;
-
-        &:hover {
-          color: white;
-          background-color: $color-contextmenu-hover;
-        }
 
         span {
           width: 100px;
