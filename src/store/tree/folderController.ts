@@ -3,15 +3,15 @@ import {Tree as TreeModel} from '@/types';
 import {lastSelect, move, orderByNameASC,
   childrenArray, deleteByTree, treeToSelect, modelToTree} from './treeHandler';
 import {fileSelectEnd, fileDelete, fileRenameStart} from './fileController';
-import {log, uuid, eventBus} from '@/ts/util';
-import EventBus from '@/models/EventBus';
+import {log, uuid} from '@/ts/util';
+import eventBus, {Bus} from '@/ts/EventBus';
 import Key from '@/models/Key';
 
 export function folderMove(state: State) {
   log.debug('folderController folderMove');
   if (state.folder && state.currentTree) {
     state.selects = move(state.container, state.selects, state.folder, state.currentTree);
-    eventBus.$emit(EventBus.VuerdCore.changeTree);
+    eventBus.$emit(Bus.VuerdCore.changeTree);
   }
 }
 

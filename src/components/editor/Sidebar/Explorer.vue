@@ -33,8 +33,8 @@
   import contextmenuStore, {Menu, Scope} from '@/store/contextmenu';
   import {findById} from '@/store/tree/treeHandler';
   import Key from '@/models/Key';
-  import EventBus from '@/models/EventBus';
-  import {eventBus, log} from '@/ts/util';
+  import eventBus, {Bus} from '@/ts/EventBus';
+  import {log} from '@/ts/util';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Title from './Title.vue';
   import TreeView from './Explorer/TreeView.vue';
@@ -199,7 +199,7 @@
             treeStore.commit(Commit.fileDelete, tree);
           }
         });
-        eventBus.$emit(EventBus.VuerdCore.changeTree);
+        eventBus.$emit(Bus.VuerdCore.changeTree);
       } else if (!this.renameTree
         && (event.key === Key.ArrowUp
           || event.key === Key.ArrowDown)) {
@@ -232,14 +232,14 @@
       this.subResize = this.resize$.subscribe(this.onResize);
       this.subContextmenu = this.contextmenu$.subscribe(this.onContextmenu);
       window.dispatchEvent(new Event('resize'));
-      eventBus.$on(EventBus.Explorer.contextmenuEnd, this.onContextmenuEnd);
+      eventBus.$on(Bus.Explorer.contextmenuEnd, this.onContextmenuEnd);
     }
 
     private destroyed() {
       this.subMousedown.unsubscribe();
       this.subResize.unsubscribe();
       this.subContextmenu.unsubscribe();
-      eventBus.$off(EventBus.Explorer.contextmenuEnd, this.onContextmenuEnd);
+      eventBus.$off(Bus.Explorer.contextmenuEnd, this.onContextmenuEnd);
       if (this.subKeydown !== null) {
         this.subMousedown.unsubscribe();
       }

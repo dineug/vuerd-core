@@ -1,8 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import IconType from '@/models/IconType';
-import EventBus from '@/models/EventBus';
-import {eventBus} from '@/ts/util';
+import eventBus, {Bus} from '@/ts/EventBus';
 import init from '@/data/activitybar';
 
 Vue.use(Vuex);
@@ -40,12 +39,12 @@ export default new Vuex.Store({
     explorer(state: State) {
       if (state.activeMenu && state.activeMenu.name === 'explorer') {
         state.activeMenu = null;
-        eventBus.$emit(EventBus.VuerdCore.sidebarEnd);
+        eventBus.$emit(Bus.VuerdCore.sidebarEnd);
       } else {
         for (const menu of state.menus) {
           if (menu.name === 'explorer') {
             state.activeMenu = menu;
-            eventBus.$emit(EventBus.VuerdCore.sidebarStart);
+            eventBus.$emit(Bus.VuerdCore.sidebarStart);
             break;
           }
         }
@@ -54,12 +53,12 @@ export default new Vuex.Store({
     plugin(state: State) {
       if (state.activeMenu && state.activeMenu.name === 'plugin') {
         state.activeMenu = null;
-        eventBus.$emit(EventBus.VuerdCore.sidebarEnd);
+        eventBus.$emit(Bus.VuerdCore.sidebarEnd);
       } else {
         for (const menu of state.menus) {
           if (menu.name === 'plugin') {
             state.activeMenu = menu;
-            eventBus.$emit(EventBus.VuerdCore.sidebarStart);
+            eventBus.$emit(Bus.VuerdCore.sidebarStart);
             break;
           }
         }

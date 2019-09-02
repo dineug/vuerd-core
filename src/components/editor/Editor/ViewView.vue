@@ -25,11 +25,11 @@
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
   import Direction from '@/models/Direction';
-  import {eventBus, log} from '@/ts/util';
+  import {log} from '@/ts/util';
+  import eventBus, {Bus} from '@/ts/EventBus';
   import {split} from '@/store/view/viewHandler';
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
   import themeStore, {State as ThemeState} from '@/store/theme';
-  import EventBus from '@/models/EventBus';
   import pluginManagement from '@/plugin/PluginManagement';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import ViewTab from './ViewTab.vue';
@@ -131,17 +131,17 @@
 
     private onDragstartTab() {
       log.debug('ViewView onDragstartTab');
-      eventBus.$emit(EventBus.ViewView.dropStart);
+      eventBus.$emit(Bus.ViewView.dropStart);
     }
 
     private onDragenterTab() {
       log.debug('ViewView onDragenterTab');
-      eventBus.$emit(EventBus.ViewView.dropViewEnd);
+      eventBus.$emit(Bus.ViewView.dropViewEnd);
     }
 
     private onDragenter() {
       log.debug('ViewView onDragenter');
-      eventBus.$emit(EventBus.ViewView.dropViewStart, this.view.id);
+      eventBus.$emit(Bus.ViewView.dropViewStart, this.view.id);
     }
 
     private onDragover(event: DragEvent) {
@@ -217,11 +217,11 @@
 
     // ==================== Life Cycle ====================
     private created() {
-      eventBus.$on(EventBus.ViewView.dropStart, this.onDropStart);
-      eventBus.$on(EventBus.ViewView.dropEnd, this.onDropEnd);
-      eventBus.$on(EventBus.ViewView.dropViewStart, this.onDropViewStart);
-      eventBus.$on(EventBus.ViewView.dropViewEnd, this.onDropViewEnd);
-      eventBus.$on(EventBus.ViewView.editorLoad, this.onEditorLoad);
+      eventBus.$on(Bus.ViewView.dropStart, this.onDropStart);
+      eventBus.$on(Bus.ViewView.dropEnd, this.onDropEnd);
+      eventBus.$on(Bus.ViewView.dropViewStart, this.onDropViewStart);
+      eventBus.$on(Bus.ViewView.dropViewEnd, this.onDropViewEnd);
+      eventBus.$on(Bus.ViewView.editorLoad, this.onEditorLoad);
       this.onActive();
     }
 
@@ -231,11 +231,11 @@
     }
 
     private destroyed() {
-      eventBus.$off(EventBus.ViewView.dropStart, this.onDropStart);
-      eventBus.$off(EventBus.ViewView.dropEnd, this.onDropEnd);
-      eventBus.$off(EventBus.ViewView.dropViewStart, this.onDropViewStart);
-      eventBus.$off(EventBus.ViewView.dropViewEnd, this.onDropViewEnd);
-      eventBus.$off(EventBus.ViewView.editorLoad, this.onEditorLoad);
+      eventBus.$off(Bus.ViewView.dropStart, this.onDropStart);
+      eventBus.$off(Bus.ViewView.dropEnd, this.onDropEnd);
+      eventBus.$off(Bus.ViewView.dropViewStart, this.onDropViewStart);
+      eventBus.$off(Bus.ViewView.dropViewEnd, this.onDropViewEnd);
+      eventBus.$off(Bus.ViewView.editorLoad, this.onEditorLoad);
     }
 
     // ==================== Life Cycle END ====================

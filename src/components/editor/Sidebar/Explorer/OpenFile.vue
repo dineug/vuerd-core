@@ -37,8 +37,8 @@
 <script lang="ts">
   import themeStore, {State as ThemeState} from '@/store/theme';
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
-  import {log, getData, findParentLiByElement, eventBus} from '@/ts/util';
-  import EventBus from '@/models/EventBus';
+  import {log, getData, findParentLiByElement} from '@/ts/util';
+  import eventBus, {Bus} from '@/ts/EventBus';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import MDIcon from '@/components/editor/MDIcon.vue';
 
@@ -92,9 +92,9 @@
       tabDraggable.view = view;
       viewStore.commit(Commit.tabDraggableStart, tabDraggable);
       this.onDraggableStart();
-      eventBus.$emit(EventBus.ViewTab.draggableStart);
-      eventBus.$emit(EventBus.ViewView.dropStart);
-      eventBus.$emit(EventBus.Editor.dragstart);
+      eventBus.$emit(Bus.ViewTab.draggableStart);
+      eventBus.$emit(Bus.ViewView.dropStart);
+      eventBus.$emit(Bus.Editor.dragstart);
       // firefox
       if (event.dataTransfer) {
         event.dataTransfer.setData('text/plain', tab.id);
@@ -103,9 +103,9 @@
 
     private onDragend(event: DragEvent) {
       log.debug('OpenFile onDragend');
-      eventBus.$emit(EventBus.ViewView.dropEnd, this.tabDraggable);
-      eventBus.$emit(EventBus.ViewTab.draggableEnd);
-      eventBus.$emit(EventBus.Editor.dragend);
+      eventBus.$emit(Bus.ViewView.dropEnd, this.tabDraggable);
+      eventBus.$emit(Bus.ViewTab.draggableEnd);
+      eventBus.$emit(Bus.Editor.dragend);
       this.onDraggableEnd();
       viewStore.commit(Commit.tabDraggableEnd);
     }
@@ -151,8 +151,8 @@
 
     // ==================== Life Cycle ====================
     private created() {
-      eventBus.$on(EventBus.OpenFile.draggableStart, this.onDraggableStart);
-      eventBus.$on(EventBus.OpenFile.draggableEnd, this.onDraggableEnd);
+      eventBus.$on(Bus.OpenFile.draggableStart, this.onDraggableStart);
+      eventBus.$on(Bus.OpenFile.draggableEnd, this.onDraggableEnd);
     }
 
     private mounted() {
@@ -162,8 +162,8 @@
     }
 
     private destroyed() {
-      eventBus.$off(EventBus.OpenFile.draggableStart, this.onDraggableStart);
-      eventBus.$off(EventBus.OpenFile.draggableEnd, this.onDraggableEnd);
+      eventBus.$off(Bus.OpenFile.draggableStart, this.onDraggableStart);
+      eventBus.$off(Bus.OpenFile.draggableEnd, this.onDraggableEnd);
       if (this.subDraggable) {
         this.subDraggable.unsubscribe();
       }

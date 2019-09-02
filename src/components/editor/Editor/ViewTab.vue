@@ -30,10 +30,10 @@
 
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
-  import {log, eventBus, getData, getTextWidth, findParentLiByElement} from '@/ts/util';
+  import {log, getData, getTextWidth, findParentLiByElement} from '@/ts/util';
+  import eventBus, {Bus} from '@/ts/EventBus';
   import themeStore, {State as ThemeState} from '@/store/theme';
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
-  import EventBus from '@/models/EventBus';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
   import MDIcon from '@/components/editor/MDIcon.vue';
 
@@ -123,9 +123,9 @@
       tabDraggable.view = this.view;
       viewStore.commit(Commit.tabDraggableStart, tabDraggable);
       this.$emit('dragstart', event);
-      eventBus.$emit(EventBus.ViewTab.draggableStart);
-      eventBus.$emit(EventBus.OpenFile.draggableStart);
-      eventBus.$emit(EventBus.Editor.dragstart);
+      eventBus.$emit(Bus.ViewTab.draggableStart);
+      eventBus.$emit(Bus.OpenFile.draggableStart);
+      eventBus.$emit(Bus.Editor.dragstart);
       // firefox
       if (event.dataTransfer) {
         event.dataTransfer.setData('text/plain', tab.id);
@@ -134,10 +134,10 @@
 
     private onDragend() {
       log.debug('ViewTab onDragend');
-      eventBus.$emit(EventBus.ViewView.dropEnd, this.tabDraggable);
-      eventBus.$emit(EventBus.ViewTab.draggableEnd);
-      eventBus.$emit(EventBus.OpenFile.draggableEnd);
-      eventBus.$emit(EventBus.Editor.dragend);
+      eventBus.$emit(Bus.ViewView.dropEnd, this.tabDraggable);
+      eventBus.$emit(Bus.ViewTab.draggableEnd);
+      eventBus.$emit(Bus.OpenFile.draggableEnd);
+      eventBus.$emit(Bus.Editor.dragend);
       viewStore.commit(Commit.tabDraggableEnd);
     }
 
@@ -192,8 +192,8 @@
     // ==================== Life Cycle ====================
     private created() {
       viewStore.commit(Commit.tabViewDelete, {view: this.view});
-      eventBus.$on(EventBus.ViewTab.draggableStart, this.onDraggableStart);
-      eventBus.$on(EventBus.ViewTab.draggableEnd, this.onDraggableEnd);
+      eventBus.$on(Bus.ViewTab.draggableStart, this.onDraggableStart);
+      eventBus.$on(Bus.ViewTab.draggableEnd, this.onDraggableEnd);
     }
 
     private mounted() {
@@ -205,8 +205,8 @@
     }
 
     private destroyed() {
-      eventBus.$off(EventBus.ViewTab.draggableStart, this.onDraggableStart);
-      eventBus.$off(EventBus.ViewTab.draggableEnd, this.onDraggableEnd);
+      eventBus.$off(Bus.ViewTab.draggableStart, this.onDraggableStart);
+      eventBus.$off(Bus.ViewTab.draggableEnd, this.onDraggableEnd);
       if (this.subDraggable) {
         this.subDraggable.unsubscribe();
       }

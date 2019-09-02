@@ -1,12 +1,12 @@
 {
   "name": "vuerd-core",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "Editor Common UI",
   "main": "dist/vuerd-core.common.js",
   "typings": "src/types/index.d.ts",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib --inline-vue --name vuerd-core src/components/index.ts",
+    "build": "vue-cli-service build --target lib --name vuerd-core src/components/index.ts",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit"
   },

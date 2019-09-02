@@ -12,8 +12,8 @@
   import themeStore, {State as ThemeState} from '@/store/theme';
   import viewStore, {View} from '@/store/view';
   import {resetSize, resetWidthRatio, resetHeightRatio} from '@/store/view/viewHandler';
-  import {log, eventBus} from '@/ts/util';
-  import EventBus from '@/models/EventBus';
+  import {log} from '@/ts/util';
+  import eventBus, {Bus} from '@/ts/EventBus';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
   import ViewContainer from './Editor/ViewContainer.vue';
 
@@ -86,7 +86,7 @@
       const x = event.x - this.sidebarWidth - SIZE_ACTIVITYBAR_WIDTH;
       const y = event.y - SIZE_TITLEBAR_HEIGHT;
       if (x < 0 || y < 0 || x > this.width || y > this.height) {
-        eventBus.$emit(EventBus.ViewView.dropViewEnd);
+        eventBus.$emit(Bus.ViewView.dropViewEnd);
       }
     }
 
@@ -97,13 +97,13 @@
       this.container.width = this.width;
       this.container.height = this.height;
       resetSize(this.container);
-      eventBus.$on(EventBus.Editor.dragstart, this.onEditorDragstart);
-      eventBus.$on(EventBus.Editor.dragend, this.onEditorDragend);
+      eventBus.$on(Bus.Editor.dragstart, this.onEditorDragstart);
+      eventBus.$on(Bus.Editor.dragend, this.onEditorDragend);
     }
 
     private destroyed() {
-      eventBus.$off(EventBus.Editor.dragstart, this.onEditorDragstart);
-      eventBus.$off(EventBus.Editor.dragend, this.onEditorDragend);
+      eventBus.$off(Bus.Editor.dragstart, this.onEditorDragstart);
+      eventBus.$off(Bus.Editor.dragend, this.onEditorDragend);
     }
 
     // ==================== Life Cycle END ====================

@@ -35,7 +35,7 @@ export default class Logger {
   }
 
   private static log(logs: any[], option: Option) {
-    if ('development' === process.env.NODE_ENV) {
+    if (process.env.NODE_ENV === 'development') {
       logs.forEach((log: any) => {
         switch (option.level) {
           case Level.info:

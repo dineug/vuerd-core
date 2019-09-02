@@ -25,8 +25,8 @@
   import 'velocity-animate/velocity.min.js';
 
   import * as layout from '@/ts/layout';
-  import {addSpanText, removeSpanText, eventBus, log} from '@/ts/util';
-  import EventBus from '@/models/EventBus';
+  import {addSpanText, removeSpanText, log} from '@/ts/util';
+  import eventBus, {Bus} from '@/ts/EventBus';
   import {minVertical, minHorizontal} from '@/store/view/viewHandler';
   import viewStore from '@/store/view';
   import treeStore, {Commit} from '@/store/tree';
@@ -211,6 +211,9 @@
 
     // ==================== Life Cycle ====================
     private created() {
+      if (process.env.NODE_ENV === 'development') {
+        eventBus.destroyed();
+      }
       const themes = pluginManagement.themes();
       for (const theme of themes) {
         if (theme.name === 'AtomOneDark') {
@@ -219,9 +222,9 @@
         }
       }
       treeStore.commit(Commit.folderInit, this.value);
-      eventBus.$on(EventBus.VuerdCore.sidebarStart, this.onSidebarStart);
-      eventBus.$on(EventBus.VuerdCore.sidebarEnd, this.onSidebarEnd);
-      eventBus.$on(EventBus.VuerdCore.changeTree, this.onChangeTree);
+      eventBus.$on(Bus.VuerdCore.sidebarStart, this.onSidebarStart);
+      eventBus.$on(Bus.VuerdCore.sidebarEnd, this.onSidebarEnd);
+      eventBus.$on(Bus.VuerdCore.changeTree, this.onChangeTree);
     }
 
     private mounted() {
@@ -235,9 +238,9 @@
       this.subResize.unsubscribe();
       this.subResizeMovement.unsubscribe();
       removeSpanText();
-      eventBus.$off(EventBus.VuerdCore.sidebarStart, this.onSidebarStart);
-      eventBus.$off(EventBus.VuerdCore.sidebarEnd, this.onSidebarEnd);
-      eventBus.$off(EventBus.VuerdCore.changeTree, this.onChangeTree);
+      eventBus.$off(Bus.VuerdCore.sidebarStart, this.onSidebarStart);
+      eventBus.$off(Bus.VuerdCore.sidebarEnd, this.onSidebarEnd);
+      eventBus.$off(Bus.VuerdCore.changeTree, this.onChangeTree);
     }
 
     // ==================== Life Cycle END ====================

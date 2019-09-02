@@ -1,8 +1,8 @@
 import {State, View, Tab, TabView} from '@/store/view';
 import {Tree} from '@/store/tree';
 import {addView, deleteByView, resetSize, tabGroups} from './viewHandler';
-import EventBus from '@/models/EventBus';
-import {log, isData, getDataIndex, getData, eventBus} from '@/ts/util';
+import {log, isData, getDataIndex, getData} from '@/ts/util';
+import eventBus, {Bus} from '@/ts/EventBus';
 import TreeToTab from '@/models/TreeToTab';
 import {viewFocusStart} from './viewController';
 
@@ -27,12 +27,12 @@ export function tabActive(state: State, payload: { view: View, tab?: Tab }) {
     }
     if (!oldTab || tab.id !== oldTab.id) {
       view.tabs.forEach((value: Tab) => value.active = value.id === tab.id);
-      eventBus.$emit(EventBus.ViewView.editorLoad, view.id);
+      eventBus.$emit(Bus.ViewView.editorLoad, view.id);
     }
   } else {
     const targetTab = view.tabs[0];
     view.tabs.forEach((value: Tab) => value.active = value.id === targetTab.id);
-    eventBus.$emit(EventBus.ViewView.editorLoad, view.id);
+    eventBus.$emit(Bus.ViewView.editorLoad, view.id);
   }
 }
 
@@ -142,7 +142,7 @@ export function tabAddPreviewStart(state: State, tree: Tree) {
     resetSize(state.container);
   }
   if (state.tabPreview) {
-    eventBus.$emit(EventBus.ViewView.editorLoad, state.tabPreview.view.id);
+    eventBus.$emit(Bus.ViewView.editorLoad, state.tabPreview.view.id);
   }
 }
 

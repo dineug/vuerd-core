@@ -57,12 +57,12 @@
 
 <script lang="ts">
   import {SIZE_TREE_HEIGHT, SIZE_SCROLLBAR} from '@/ts/layout';
-  import {log, eventBus, getData, validFileName} from '@/ts/util';
-  import {findById, childrenCount, path} from '@/store/tree/treeHandler';
+  import {log, getData, validFileName} from '@/ts/util';
+  import eventBus, {Bus} from '@/ts/EventBus';
+  import {findById, childrenCount} from '@/store/tree/treeHandler';
   import treeStore, {Tree, Commit} from '@/store/tree';
   import viewStore, {Commit as ViewCommit} from '@/store/view';
   import themeStore, {State as ThemeState} from '@/store/theme';
-  import EventBus from '@/models/EventBus';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import MDIcon from '@/components/editor/MDIcon.vue';
 
@@ -168,7 +168,7 @@
     private onDragstart(event: DragEvent, tree: Tree) {
       log.debug('TreeView onDragstart');
       treeStore.commit(Commit.folderDraggableStart, tree);
-      eventBus.$emit(EventBus.TreeView.draggableStart);
+      eventBus.$emit(Bus.TreeView.draggableStart);
       // firefox
       if (event.dataTransfer) {
         event.dataTransfer.setData('text/plain', tree.id);
@@ -180,7 +180,7 @@
       treeStore.commit(Commit.folderMove);
       treeStore.commit(Commit.folderActiveEnd);
       treeStore.commit(Commit.folderDraggableEnd);
-      eventBus.$emit(EventBus.TreeView.draggableEnd);
+      eventBus.$emit(Bus.TreeView.draggableEnd);
     }
 
     private onDraggableStart() {
@@ -264,13 +264,13 @@
 
     // ==================== Life Cycle ====================
     private created() {
-      eventBus.$on(EventBus.TreeView.draggableStart, this.onDraggableStart);
-      eventBus.$on(EventBus.TreeView.draggableEnd, this.onDraggableEnd);
+      eventBus.$on(Bus.TreeView.draggableStart, this.onDraggableStart);
+      eventBus.$on(Bus.TreeView.draggableEnd, this.onDraggableEnd);
     }
 
     private destroyed() {
-      eventBus.$off(EventBus.TreeView.draggableStart, this.onDraggableStart);
-      eventBus.$off(EventBus.TreeView.draggableEnd, this.onDraggableEnd);
+      eventBus.$off(Bus.TreeView.draggableStart, this.onDraggableStart);
+      eventBus.$off(Bus.TreeView.draggableEnd, this.onDraggableEnd);
     }
 
     // ==================== Life Cycle END ====================

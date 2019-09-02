@@ -1,14 +1,10 @@
 import log from './Logger';
 import {v4 as uuid} from 'uuid';
 import {SIZE_FONT} from './layout';
-import Vue from 'vue';
-
-const eventBus = new Vue();
 
 export {
   log,
   uuid,
-  eventBus,
 };
 
 interface List {
@@ -44,6 +40,7 @@ export function isData<T extends List>(list: T[], id: string): boolean {
 
 // setup text width
 let spanText: HTMLElement | null = null;
+
 export function addSpanText() {
   spanText = document.getElementById('span-text-width');
   if (!spanText) {
@@ -58,6 +55,7 @@ export function addSpanText() {
     font-size: ${SIZE_FONT + 2}px;
   `);
 }
+
 // remove text width
 export function removeSpanText() {
   if (spanText) {

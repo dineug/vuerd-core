@@ -26,8 +26,8 @@
   import themeStore, {State as ThemeState} from '@/store/theme';
   import {Menu, Scope} from '@/store/contextmenu';
   import treeStore from '@/store/tree';
-  import EventBus from '@/models/EventBus';
-  import {eventBus, log} from '@/ts/util';
+  import {log} from '@/ts/util';
+  import eventBus, {Bus} from '@/ts/EventBus';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import MDIcon from './MDIcon.vue';
 
@@ -91,7 +91,7 @@
         switch (this.scope) {
           case Scope.explorer:
             menu.execute(treeStore.state.selects);
-            eventBus.$emit(EventBus.Explorer.contextmenuEnd);
+            eventBus.$emit(Bus.Explorer.contextmenuEnd);
             break;
           default:
             menu.execute(null);
