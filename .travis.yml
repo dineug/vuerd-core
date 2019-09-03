@@ -10,4 +10,6 @@ deploy:
   on:
     tags: true
 
-script: yarn build
+script:
+  - yarn lint
+  - yarn build
