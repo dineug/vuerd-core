@@ -28,6 +28,7 @@
   import {View} from '@/store/view';
   import Direction from '@/models/Direction';
   import {log} from '@/ts/util';
+  import pluginManagement from '@/plugin/PluginManagement';
   import {minHorizontal, minVertical, resetHeightRatio, resetWidthRatio} from '@/store/view/viewHandler';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Sash from '../Sash.vue';
@@ -79,6 +80,7 @@
             resetWidthRatio(view2);
             this.first[direction] = true;
             this.x += event.movementX;
+            pluginManagement.editorResize();
           }
           break;
         case Direction.right:
@@ -91,6 +93,7 @@
             resetWidthRatio(view2);
             this.first[direction] = true;
             this.x += event.movementX;
+            pluginManagement.editorResize();
           }
           break;
       }
@@ -111,6 +114,7 @@
             resetHeightRatio(view2);
             this.first[direction] = true;
             this.y += event.movementY;
+            pluginManagement.editorResize();
           }
           break;
         case Direction.bottom:
@@ -123,6 +127,7 @@
             resetHeightRatio(view2);
             this.first[direction] = true;
             this.y += event.movementY;
+            pluginManagement.editorResize();
           }
           break;
       }

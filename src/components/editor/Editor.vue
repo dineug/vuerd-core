@@ -14,6 +14,7 @@
   import {resetSize, resetWidthRatio, resetHeightRatio} from '@/store/view/viewHandler';
   import {log} from '@/ts/util';
   import eventBus, {Bus} from '@/ts/EventBus';
+  import pluginManagement from '@/plugin/PluginManagement';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
   import ViewContainer from './Editor/ViewContainer.vue';
 
@@ -48,12 +49,14 @@
     private watchWidth(width: number) {
       this.container.width = width;
       resetWidthRatio(this.container);
+      pluginManagement.editorResize();
     }
 
     @Watch('height')
     private watchHeight(height: number) {
       this.container.height = height;
       resetHeightRatio(this.container);
+      pluginManagement.editorResize();
     }
 
     // ==================== Event Handler ===================

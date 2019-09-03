@@ -1,5 +1,5 @@
 <template lang="pug">
-  .image-preview
+  .image-preview(:style="`width: ${width}px; height: ${height}px;`")
     img(v-if="value.indexOf('http') !== -1" :src="value")
     .svg(v-else-if="scope === 'svg'" v-html="value")
     img(v-else :src="value")
@@ -12,11 +12,13 @@
   export default class ImagePreview extends Vue {
     private value: string = '';
     private scope: string = '';
+    private width: number = 0;
+    private height: number = 0;
   }
 </script>
 
 <style scoped lang="scss">
   .image-preview {
-
+    overflow: auto;
   }
 </style>

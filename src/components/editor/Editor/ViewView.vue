@@ -1,11 +1,11 @@
 <template lang="pug">
-  .split-view-main.scrollbar(@click="onFocusView")
+  .split-view-main(@click="onFocusView")
     ViewTab(
       :view="view"
       @dragstart="onDragstartTab"
       @dragenter="onDragenterTab"
     )
-    .split-view-editor(
+    .split-view-editor.scrollbar(
       ref="view"
       :style="`height: ${height}px; top: ${SIZE_VIEW_TAB_HEIGHT}px;`"
       :id="`editor-${view.id}`"
@@ -251,7 +251,7 @@
       width: 100%;
       position: absolute;
       z-index: 100;
-      overflow: auto;
+      overflow: hidden;
     }
   }
 </style>

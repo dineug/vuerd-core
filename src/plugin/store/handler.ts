@@ -150,7 +150,8 @@ interface Dataset {
   width: number;
   height: number;
 }
-function getDataset(selector: string): Dataset | null {
+
+export function getDataset(selector: string): Dataset | null {
   const el = document.querySelector(selector) as HTMLElement;
   let dataset: Dataset | null = null;
   if (el && el.dataset.width && el.dataset.height) {

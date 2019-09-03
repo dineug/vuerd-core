@@ -2,7 +2,7 @@ import {Component} from 'vue';
 import {Store} from 'vuex';
 import {Commit, State} from './store';
 import {View, Tab} from '@/store/view';
-import {getEditor} from './store/handler';
+import {getEditor, getDataset} from './store/handler';
 import {Theme} from '@/types';
 import themeStore, {Commit as ThemeCommit} from '@/store/theme';
 
@@ -20,6 +20,7 @@ class PluginManagement {
       view,
       tab,
     });
+    this.editorResize();
   }
 
   public isEditor(component: Component): boolean {
@@ -66,6 +67,20 @@ class PluginManagement {
       }
     });
     return list;
+  }
+
+  public editorResize() {
+    const list = this.editors();
+    list.forEach((value) => {
+      value.editors.forEach((editor) => {
+        const selector = `#editor-${editor.tab.view.id}`;
+        const dataset = getDataset(selector);
+        if (dataset) {
+          editor.node.$data.width = dataset.width;
+          editor.node.$data.height = dataset.height;
+        }
+      });
+    });
   }
 
 }
