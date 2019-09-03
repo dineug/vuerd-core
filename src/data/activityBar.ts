@@ -1,4 +1,4 @@
-import activitybarStore, {ActivityMenu, Commit} from '@/store/activityBar';
+import activityBarStore, {ActivityMenu, Commit} from '@/store/activityBar';
 import IconType from '@/models/IconType';
 import {uuid} from '@/ts/util';
 
@@ -9,7 +9,7 @@ const init: ActivityMenu[] = [
     icon: 'mdi-file-multiple',
     iconType: IconType.mdi,
     execute(): void {
-      activitybarStore.commit(Commit.explorer);
+      activityBarStore.commit(Commit.explorer);
     },
   },
   {
@@ -18,7 +18,7 @@ const init: ActivityMenu[] = [
     icon: 'mdi-shape',
     iconType: IconType.mdi,
     execute(): void {
-      activitybarStore.commit(Commit.plugin);
+      activityBarStore.commit(Commit.plugin);
     },
   },
 ];

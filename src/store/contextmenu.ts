@@ -6,7 +6,7 @@ import init from '@/data/contextmenuExplorer';
 Vue.use(Vuex);
 
 export interface State {
-  explorer: Array<Menu<TreeSelect>>;
+  explorer: Array<Menu<TreeSelect[]>>;
 }
 
 export interface Menu<T> {
@@ -31,7 +31,7 @@ export const enum Commit {
 
 }
 
-export default new Vuex.Store({
+export default new Vuex.Store<State>({
   state: {
     explorer: init,
   },

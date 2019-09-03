@@ -31,7 +31,7 @@ export const enum Commit {
 }
 
 export function createStore() {
-  return new Vuex.Store({
+  return new Vuex.Store<State>({
     state: {
       component: null,
       scope: null,

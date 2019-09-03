@@ -35,6 +35,7 @@
     width: 100%;
     height: 100%;
 
+    padding: 0;
     border: none;
     resize: none;
     outline: none;

@@ -70,7 +70,7 @@ export const enum Commit {
   fileDelete = 'fileDelete',
 }
 
-export default new Vuex.Store({
+export default new Vuex.Store<State>({
   state: {
     container: init,
     selects: [],

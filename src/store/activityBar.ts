@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import IconType from '@/models/IconType';
 import eventBus, {Bus} from '@/ts/EventBus';
-import init from '@/data/activitybar';
+import init from '@/data/activityBar';
 
 Vue.use(Vuex);
 

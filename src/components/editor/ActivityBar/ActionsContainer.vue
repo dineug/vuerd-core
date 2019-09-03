@@ -12,7 +12,7 @@
 
 <script lang="ts">
   import themeStore, {State as ThemeState} from '@/store/theme';
-  import activitybarStore, {ActivityMenu} from '@/store/activityBar';
+  import activityBarStore, {ActivityMenu} from '@/store/activityBar';
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import MDIcon from '@/components/editor/MDIcon.vue';
 
@@ -24,11 +24,11 @@
   export default class ActionsContainer extends Vue {
 
     get menus(): ActivityMenu[] {
-      return activitybarStore.state.menus;
+      return activityBarStore.state.menus;
     }
 
     get activeMenu(): ActivityMenu | null {
-      return activitybarStore.state.activeMenu;
+      return activityBarStore.state.activeMenu;
     }
 
     get theme(): ThemeState {

@@ -251,6 +251,7 @@
       width: 100%;
       position: absolute;
       z-index: 100;
+      overflow: auto;
     }
   }
 </style>

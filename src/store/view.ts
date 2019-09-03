@@ -80,7 +80,7 @@ export const enum Commit {
   viewFocusEnd = 'viewFocusEnd',
 }
 
-export default new Vuex.Store({
+export default new Vuex.Store<State>({
   state: {
     container: init,
     tabDraggable: null,

@@ -16,7 +16,6 @@
 
 <style scoped lang="scss">
   .video-preview {
-    width: 100%;
-    height: 100%;
+
   }
 </style>

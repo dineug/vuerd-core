@@ -47,7 +47,7 @@ export const enum ColorKey {
   tabActive = 'tabActive',
 }
 
-export default new Vuex.Store({
+export default new Vuex.Store<State>({
   state: {
     drop: '#9da5b4',
     sash: '#80808059',
