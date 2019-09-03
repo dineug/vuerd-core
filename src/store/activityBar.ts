@@ -26,7 +26,7 @@ export const enum Commit {
   plugin = 'plugin',
 }
 
-export default new Vuex.Store({
+export default new Vuex.Store<State>({
   state: {
     menus: init,
     activeMenu: init[0],

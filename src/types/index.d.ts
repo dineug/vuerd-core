@@ -46,8 +46,8 @@ export interface Color {
 }
 
 export declare class Command {
-  editorAdd(option: EditorOption): Command;
-  themeAdd(theme: Theme): Command;
+  public editorAdd(option: EditorOption): Command;
+  public themeAdd(theme: Theme): Command;
 }
 
 export declare function use(plugin: Plugin): void;
