@@ -35,7 +35,18 @@ export default class Logger {
   }
 
   private static log(logs: any[], option: Option) {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'production') {
+      logs.forEach((log: any) => {
+        switch (option.level) {
+          case Level.warn:
+            window.console.warn(log);
+            break;
+          case Level.error:
+            window.console.error(log);
+            break;
+        }
+      });
+    } else if (process.env.NODE_ENV === 'development') {
       logs.forEach((log: any) => {
         switch (option.level) {
           case Level.info:

@@ -63,6 +63,7 @@
   import treeStore, {Tree, Commit} from '@/store/tree';
   import viewStore, {Commit as ViewCommit} from '@/store/view';
   import themeStore, {State as ThemeState} from '@/store/theme';
+  import AnimationFrame from '@/ts/AnimationFrame';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import MDIcon from '@/components/editor/MDIcon.vue';
 
@@ -72,6 +73,11 @@
   interface DraggableObservable {
     subDragover: Subscription;
     subDragleave: Subscription;
+  }
+
+  interface OpenAnimation {
+    opacity: number;
+    height: number;
   }
 
   const PADDING_LEFT = 53 + SIZE_SCROLLBAR;
@@ -98,6 +104,7 @@
     private depth!: number;
 
     private draggableObservable: DraggableObservable[] = [];
+    private openAnimation: AnimationFrame<OpenAnimation> | null = null;
 
     get folder(): Tree | null {
       return treeStore.state.folder;
@@ -237,27 +244,44 @@
       if (el.dataset.id) {
         const tree = findById(treeStore.state.container, el.dataset.id);
         if (tree) {
-          window.Velocity(
-            el,
-            {opacity: 1, height: childrenCount(tree) * SIZE_TREE_HEIGHT},
+          if (this.openAnimation) {
+            this.openAnimation.stop();
+          }
+          this.openAnimation = new AnimationFrame(
             {
-              duration: 200,
-              complete: () => {
-                done();
-                el.removeAttribute('style');
-              },
+              opacity: 0,
+              height: 0,
             },
-          );
+            {
+              opacity: 1,
+              height: childrenCount(tree) * SIZE_TREE_HEIGHT,
+            }, 200).update((value: OpenAnimation) => {
+              el.style.opacity = `${value.opacity}`;
+              el.style.height = `${value.height}px`;
+            }).complete(() => {
+              done();
+              el.removeAttribute('style');
+          }).start();
         }
       }
     }
 
     private onLeave(el: HTMLElement, done: () => void) {
-      window.Velocity(
-        el,
-        {opacity: 0, height: 0},
-        {duration: 200, complete: done},
-      );
+      if (this.openAnimation) {
+        this.openAnimation.stop();
+      }
+      this.openAnimation = new AnimationFrame(
+        {
+          opacity: 1,
+          height: el.clientHeight,
+        },
+        {
+          opacity: 0,
+          height: 0,
+        }, 200).update((value: OpenAnimation) => {
+          el.style.opacity = `${value.opacity}`;
+          el.style.height = `${value.height}px`;
+      }).complete(done).start();
     }
 
     // ==================== Event Handler END ===================
@@ -303,6 +327,7 @@
         cursor: pointer;
         display: inline-flex;
         align-items: center;
+        height: $size-tree-height - 2;
 
         .icon {
           padding-right: 4px;

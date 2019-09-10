@@ -143,6 +143,8 @@ export function tabAddPreviewStart(state: State, tree: Tree) {
   }
   if (state.tabPreview) {
     eventBus.$emit(Bus.ViewView.editorLoad, state.tabPreview.view.id);
+  } else if (state.viewFocus) {
+    eventBus.$emit(Bus.ViewView.editorLoad, state.viewFocus.id);
   }
 }
 

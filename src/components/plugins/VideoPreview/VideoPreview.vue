@@ -11,9 +11,11 @@
 
   @Component
   export default class VideoPreview extends Vue {
+    // ==================== plugin DATA ====================
     private value: string = '';
     private width: number = 0;
     private height: number = 0;
+    // ==================== plugin DATA END ====================
   }
 </script>
 

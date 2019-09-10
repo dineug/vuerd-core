@@ -61,7 +61,6 @@
 
     private keydown$: Observable<KeyboardEvent> = fromEvent<KeyboardEvent>(window, 'keydown');
     private mousedown$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mousedown');
-    private contextmenu$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'contextmenu');
     private resize$: Observable<Event> = fromEvent(window, 'resize');
     private subKeydown: Subscription | null = null;
     private subMousedown!: Subscription;
@@ -230,7 +229,7 @@
     private mounted() {
       this.subMousedown = this.mousedown$.subscribe(this.onMousedown);
       this.subResize = this.resize$.subscribe(this.onResize);
-      this.subContextmenu = this.contextmenu$.subscribe(this.onContextmenu);
+      this.subContextmenu = fromEvent<MouseEvent>(this.$el, 'contextmenu').subscribe(this.onContextmenu);
       window.dispatchEvent(new Event('resize'));
       eventBus.$on(Bus.Explorer.contextmenuEnd, this.onContextmenuEnd);
     }

@@ -206,6 +206,7 @@
           cursor: pointer;
           display: inline-flex;
           align-items: center;
+          height: $size-tree-height - 2;
 
           &.draggable {
             opacity: 0.5;

@@ -1,7 +1,7 @@
 <template lang="pug">
   .split-view-drop
     .split-view-drop-ghost(ref="ghost")
-    .split-view-drop-split(ref="split" :style="`background-color: ${theme.drop};`")
+    .split-view-drop-split(ref="split" :style="splitStyle")
 </template>
 
 <script lang="ts">
@@ -9,10 +9,18 @@
   import themeStore, {State as ThemeState} from '@/store/theme';
   import Direction from '@/models/Direction';
   import {log} from '@/ts/util';
+  import AnimationFrame from '@/ts/AnimationFrame';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
 
   import {fromEvent, Subscription} from 'rxjs';
   import {throttleTime} from 'rxjs/operators';
+
+  interface SplitAnimation {
+    width: number;
+    height: number;
+    top: number;
+    left: number;
+  }
 
   @Component
   export default class ViewDrop extends Vue {
@@ -24,9 +32,24 @@
     private direction!: Direction;
 
     private subDragover!: Subscription;
+    private splitAnimate: AnimationFrame<SplitAnimation> | null = null;
+    private splitWidth: number = 0;
+    private splitHeight: number = 0;
+    private splitTop: number = 0;
+    private splitLeft: number = 0;
 
     get theme(): ThemeState {
       return themeStore.state;
+    }
+
+    get splitStyle(): string {
+      return `
+      background-color: ${this.theme.drop};
+      top: ${this.splitTop}px;
+      left: ${this.splitLeft}px;
+      width: ${this.splitWidth}px;
+      height: ${this.splitHeight}px;
+      `;
     }
 
     @Watch('direction')
@@ -49,17 +72,27 @@
           break;
       }
 
-      const el = this.$refs.split as HTMLElement;
-      window.Velocity(
-        el,
+      if (this.splitAnimate) {
+        this.splitAnimate.stop();
+      }
+      this.splitAnimate = new AnimationFrame(
+        {
+          width: this.splitWidth,
+          height: this.splitHeight,
+          top: this.splitTop,
+          left: this.splitLeft,
+        },
         {
           width,
           height,
           top,
           left,
-        },
-        {duration: 100},
-      );
+        }, 100).update((value: SplitAnimation) => {
+          this.splitWidth = value.width;
+          this.splitHeight = value.height;
+          this.splitTop = value.top;
+          this.splitLeft = value.left;
+        }).start();
     }
 
     // ==================== Event Handler ===================

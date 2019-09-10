@@ -1,6 +1,6 @@
 import {Store} from 'vuex';
-import pluginManagement from '@/plugin/PluginManagement';
-import {createStore, Commit, State} from '@/plugin/store';
+import pluginManagement from './PluginManagement';
+import {createStore, Commit, State} from './store';
 import {log} from '@/ts/util';
 import {EditorOption, Theme} from '@/types';
 

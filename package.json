@@ -1,6 +1,6 @@
 {
   "name": "vuerd-core",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "description": "Editor Common UI",
   "main": "dist/vuerd-core.common.js",
   "typings": "src/types/index.d.ts",
@@ -16,10 +16,10 @@
   "repository": "https://github.com/vuerd/vuerd-core.git",
   "license": "MIT",
   "dependencies": {
+    "@tweenjs/tween.js": "^18.1.2",
     "core-js": "^2.6.5",
     "rxjs": "^6.5.2",
     "uuid": "^3.3.2",
-    "velocity-animate": "^1.5.2",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
     "vue-property-decorator": "^8.1.0",

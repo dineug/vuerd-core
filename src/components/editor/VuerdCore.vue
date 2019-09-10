@@ -22,8 +22,6 @@
 </template>
 
 <script lang="ts">
-  import 'velocity-animate/velocity.min.js';
-
   import * as layout from '@/ts/layout';
   import {addSpanText, removeSpanText, log} from '@/ts/util';
   import eventBus, {Bus} from '@/ts/EventBus';
