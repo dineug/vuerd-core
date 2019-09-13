@@ -1,8 +1,9 @@
 # vuerd-core
 Editor Common UI
 
-## Storybook 
-[Live Demo](https://vuerd.github.io/vuerd-docs/)
+## Document
+[Storybook](https://vuerd.github.io/vuerd-docs/)   
+[Live Demo](https://vuerd.github.io/vuerd-docs/iframe.html?id=demo-live--vuerd-core)
 
 ## Install
 ```bash

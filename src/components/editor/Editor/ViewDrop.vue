@@ -32,7 +32,7 @@
     private direction!: Direction;
 
     private subDragover!: Subscription;
-    private splitAnimate: AnimationFrame<SplitAnimation> | null = null;
+    private splitAnimation: AnimationFrame<SplitAnimation> | null = null;
     private splitWidth: number = 0;
     private splitHeight: number = 0;
     private splitTop: number = 0;
@@ -72,10 +72,10 @@
           break;
       }
 
-      if (this.splitAnimate) {
-        this.splitAnimate.stop();
+      if (this.splitAnimation) {
+        this.splitAnimation.stop();
       }
-      this.splitAnimate = new AnimationFrame(
+      this.splitAnimation = new AnimationFrame(
         {
           width: this.splitWidth,
           height: this.splitHeight,

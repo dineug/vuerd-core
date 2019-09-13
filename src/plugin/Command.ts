@@ -16,7 +16,7 @@ export default class Command {
     if (pluginManagement.isEditor(option.component)) {
       this.store.commit(Commit.editorAdd, option);
     } else {
-      log.warn('Command editorAdd: component duplication');
+      log.warn(`Command editorAdd: component ${option.component.name} duplication`);
     }
     return this;
   }
