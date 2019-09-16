@@ -49,14 +49,18 @@
     private watchWidth(width: number) {
       this.container.width = width;
       resetWidthRatio(this.container);
-      pluginManagement.editorResize();
+      this.$nextTick(() => {
+        pluginManagement.editorResize();
+      });
     }
 
     @Watch('height')
     private watchHeight(height: number) {
       this.container.height = height;
       resetHeightRatio(this.container);
-      pluginManagement.editorResize();
+      this.$nextTick(() => {
+        pluginManagement.editorResize();
+      });
     }
 
     // ==================== Event Handler ===================

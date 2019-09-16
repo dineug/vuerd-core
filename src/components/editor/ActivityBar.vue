@@ -1,5 +1,5 @@
 <template lang="pug">
-  .activitybar(:style="`background-color: ${theme.activity};`")
+  .activitybar(:style="`background-color: ${theme.activityBar};`")
     .content
       ActionsContainer
 </template>

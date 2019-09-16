@@ -1,71 +1,103 @@
 <template lang="pug">
-  i.mdi(
-    :class="`${mdi}`"
-    :style="`font-size: ${size}px; line-height: ${size}px;`"
+  svg.mdi(
+    viewBox="0 0 24 24"
+    :style="svgStyle"
   )
+    path(:d="path" :fill="active ? theme.fontActive : theme.font")
 </template>
 
 <script lang="ts">
+  import themeStore, {State as ThemeState} from '@/store/theme';
+  import mdi from '@/ts/mdi';
   import {Component, Prop, Vue} from 'vue-property-decorator';
+
+  const SIZE = 24;
+  const SIZE_RATIO = 1.5;
 
   @Component
   export default class MDIcon extends Vue {
-    @Prop({type: Number, default: 24})
+    @Prop({type: Number, default: SIZE})
     private size!: number;
     @Prop({type: Boolean, default: false})
     private file!: boolean;
+    @Prop({type: Boolean, default: false})
+    private active!: boolean;
 
-    private mdi: string = 'mdi-file-document';
+    private path: string = mdi.mdiFileDocument;
+
+    get rem(): number {
+      return SIZE_RATIO * (this.size / SIZE);
+    }
+
+    get svgStyle(): string {
+      return `
+        width: ${this.rem}rem;
+        height: ${this.rem}rem;
+      `;
+    }
+
+    get theme(): ThemeState {
+      return themeStore.state;
+    }
 
     private icon(name: string): string {
       const ext = name.substr(name.lastIndexOf('.') + 1);
-      let mdi = 'mdi-file-document';
+      let path = mdi.mdiFileDocument;
       switch (ext) {
         case 'html':
-          mdi = 'mdi-language-html5';
+          path = mdi.mdiLanguageHtml5;
           break;
         case 'css':
-          mdi = 'mdi-language-css3';
+          path = mdi.mdiLanguageCss3;
           break;
         case 'js':
-          mdi = 'mdi-language-javascript';
+          path = mdi.mdiLanguageJavascript;
           break;
         case 'ts':
-          mdi = 'mdi-language-typescript';
+          path = mdi.mdiLanguageTypescript;
           break;
         case 'json':
-          mdi = 'mdi-json';
+          path = mdi.mdiJson;
           break;
         case 'md':
-          mdi = 'mdi-markdown';
+          path = mdi.mdiMarkdown;
           break;
         case 'pdf':
-          mdi = 'mdi-file-pdf';
+          path = mdi.mdiFilePdf;
           break;
         case 'png':
         case 'jpg':
         case 'jpeg':
         case 'gif':
         case 'ico':
-          mdi = 'mdi-file-image';
+          path = mdi.mdiFileImage;
           break;
         case 'xls':
-          mdi = 'mdi-file-excel';
+          path = mdi.mdiFileExcel;
           break;
         case 'txt':
         default:
-          mdi = 'mdi-file-document';
+          path = mdi.mdiFileDocument;
           break;
       }
-      return mdi;
+      return path;
+    }
+
+    private mdiKey(name: string): string {
+      const list = name.split('-');
+      for (let i = 1; i < list.length; i++) {
+        list[i] = list[i].charAt(0).toUpperCase() + list[i].slice(1);
+      }
+      return list.join('');
     }
 
     private setMdi() {
       if (this.$slots.default && this.$slots.default[0].text) {
         if (this.file) {
-          this.mdi = this.icon(this.$slots.default[0].text);
+          this.path = this.icon(this.$slots.default[0].text);
         } else {
-          this.mdi = this.$slots.default[0].text;
+          const key = this.mdiKey(this.$slots.default[0].text);
+          this.path = mdi[key];
         }
       }
     }

@@ -136,13 +136,13 @@
           if (0 < sidebarWidth && sizeMainWidthMin < mainWidth) {
             // mouse 뱡향 분기 처리
             if (mouseX < 0) {
-              this.sidebarWidth = 0;
+              this.sidebarWidthOld = this.sidebarWidth = 0;
             } else if (mouseX > workspace.clientWidth) {
               this.sidebarWidth = workspace.clientWidth - sizeMainWidthMin - layout.SIZE_ACTIVITYBAR_WIDTH;
             } else if (e.movementX < 0 && mouseX < sidebarWidth) {
-              this.sidebarWidth = sidebarWidth;
+              this.sidebarWidthOld = this.sidebarWidth = sidebarWidth;
             } else if (e.movementX > 0 && mouseX > sidebarWidth) {
-              this.sidebarWidth = sidebarWidth;
+              this.sidebarWidthOld = this.sidebarWidth = sidebarWidth;
             }
             this.onResize();
           }
@@ -244,8 +244,6 @@
 </script>
 
 <style lang="scss">
-  @import '~@mdi/font/css/materialdesignicons.min.css';
-
   .vuerd-core {
     height: 100vh;
     position: relative;

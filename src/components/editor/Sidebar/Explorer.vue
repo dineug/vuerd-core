@@ -183,6 +183,9 @@
 
     private onKeydown(event: KeyboardEvent) {
       log.debug('Explorer onKeydown');
+      if (event.key === Key.Tab) {
+        event.preventDefault();
+      }
       if (!this.renameTree && event.key === Key.F2) {
         treeStore.commit(Commit.fileRenameStart, this.lastSelect);
       } else if (this.renameTree

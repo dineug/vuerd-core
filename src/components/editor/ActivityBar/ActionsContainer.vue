@@ -7,7 +7,7 @@
       :title="menu.name"
       @click="menu.execute"
     )
-      MDIcon {{menu.icon}}
+      MDIcon(:active="activeMenu && menu.id === activeMenu.id") {{menu.icon}}
 </template>
 
 <script lang="ts">

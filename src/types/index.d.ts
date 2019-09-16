@@ -32,7 +32,7 @@ export interface Color {
   active: string;
   editor: string;
   titleBar: string;
-  activity: string;
+  activityBar: string;
   statusbar: string;
   font: string;
   fontActive: string;

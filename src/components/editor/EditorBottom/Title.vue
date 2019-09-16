@@ -2,8 +2,8 @@
   .title(:style="`border-top-color: ${theme.sash};`")
     .title-tab
       ul
-        li 도메인
-        li 테이블
+        li domain
+        li table
     .title-action
       ul
         li

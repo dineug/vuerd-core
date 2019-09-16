@@ -22,7 +22,7 @@
         @dragend="onDragend"
       )
         span.icon
-          MDIcon(:size="16" file) {{tab.name}}
+          MDIcon(:size="16" :active="tab.active" file) {{tab.name}}
         span.name {{tab.name}}
         span.close(@click="onClose($event, tab)")
           MDIcon(:size="12") mdi-close
@@ -79,7 +79,6 @@
       log.debug('ViewTab setMinWidth');
       if (this.view.tabs.length !== 0) {
         const ul = this.$el.childNodes[0];
-        log.debug(`tabs:${this.view.tabs.length}, el:${ul.childNodes.length}`);
         this.minWidth = 0;
         ul.childNodes.forEach((child: ChildNode) => {
           const li = child as HTMLElement;

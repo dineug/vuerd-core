@@ -7,7 +7,7 @@ import eventBus, {Bus} from '@/ts/EventBus';
 const init: Array<Menu<TreeSelect[]>> = [
   {
     id: uuid(),
-    name: '새 파일',
+    name: 'New File',
     execute(trees: TreeSelect[] | null): void {
       let tree: TreeSelect | null = null;
       if (trees) {
@@ -18,7 +18,7 @@ const init: Array<Menu<TreeSelect[]>> = [
   },
   {
     id: uuid(),
-    name: '새 폴더',
+    name: 'New Folder',
     execute(trees: TreeSelect[] | null): void {
       let tree: TreeSelect | null = null;
       if (trees) {
@@ -29,7 +29,7 @@ const init: Array<Menu<TreeSelect[]>> = [
   },
   {
     id: uuid(),
-    name: '이름 바꾸기',
+    name: 'Rename',
     keymap: 'F2',
     execute(trees: TreeSelect[] | null): void {
       let tree: TreeSelect | null = null;
@@ -44,7 +44,7 @@ const init: Array<Menu<TreeSelect[]>> = [
   },
   {
     id: uuid(),
-    name: '삭제',
+    name: 'Delete',
     keymap: 'Delete',
     execute(trees: TreeSelect[] | null): void {
       if (trees) {

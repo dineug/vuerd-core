@@ -10,7 +10,7 @@ export default {
         active: '#0081C3',
         editor: '#282c34',
         titleBar: '#282c34',
-        activity: '#282c34',
+        activityBar: '#282c34',
         statusbar: '#21252b',
         font: '#cccccc',
         fontActive: 'white',

@@ -30,7 +30,7 @@
               @dragend="onDragend"
             )
               span.icon
-                MDIcon(:size="16" file) {{tab.name}}
+                MDIcon(:size="16" :active="tab.active" file) {{tab.name}}
               span.name {{tab.name}}
 </template>
 
