@@ -23,7 +23,7 @@
 
 <script lang="ts">
   import * as layout from '@/ts/layout';
-  import {addSpanText, removeSpanText, log} from '@/ts/util';
+  import {log} from '@/ts/util';
   import eventBus, {Bus} from '@/ts/EventBus';
   import {minVertical, minHorizontal} from '@/store/view/viewHandler';
   import viewStore from '@/store/view';
@@ -229,13 +229,11 @@
       this.subResizeMovement = this.resize$.subscribe(this.onResizeMovement);
       this.subResize = this.resize$.subscribe(this.onResize);
       window.dispatchEvent(new Event('resize'));
-      addSpanText();
     }
 
     private destroyed() {
       this.subResize.unsubscribe();
       this.subResizeMovement.unsubscribe();
-      removeSpanText();
       eventBus.$off(Bus.VuerdCore.sidebarStart, this.onSidebarStart);
       eventBus.$off(Bus.VuerdCore.sidebarEnd, this.onSidebarEnd);
       eventBus.$off(Bus.VuerdCore.changeTree, this.onChangeTree);

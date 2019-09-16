@@ -30,7 +30,7 @@
 
 <script lang="ts">
   import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
-  import {log, getData, getTextWidth, findParentLiByElement} from '@/ts/util';
+  import {log, getData, findParentLiByElement} from '@/ts/util';
   import eventBus, {Bus} from '@/ts/EventBus';
   import themeStore, {State as ThemeState} from '@/store/theme';
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
@@ -41,7 +41,6 @@
   import {throttleTime, debounceTime} from 'rxjs/operators';
 
   const TAB_PADDING = 42.5;
-  const TAB_PADDING_SPAN = 49.2;
 
   @Component({
     components: {
@@ -71,7 +70,9 @@
 
     @Watch('view.tabs')
     private watchTabs() {
-      this.$nextTick(this.setMinWidth);
+      this.$nextTick(() => {
+        this.setMinWidth();
+      });
     }
 
     private setMinWidth() {
@@ -80,19 +81,13 @@
         const ul = this.$el.childNodes[0];
         log.debug(`tabs:${this.view.tabs.length}, el:${ul.childNodes.length}`);
         this.minWidth = 0;
-        if (this.view.tabs.length === ul.childNodes.length) {
-          ul.childNodes.forEach((child: ChildNode) => {
-            const li = child as HTMLElement;
-            const span = li.querySelector<HTMLElement>('.name');
-            if (span) {
-              this.minWidth += span.offsetWidth + TAB_PADDING;
-            }
-          });
-        } else {
-          this.view.tabs.forEach((tab: Tab) => {
-            this.minWidth += getTextWidth(tab.name) + TAB_PADDING_SPAN;
-          });
-        }
+        ul.childNodes.forEach((child: ChildNode) => {
+          const li = child as HTMLElement;
+          const span = li.querySelector<HTMLElement>('.name');
+          if (span) {
+            this.minWidth += span.offsetWidth + TAB_PADDING;
+          }
+        });
       }
     }
 

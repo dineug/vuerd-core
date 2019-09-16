@@ -1,6 +1,6 @@
 <template lang="pug">
   .split-view-drop
-    .split-view-drop-ghost(ref="ghost")
+    .split-view-drop-ghost(ref="ghost" :style="ghostStyle")
     .split-view-drop-split(ref="split" :style="splitStyle")
 </template>
 
@@ -49,6 +49,14 @@
       left: ${this.splitLeft}px;
       width: ${this.splitWidth}px;
       height: ${this.splitHeight}px;
+      `;
+    }
+
+    get ghostStyle(): string {
+      return `
+      top: ${SIZE_VIEW_TAB_HEIGHT}px;
+      width: ${this.width}px;
+      height: ${this.height}px;
       `;
     }
 
@@ -124,8 +132,6 @@
   .split-view-drop {
 
     .split-view-drop-ghost {
-      width: 100%;
-      height: 100%;
       position: absolute;
       z-index: 9000;
       opacity: 0;
