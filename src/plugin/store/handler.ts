@@ -88,7 +88,34 @@ export function loaded(component: Component, editors: Editor[], tabView: TabView
     }
   }
 
-  const parent = new Vue({render: (h) => h(component)});
+  const parent = new Vue({
+    data: () => ({
+      value: '',
+      scope: '',
+      width: 0,
+      height: 0,
+      color: {},
+    }),
+    render(h) {
+      return h(component, {
+        props: {
+          value: this.value,
+          scope: this.scope,
+          width: this.width,
+          height: this.height,
+          color: this.color,
+        },
+        on: {
+          input: (value: string) => {
+            this.$emit('input', value);
+          },
+          change: (value: string) => {
+            this.$emit('change', value);
+          },
+        },
+      });
+    },
+  });
   const selector = `#editor-${tabView.view.id}`;
   const dataset = getDataset(selector);
   instanceReset(component, selector);
@@ -102,25 +129,25 @@ export function loaded(component: Component, editors: Editor[], tabView: TabView
   editors.push(editor);
 
   if (dataset) {
-    editor.node.$data.width = dataset.width;
-    editor.node.$data.height = dataset.height;
+    editor.parent.$data.width = dataset.width;
+    editor.parent.$data.height = dataset.height;
   }
-  editor.node.$data.color = themeStore.getters.color;
-  editor.node.$data.scope = tabView.name.substr(tabView.name.lastIndexOf('.') + 1);
-  editor.node.$data.value = tabView.value;
-  editor.node.$on('change', (value: string) => {
+  editor.parent.$data.color = themeStore.getters.color;
+  editor.parent.$data.scope = tabView.name.substr(tabView.name.lastIndexOf('.') + 1);
+  editor.parent.$data.value = tabView.value;
+  editor.parent.$on('change', (value: string) => {
     editors.forEach((target) => {
       if (target.tab.id === tabView.id) {
-        target.node.$data.value = value;
+        target.parent.$data.value = value;
         target.tab.value = value;
       }
     });
     viewStore.commit(ViewCommit.tabAddPreviewEnd);
   });
-  editor.node.$on('input', (value: string) => {
+  editor.parent.$on('input', (value: string) => {
     editors.forEach((target) => {
       if (target.tab.id === tabView.id) {
-        target.node.$data.value = value;
+        target.parent.$data.value = value;
         target.tab.value = value;
       }
     });

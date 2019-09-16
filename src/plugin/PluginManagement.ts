@@ -40,7 +40,7 @@ class PluginManagement {
     const editors = this.editors();
     editors.forEach((editor) => {
       editor.editors.forEach((value) => {
-        value.node.$data.color = themeStore.getters.color;
+        value.parent.$data.color = themeStore.getters.color;
       });
     });
   }
@@ -76,8 +76,8 @@ class PluginManagement {
         const selector = `#editor-${editor.tab.view.id}`;
         const dataset = getDataset(selector);
         if (dataset) {
-          editor.node.$data.width = dataset.width;
-          editor.node.$data.height = dataset.height;
+          editor.parent.$data.width = dataset.width;
+          editor.parent.$data.height = dataset.height;
         }
       });
     });

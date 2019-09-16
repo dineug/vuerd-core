@@ -14,10 +14,10 @@
 
   @Component
   export default class TextEditor extends Vue {
-    // ==================== plugin DATA ====================
-    private value: string = '';
-    private color: Color | any = {};
-    // ==================== plugin DATA END ====================
+    @Prop({type: String, default: ''})
+    private value!: string;
+    @Prop({type: Object, default: () => ({})})
+    private color!: Color;
 
     private onChange(event: Event) {
       const textarea = event.target as HTMLTextAreaElement;

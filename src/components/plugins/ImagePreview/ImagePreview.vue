@@ -10,12 +10,14 @@
 
   @Component
   export default class ImagePreview extends Vue {
-    // ==================== plugin DATA ====================
-    private value: string = '';
-    private scope: string = '';
-    private width: number = 0;
-    private height: number = 0;
-    // ==================== plugin DATA END ====================
+    @Prop({type: String, default: ''})
+    private value!: string;
+    @Prop({type: String, default: ''})
+    private scope!: string;
+    @Prop({type: Number, default: 0})
+    private width!: number;
+    @Prop({type: Number, default: 0})
+    private height!: number;
   }
 </script>
 
