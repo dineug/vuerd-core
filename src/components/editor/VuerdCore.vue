@@ -244,11 +244,14 @@
 </script>
 
 <style lang="scss">
+  @import "../../scss/NotoSans.scss";
+
   .vuerd-core {
     height: 100vh;
     position: relative;
     overflow: hidden;
     min-width: $size-min-width;
+    font-family: 'Noto Sans', sans-serif;
 
     .workspace {
       height: 100%;

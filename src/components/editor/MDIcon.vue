@@ -3,16 +3,16 @@
     viewBox="0 0 24 24"
     :style="svgStyle"
   )
-    path(:d="path" :fill="active ? theme.fontActive : theme.font")
+    path(:d="path" :fill="fill")
 </template>
 
 <script lang="ts">
-  import themeStore, {State as ThemeState} from '@/store/theme';
+  import themeStore from '@/store/theme';
   import mdi from '@/ts/mdi';
   import {Component, Prop, Vue} from 'vue-property-decorator';
 
   const SIZE = 24;
-  const SIZE_RATIO = 1.5;
+  const SIZE_REM = 1.5;
 
   @Component
   export default class MDIcon extends Vue {
@@ -20,13 +20,13 @@
     private size!: number;
     @Prop({type: Boolean, default: false})
     private file!: boolean;
-    @Prop({type: Boolean, default: false})
-    private active!: boolean;
+    @Prop({type: String, default: ''})
+    private color!: string;
 
     private path: string = mdi.mdiFileDocument;
 
     get rem(): number {
-      return SIZE_RATIO * (this.size / SIZE);
+      return SIZE_REM * (this.size / SIZE);
     }
 
     get svgStyle(): string {
@@ -36,8 +36,12 @@
       `;
     }
 
-    get theme(): ThemeState {
-      return themeStore.state;
+    get fill(): string {
+      if (this.color === '') {
+        return themeStore.state.font;
+      } else {
+        return this.color;
+      }
     }
 
     private icon(name: string): string {

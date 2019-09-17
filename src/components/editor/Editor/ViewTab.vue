@@ -22,7 +22,7 @@
         @dragend="onDragend"
       )
         span.icon
-          MDIcon(:size="16" :active="tab.active" file) {{tab.name}}
+          MDIcon(:size="16" :color="tab.active ? theme.fontActive : theme.font" file) {{tab.name}}
         span.name {{tab.name}}
         span.close(@click="onClose($event, tab)")
           MDIcon(:size="12") mdi-close
