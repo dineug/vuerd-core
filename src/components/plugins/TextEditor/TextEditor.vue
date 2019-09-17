@@ -23,7 +23,6 @@
 
     @Watch('focus')
     private watchFocus(focus: boolean) {
-      window.console.log(`TextEditor watchFocus: ${focus}`);
       const textarea = this.$el as HTMLTextAreaElement;
       if (focus) {
         textarea.focus();
