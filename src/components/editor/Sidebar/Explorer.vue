@@ -246,6 +246,7 @@
       eventBus.$off(Bus.Explorer.contextmenuEnd, this.onContextmenuEnd);
       if (this.subKeydown !== null) {
         this.subMousedown.unsubscribe();
+        viewStore.commit(ViewCommit.viewExplorerFocusEnd);
       }
     }
 
