@@ -1,20 +1,17 @@
+import {LogLevel} from '@/types';
+
 enum Level {
-  info = 'info',
   debug = 'debug',
   warn = 'warn',
   error = 'error',
 }
 
-interface Option {
+export interface Option {
   level: Level;
 }
 
 export default class Logger {
-  public static info(...logs: any) {
-    Logger.log(logs, {
-      level: Level.info,
-    });
-  }
+  public static logLevel: LogLevel | null = null;
 
   public static debug(...logs: any) {
     Logger.log(logs, {
@@ -35,32 +32,20 @@ export default class Logger {
   }
 
   private static log(logs: any[], option: Option) {
-    if (process.env.NODE_ENV === 'production') {
-      logs.forEach((log: any) => {
-        switch (option.level) {
-          case Level.warn:
-            window.console.warn(log);
-            break;
-          case Level.error:
-            window.console.error(log);
-            break;
-        }
-      });
-    } else if (process.env.NODE_ENV === 'development') {
-      logs.forEach((log: any) => {
-        switch (option.level) {
-          case Level.info:
-          case Level.debug:
+    logs.forEach((log: any) => {
+      switch (option.level) {
+        case Level.debug:
+          if (process.env.NODE_ENV === 'development' || Logger.logLevel === Level.debug) {
             window.console.dir(log);
-            break;
-          case Level.warn:
-            window.console.warn(log);
-            break;
-          case Level.error:
-            window.console.error(log);
-            break;
-        }
-      });
-    }
+          }
+          break;
+        case Level.warn:
+          window.console.warn(log);
+          break;
+        case Level.error:
+          window.console.error(log);
+          break;
+      }
+    });
   }
 }

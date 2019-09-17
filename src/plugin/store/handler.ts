@@ -6,6 +6,7 @@ import {isData} from '@/ts/util';
 import {tabGroups} from '@/store/view/viewHandler';
 import viewStore, {Commit as ViewCommit} from '@/store/view';
 import themeStore from '@/store/theme';
+import {log} from '@/ts/util';
 
 export function getEditor(name: string, plugins: Array<Store<State>>): Store<State> {
   const editors = getScopeEditors(name, plugins);
@@ -80,9 +81,10 @@ function asterisk(scope: Array<string | RegExp>): boolean {
 }
 
 export function loaded(component: Component, editors: Editor[], tabView: TabView) {
+  log.debug('plugin handler loaded');
+
   for (let i = 0; i < editors.length; i++) {
     if (editors[i].tab.view.id === tabView.view.id) {
-      editors[i].node.$destroy();
       editors[i].parent.$destroy();
       editors.splice(i, 1);
       break;

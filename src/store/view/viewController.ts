@@ -7,7 +7,9 @@ import pluginManagement from '@/plugin/PluginManagement';
 export function viewFocusStart(state: State, view: View) {
   log.debug('viewController viewFocusStart');
   state.viewFocus = view;
-  pluginManagement.editorFocusStart(view);
+  if (!state.explorerFocus) {
+    pluginManagement.editorFocusStart(view);
+  }
   if (state.tabPreview && view.id !== state.tabPreview.view.id) {
     tabAddPreviewEnd(state);
   }

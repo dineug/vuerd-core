@@ -11,10 +11,6 @@ export interface Tree {
   read?(path: string, id: string): Promise<string>;
 }
 
-export interface Plugin {
-  install(command: Command): void;
-}
-
 export interface EditorOption {
   component: Component;
   scope: Array<string | RegExp>;
@@ -50,9 +46,19 @@ export declare class Command {
   public themeAdd(theme: Theme): Command;
 }
 
+export interface Plugin {
+  install(command: Command): void;
+}
+
 export declare function use(plugin: Plugin): void;
 
-export declare function install(Vue: typeof _Vue): void;
+export type LogLevel = 'debug';
+
+export interface Option {
+  logLevel?: LogLevel;
+}
+
+export declare function install(Vue: typeof _Vue, option?: Option): void;
 declare const _default: {
   install: typeof install;
   use: typeof use;

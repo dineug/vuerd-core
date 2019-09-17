@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-  import {Component, Prop, Vue} from 'vue-property-decorator';
+  import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
   import {Color} from '@/types';
 
   @Component
@@ -18,6 +18,19 @@
     private value!: string;
     @Prop({type: Object, default: () => ({})})
     private color!: Color;
+    @Prop({type: Boolean, default: false})
+    private focus!: boolean;
+
+    @Watch('focus')
+    private watchFocus(focus: boolean) {
+      window.console.log(`TextEditor watchFocus: ${focus}`);
+      const textarea = this.$el as HTMLTextAreaElement;
+      if (focus) {
+        textarea.focus();
+      } else {
+        textarea.blur();
+      }
+    }
 
     private onChange(event: Event) {
       const textarea = event.target as HTMLTextAreaElement;
