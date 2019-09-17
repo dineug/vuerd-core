@@ -95,19 +95,13 @@ class PluginManagement {
   public editorFocusStart(view: View) {
     log.debug('PluginManagement editorFocusStart');
     const list = this.editors();
-    let result = false;
-    for (const value of list) {
-      for (const editor of value.editors) {
+    list.forEach((value) => {
+      value.editors.forEach((editor) => {
         if (editor.tab.view.id === view.id) {
           editor.parent.$data.focus = true;
-          result = true;
-          break;
         }
-      }
-      if (result) {
-        break;
-      }
-    }
+      });
+    });
   }
 
   public editorFocusEnd() {
