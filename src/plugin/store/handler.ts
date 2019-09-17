@@ -82,6 +82,7 @@ function asterisk(scope: Array<string | RegExp>): boolean {
 export function loaded(component: Component, editors: Editor[], tabView: TabView) {
   for (let i = 0; i < editors.length; i++) {
     if (editors[i].tab.view.id === tabView.view.id) {
+      editors[i].node.$destroy();
       editors[i].parent.$destroy();
       editors.splice(i, 1);
       break;
