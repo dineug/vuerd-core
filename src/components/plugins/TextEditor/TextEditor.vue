@@ -19,12 +19,12 @@
     @Prop({type: Object, default: () => ({})})
     private color!: Color;
     @Prop({type: Boolean, default: false})
-    private focus!: boolean;
+    private currentFocus!: boolean;
 
-    @Watch('focus')
-    private watchFocus(focus: boolean) {
+    @Watch('currentFocus')
+    private watchFocus(currentFocus: boolean) {
       const textarea = this.$el as HTMLTextAreaElement;
-      if (focus) {
+      if (currentFocus) {
         textarea.focus();
       } else {
         textarea.blur();

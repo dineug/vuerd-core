@@ -89,7 +89,7 @@ class PluginManagement {
     for (const value of list) {
       for (const editor of value.editors) {
         if (editor.tab.view.id === view.id) {
-          editor.parent.$data.focus = true;
+          editor.parent.$data.currentFocus = true;
           result = true;
           break;
         }
@@ -103,7 +103,7 @@ class PluginManagement {
   public editorFocusEnd() {
     const list = this.editors();
     list.forEach((value) => {
-      value.editors.forEach((editor) => editor.parent.$data.focus = false);
+      value.editors.forEach((editor) => editor.parent.$data.currentFocus = false);
     });
   }
 

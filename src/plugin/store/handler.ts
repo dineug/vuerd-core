@@ -97,7 +97,7 @@ export function loaded(component: Component, editors: Editor[], tabView: TabView
       scope: '',
       width: 0,
       height: 0,
-      focus: false,
+      currentFocus: false,
       color: {},
     }),
     render(h) {
@@ -107,7 +107,7 @@ export function loaded(component: Component, editors: Editor[], tabView: TabView
           scope: this.scope,
           width: this.width,
           height: this.height,
-          focus: this.focus,
+          currentFocus: this.currentFocus,
           color: this.color,
         },
         on: {
