@@ -83,6 +83,30 @@ class PluginManagement {
     });
   }
 
+  public editorFocusStart(view: View) {
+    const list = this.editors();
+    let result = false;
+    for (const value of list) {
+      for (const editor of value.editors) {
+        if (editor.tab.view.id === view.id) {
+          editor.parent.$data.focus = true;
+          result = true;
+          break;
+        }
+      }
+      if (result) {
+        break;
+      }
+    }
+  }
+
+  public editorFocusEnd() {
+    const list = this.editors();
+    list.forEach((value) => {
+      value.editors.forEach((editor) => editor.parent.$data.focus = false);
+    });
+  }
+
 }
 
 export default new PluginManagement();

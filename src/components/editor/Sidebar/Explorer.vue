@@ -28,7 +28,7 @@
 <script lang="ts">
   import {SIZE_STATUSBAR_HEIGHT, SIZE_TITLEBAR_HEIGHT, SIZE_TREE_HEIGHT} from '@/ts/layout';
   import treeStore, {Commit, Tree, TreeSelect} from '@/store/tree';
-  import viewStore, {View} from '@/store/view';
+  import viewStore, {View, Commit as ViewCommit} from '@/store/view';
   import themeStore, {State as ThemeState} from '@/store/theme';
   import contextmenuStore, {Menu, Scope} from '@/store/contextmenu';
   import {findById} from '@/store/tree/treeHandler';
@@ -143,11 +143,13 @@
         if (el.closest('.explorer') || el.closest('.contextmenu-explorer')) {
           if (this.subKeydown === null) {
             this.subKeydown = this.keydown$.subscribe(this.onKeydown);
+            viewStore.commit(ViewCommit.viewExplorerFocusStart);
           }
         } else {
           if (this.subKeydown !== null) {
             this.subKeydown.unsubscribe();
             this.subKeydown = null;
+            viewStore.commit(ViewCommit.viewExplorerFocusEnd);
           }
         }
         if (!el.closest('.contextmenu')) {

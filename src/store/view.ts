@@ -18,6 +18,8 @@ import {
 import {
   viewFocusStart,
   viewFocusEnd,
+  viewExplorerFocusStart,
+  viewExplorerFocusEnd,
 } from './view/viewController';
 import init from '@/data/view';
 
@@ -28,6 +30,7 @@ export interface State {
   tabDraggable: TabView | null;
   viewFocus: View | null;
   tabPreview: TabView | null;
+  explorerFocus: boolean;
 }
 
 /**
@@ -78,6 +81,8 @@ export const enum Commit {
   tabDelete = 'tabDelete',
   viewFocusStart = 'viewFocusStart',
   viewFocusEnd = 'viewFocusEnd',
+  viewExplorerFocusStart = 'viewExplorerFocusStart',
+  viewExplorerFocusEnd = 'viewExplorerFocusEnd',
 }
 
 export default new Vuex.Store<State>({
@@ -86,6 +91,7 @@ export default new Vuex.Store<State>({
     tabDraggable: null,
     viewFocus: null,
     tabPreview: null,
+    explorerFocus: false,
   },
   getters: {
     tabGroups: (state: State): View[] => tabGroups(state.container),
@@ -104,6 +110,8 @@ export default new Vuex.Store<State>({
     tabDelete,
     viewFocusStart,
     viewFocusEnd,
+    viewExplorerFocusStart,
+    viewExplorerFocusEnd,
   },
   actions: {},
 });
