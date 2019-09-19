@@ -134,7 +134,6 @@
           const mainWidth = workspace.clientWidth - sidebarWidth - layout.SIZE_ACTIVITYBAR_WIDTH;
           const mouseX = e.x - layout.SIZE_ACTIVITYBAR_WIDTH;
           if (0 < sidebarWidth && sizeMainWidthMin < mainWidth) {
-            // mouse 뱡향 분기 처리
             if (mouseX < 0) {
               this.sidebarWidthOld = this.sidebarWidth = 0;
             } else if (mouseX > workspace.clientWidth) {
@@ -161,7 +160,6 @@
           const mouseY = e.y - padding;
           if (sizeEditorBottomTopMin < editorHeight
             && padding < editorBottomHeight) {
-            // mouse 뱡향 분기 처리
             if (mouseY < 0) {
               this.editorBottomHeight = main.clientHeight - sizeEditorBottomTopMin;
             } else if (mouseY + padding > main.clientHeight) {

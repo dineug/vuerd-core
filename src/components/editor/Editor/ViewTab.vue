@@ -34,6 +34,7 @@
   import eventBus, {Bus} from '@/ts/EventBus';
   import themeStore, {State as ThemeState} from '@/store/theme';
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
+  import pluginManagement from '@/plugin/PluginManagement';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
   import MDIcon from '@/components/editor/MDIcon.vue';
 
@@ -100,6 +101,9 @@
       log.debug('ViewTab onClose');
       event.stopPropagation();
       viewStore.commit(Commit.tabClose, {view: this.view, tab});
+      this.$nextTick(() => {
+        pluginManagement.editorResize();
+      });
     }
 
     private onMousedown() {
