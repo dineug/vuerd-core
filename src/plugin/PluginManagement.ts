@@ -97,9 +97,7 @@ class PluginManagement {
     const list = this.editors();
     list.forEach((value) => {
       value.editors.forEach((editor) => {
-        if (editor.tab.view.id === view.id) {
-          editor.parent.$data.focus = true;
-        }
+        editor.parent.$data.focus = editor.tab.view.id === view.id;
       });
     });
   }

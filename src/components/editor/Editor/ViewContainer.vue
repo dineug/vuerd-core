@@ -34,13 +34,6 @@
   import Sash from '../Sash.vue';
   import ViewView from './ViewView.vue';
 
-  interface First {
-    left: boolean;
-    right: boolean;
-    top: boolean;
-    bottom: boolean;
-  }
-
   @Component({
     components: {
       Sash,
@@ -53,13 +46,6 @@
 
     private x: number = 0;
     private y: number = 0;
-
-    private first: First = {
-      left: false,
-      right: false,
-      top: false,
-      bottom: false,
-    };
 
     get theme(): ThemeState {
       return themeStore.state;
@@ -78,7 +64,6 @@
             view2.widthRatio = view2.width / this.container.width;
             resetWidthRatio(view1);
             resetWidthRatio(view2);
-            this.first[direction] = true;
             this.x += event.movementX;
             pluginManagement.editorResize();
           }
@@ -91,7 +76,6 @@
             view2.widthRatio = view2.width / this.container.width;
             resetWidthRatio(view1);
             resetWidthRatio(view2);
-            this.first[direction] = true;
             this.x += event.movementX;
             pluginManagement.editorResize();
           }
@@ -112,7 +96,6 @@
             view2.heightRatio = view2.height / this.container.height;
             resetHeightRatio(view1);
             resetHeightRatio(view2);
-            this.first[direction] = true;
             this.y += event.movementY;
             pluginManagement.editorResize();
           }
@@ -125,7 +108,6 @@
             view2.heightRatio = view2.height / this.container.height;
             resetHeightRatio(view1);
             resetHeightRatio(view2);
-            this.first[direction] = true;
             this.y += event.movementY;
             pluginManagement.editorResize();
           }
