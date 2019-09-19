@@ -104,11 +104,11 @@
       const padding = layout.SIZE_TITLEBAR_HEIGHT + layout.SIZE_STATUSBAR_HEIGHT;
       const editorBottomHeightMin = this.editorBottomHeight + padding + layout.SIZE_EDITOR_BOTTOM_TOP_MIN;
       if (window.innerHeight < editorBottomHeightMin
-        && padding + layout.SIZE_SASH < this.editorBottomHeight) {
+        && padding < this.editorBottomHeight) {
         this.editorBottomHeight += this.resizeMovement.y;
       }
-      if (this.editorBottomHeight < padding + layout.SIZE_SASH) {
-        this.editorBottomHeight = padding + layout.SIZE_SASH;
+      if (this.editorBottomHeight < padding) {
+        this.editorBottomHeight = padding;
       }
     }
 
@@ -160,12 +160,12 @@
           const padding = layout.SIZE_TITLEBAR_HEIGHT + layout.SIZE_STATUSBAR_HEIGHT;
           const mouseY = e.y - padding;
           if (sizeEditorBottomTopMin < editorHeight
-            && padding + layout.SIZE_SASH < editorBottomHeight) {
+            && padding < editorBottomHeight) {
             // mouse 뱡향 분기 처리
             if (mouseY < 0) {
               this.editorBottomHeight = main.clientHeight - sizeEditorBottomTopMin;
             } else if (mouseY + padding > main.clientHeight) {
-              this.editorBottomHeight = padding + layout.SIZE_SASH;
+              this.editorBottomHeight = padding;
             } else if (e.movementY < 0 && mouseY < editorHeight) {
               this.editorBottomHeight = editorBottomHeight;
             } else if (e.movementY > 0 && mouseY > editorHeight) {
