@@ -181,6 +181,9 @@
       log.debug('ViewTab onDragenter');
       if (this.tabDraggable && this.tabDraggable.view.id !== this.view.id) {
         viewStore.commit(Commit.tabMove, {view: this.view});
+        this.$nextTick(() => {
+          pluginManagement.editorResize();
+        });
       }
       this.$emit('dragenter', event);
     }

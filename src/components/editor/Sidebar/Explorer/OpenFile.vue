@@ -39,6 +39,7 @@
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
   import {log, getData, findParentLiByElement} from '@/ts/util';
   import eventBus, {Bus} from '@/ts/EventBus';
+  import pluginManagement from '@/plugin/PluginManagement';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import MDIcon from '@/components/editor/MDIcon.vue';
 
@@ -142,6 +143,9 @@
           const tab = getData(view.tabs, li.dataset.id);
           if (tab) {
             viewStore.commit(Commit.tabMove, {view, tab});
+            this.$nextTick(() => {
+              pluginManagement.editorResize();
+            });
           }
         }
       }
