@@ -207,12 +207,9 @@
 
     // ==================== Life Cycle ====================
     private created() {
-      if (process.env.NODE_ENV === 'development') {
-        eventBus.destroyed();
-      }
-      const themes = pluginManagement.themes();
+      const themes = pluginManagement.themes;
       for (const theme of themes) {
-        if (theme.name === 'AtomOneDark') {
+        if (theme.name === 'VSCode') {
           pluginManagement.themeLoad(theme);
           break;
         }
@@ -232,9 +229,7 @@
     private destroyed() {
       this.subResize.unsubscribe();
       this.subResizeMovement.unsubscribe();
-      eventBus.$off(Bus.VuerdCore.sidebarStart, this.onSidebarStart);
-      eventBus.$off(Bus.VuerdCore.sidebarEnd, this.onSidebarEnd);
-      eventBus.$off(Bus.VuerdCore.changeTree, this.onChangeTree);
+      eventBus.destroyed();
     }
 
     // ==================== Life Cycle END ====================

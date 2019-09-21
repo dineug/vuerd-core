@@ -9,7 +9,7 @@ import {log} from '@/ts/util';
 
 class PluginManagement {
   private plugins: Array<Store<State>> = [];
-  private theme: Theme | null = null;
+  private currentTheme: Theme | null = null;
 
   public add(store: Store<State>) {
     log.debug('PluginManagement add');
@@ -40,9 +40,9 @@ class PluginManagement {
 
   public themeLoad(theme: Theme) {
     log.debug('PluginManagement themeLoad');
-    this.theme = theme;
+    this.currentTheme = theme;
     themeStore.commit(ThemeCommit.theme, theme);
-    const editors = this.editors();
+    const editors = this.editors;
     editors.forEach((editor) => {
       editor.editors.forEach((value) => {
         value.parent.$data.color = themeStore.getters.color;
@@ -50,7 +50,7 @@ class PluginManagement {
     });
   }
 
-  public themes(): Theme[] {
+  get themes(): Theme[] {
     log.debug('PluginManagement themes');
     const list: Theme[] = [];
     this.plugins.forEach((plugin) => {
@@ -61,12 +61,12 @@ class PluginManagement {
     return list;
   }
 
-  public currentTheme(): Theme | null {
+  get theme(): Theme | null {
     log.debug('PluginManagement currentTheme');
-    return this.theme;
+    return this.currentTheme;
   }
 
-  public editors(): State[] {
+  get editors(): State[] {
     log.debug('PluginManagement editors');
     const list: State[] = [];
     this.plugins.forEach((plugin) => {
@@ -79,7 +79,7 @@ class PluginManagement {
 
   public editorResize() {
     log.debug('PluginManagement editorResize');
-    const list = this.editors();
+    const list = this.editors;
     list.forEach((value) => {
       value.editors.forEach((editor) => {
         const selector = `#editor-${editor.tab.view.id}`;
@@ -94,7 +94,7 @@ class PluginManagement {
 
   public editorFocusStart(view: View) {
     log.debug('PluginManagement editorFocusStart');
-    const list = this.editors();
+    const list = this.editors;
     list.forEach((value) => {
       value.editors.forEach((editor) => {
         editor.parent.$data.focus = editor.tab.view.id === view.id;
@@ -104,7 +104,7 @@ class PluginManagement {
 
   public editorFocusEnd() {
     log.debug('PluginManagement editorFocusEnd');
-    const list = this.editors();
+    const list = this.editors;
     list.forEach((value) => {
       value.editors.forEach((editor) => editor.parent.$data.focus = false);
     });

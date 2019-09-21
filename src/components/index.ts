@@ -3,11 +3,12 @@ import _VuerdCore from './editor/VuerdCore.vue';
 import {Plugin, Option} from '@/types';
 import Logger from '@/ts/Logger';
 import Command from '@/plugin/Command';
-import TextEditor from './plugins/TextEditor';
-import ImagePreview from './plugins/ImagePreview';
-import VideoPreview from './plugins/VideoPreview';
-import AtomOneDark from './plugins/AtomOneDark';
-import AtomOneLight from './plugins/AtomOneLight';
+import TextEditor from './plugins/editor/TextEditor';
+import ImagePreview from './plugins/editor/ImagePreview';
+import VideoPreview from './plugins/editor/VideoPreview';
+import VSCode from './plugins/theme/VSCode';
+import AtomOneDark from './plugins/theme/AtomOneDark';
+import AtomOneLight from './plugins/theme/AtomOneLight';
 
 const VuerdCore = {
   install: (Vue: typeof _Vue, option?: Option) => {
@@ -21,9 +22,13 @@ const VuerdCore = {
   },
 };
 
+// default editor
 VuerdCore.use(TextEditor);
 VuerdCore.use(ImagePreview);
 VuerdCore.use(VideoPreview);
+
+// default theme
+VuerdCore.use(VSCode);
 VuerdCore.use(AtomOneDark);
 VuerdCore.use(AtomOneLight);
 
