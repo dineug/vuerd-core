@@ -127,9 +127,8 @@
         return null;
       } else if (el.localName === 'span' && el.className === 'node') {
         return el;
-      } else {
-        return this.findNodeByElement(el.parentElement);
       }
+      return this.findNodeByElement(el.parentElement);
     }
 
     // ==================== Event Handler ===================

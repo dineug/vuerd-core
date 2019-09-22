@@ -61,9 +61,8 @@ export function findParentLiByElement(el: HTMLElement | null): HTMLElement | nul
     return null;
   } else if (el.localName === 'li') {
     return el;
-  } else {
-    return findParentLiByElement(el.parentElement);
   }
+  return findParentLiByElement(el.parentElement);
 }
 
 export function validFileName(name: string): string {
@@ -85,7 +84,6 @@ export function autoName<T extends Name>(list: T[], id: string, name: string, nu
   }
   if (result) {
     return name;
-  } else {
-    return autoName(list, id, name.replace(/[0-9]/g, '') + num, num + 1);
   }
+  return autoName(list, id, name.replace(/[0-9]/g, '') + num, num + 1);
 }

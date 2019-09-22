@@ -165,12 +165,12 @@
         const el = event.target as HTMLElement;
         this.contextmenu = !!el.closest('.explorer');
         if (this.contextmenu) {
-          this.contextmenuX = event.clientX;
+          this.contextmenuX = event.x;
           const height = this.getMenus.length * MENU_HEIGHT;
-          if (event.clientY + height > this.windowHeight) {
-            this.contextmenuY = event.clientY - height;
+          if (event.y + height > this.windowHeight) {
+            this.contextmenuY = event.y - height;
           } else {
-            this.contextmenuY = event.clientY;
+            this.contextmenuY = event.y;
           }
         }
         const node = el.closest('.node') as HTMLElement;

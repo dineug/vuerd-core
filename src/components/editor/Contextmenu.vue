@@ -48,6 +48,7 @@
     @Prop({type: String, default: ''})
     private scope!: Scope;
 
+    private windowHeight: number = window.innerHeight;
     private currentMenu: Menu<any> | null = null;
 
     get getMenus(): Array<Menu<any>> {
@@ -75,10 +76,16 @@
     get childrenY(): number {
       if (this.currentMenu) {
         const menus = this.getMenus;
-        return this.y + menus.indexOf(this.currentMenu) * MENU_HEIGHT;
-      } else {
-        return this.y;
+        let y = this.y + menus.indexOf(this.currentMenu) * MENU_HEIGHT;
+        if (this.currentMenu.children) {
+          const height = (this.currentMenu.children.length - 1) * MENU_HEIGHT;
+          if (y + height > this.windowHeight) {
+            y -= height;
+          }
+        }
+        return y;
       }
+      return this.y;
     }
 
     get theme(): ThemeState {

@@ -39,9 +39,8 @@
     get fill(): string {
       if (this.color === '') {
         return themeStore.state.font;
-      } else {
-        return this.color;
       }
+      return this.color;
     }
 
     private icon(name: string): string {
