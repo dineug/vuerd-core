@@ -58,8 +58,16 @@
     }
 
     get base(): boolean {
+      let result = false;
       const icon = pluginManagement.icon;
-      return (this.folder && !icon.getFolder) || (!this.folder && !icon.getFile);
+      if (this.folder && !icon.getFolder) {
+        result = true;
+      } else if (!this.folder && !icon.getFile) {
+        result = true;
+      } else if (!this.folder && icon.getFile) {
+        result = icon.getFile(this.name) === '';
+      }
+      return result;
     }
 
     get baseFolder(): boolean {

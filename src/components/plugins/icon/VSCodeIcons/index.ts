@@ -1,9 +1,7 @@
 import {Command} from '@/types';
 import { getIconForFile, getIconForFolder, getIconForOpenFolder } from 'vscode-icons-js';
 
-const svg = {} as any;
-const req = require.context('./icons', false, /\.svg$/);
-req.keys().forEach((filename) => svg[filename.substr(2)] = req(filename));
+const url = 'https://dderevjanik.github.io/vscode-icons-js-example/icons';
 
 export default {
   install(command: Command) {
@@ -12,15 +10,15 @@ export default {
       getFile(name: string): string {
         const icon = getIconForFile(name);
         if (icon) {
-          return svg[icon];
+          return `${url}/${icon}`;
         }
         return '';
       },
       getFolder(name: string, open?: boolean): string {
         if (open) {
-          return svg[getIconForOpenFolder(name)];
+          return `${url}/${getIconForOpenFolder(name)}`;
         }
-        return svg[getIconForFolder(name)];
+        return `${url}/${getIconForFolder(name)}`;
       },
     });
   },
