@@ -30,7 +30,7 @@
               @dragend="onDragend"
             )
               span.icon
-                MDIcon(:size="16" :color="tab.active ? theme.fontActive : theme.font" file) {{tab.name}}
+                Icon(:name="tab.name")
               span.name {{tab.name}}
 </template>
 
@@ -42,6 +42,7 @@
   import pluginManagement from '@/plugin/PluginManagement';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import MDIcon from '@/components/editor/MDIcon.vue';
+  import Icon from '@/components/editor/Icon.vue';
 
   import {fromEvent, Subscription, Subject} from 'rxjs';
   import {throttleTime, debounceTime} from 'rxjs/operators';
@@ -49,6 +50,7 @@
   @Component({
     components: {
       MDIcon,
+      Icon,
     },
   })
   export default class OpenFile extends Vue {
@@ -187,7 +189,7 @@
       z-index: 200;
 
       li {
-        padding: 1px 0 1px 10px;
+        padding-left: 10px;
         white-space: nowrap;
         overflow: hidden;
 
@@ -210,7 +212,7 @@
           cursor: pointer;
           display: inline-flex;
           align-items: center;
-          height: $size-tree-height - 2;
+          height: $size-tree-height;
 
           &.draggable {
             opacity: 0.5;
@@ -218,6 +220,7 @@
 
           .icon {
             padding-right: 4px;
+            height: $size-tree-height;
           }
 
           .name {

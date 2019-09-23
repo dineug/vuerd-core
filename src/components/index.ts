@@ -9,6 +9,7 @@ import VideoPreview from './plugins/editor/VideoPreview';
 import VSCode from './plugins/theme/VSCode';
 import AtomOneDark from './plugins/theme/AtomOneDark';
 import AtomOneLight from './plugins/theme/AtomOneLight';
+import VSCodeIcons from './plugins/icon/VSCodeIcons';
 
 const VuerdCore = {
   install: (Vue: typeof _Vue, option?: Option) => {
@@ -31,5 +32,8 @@ VuerdCore.use(VideoPreview);
 VuerdCore.use(VSCode);
 VuerdCore.use(AtomOneDark);
 VuerdCore.use(AtomOneLight);
+
+// default icon
+VuerdCore.use(VSCodeIcons);
 
 export default VuerdCore;

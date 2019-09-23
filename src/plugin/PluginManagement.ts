@@ -3,17 +3,78 @@ import {Store} from 'vuex';
 import {Commit, State} from './store';
 import {View, Tab} from '@/store/view';
 import {getEditor, getDataset} from './store/handler';
-import {Theme} from '@/types';
+import {Theme, Icon} from '@/types';
 import themeStore, {Commit as ThemeCommit} from '@/store/theme';
 import {log} from '@/ts/util';
 
 class PluginManagement {
   private plugins: Array<Store<State>> = [];
-  private currentTheme: Theme | null = null;
+  private currentTheme!: Theme;
+  private currentIcon!: Icon;
+
+  get themes(): Theme[] {
+    log.debug('PluginManagement themes');
+    const list: Theme[] = [];
+    this.plugins.forEach((plugin) => {
+      if (plugin.state.theme) {
+        list.push(plugin.state.theme);
+      }
+    });
+    return list;
+  }
+
+  get theme(): Theme {
+    log.debug('PluginManagement theme');
+    return this.currentTheme;
+  }
+
+  get icons(): Icon[] {
+    log.debug('PluginManagement icons');
+    const list: Icon[] = [];
+    this.plugins.forEach((plugin) => {
+      if (plugin.state.icon) {
+        list.push(plugin.state.icon);
+      }
+    });
+    return list;
+  }
+
+  get icon(): Icon {
+    log.debug('PluginManagement icon');
+    return this.currentIcon;
+  }
+
+  get editors(): State[] {
+    log.debug('PluginManagement editors');
+    const list: State[] = [];
+    this.plugins.forEach((plugin) => {
+      if (plugin.state.editor) {
+        list.push(plugin.state);
+      }
+    });
+    return list;
+  }
 
   public add(store: Store<State>) {
     log.debug('PluginManagement add');
     this.plugins.push(store);
+  }
+
+  public themeLoad(theme: Theme) {
+    log.debug('PluginManagement themeLoad');
+    this.currentTheme = theme;
+    themeStore.commit(ThemeCommit.theme, theme);
+    const editors = this.editors;
+    editors.forEach((editor) => {
+      editor.editorInstances.forEach((value) => {
+        value.parent.$data.color = themeStore.getters.color;
+      });
+    });
+  }
+
+  public iconLoad(icon: Icon) {
+    log.debug('PluginManagement iconLoad');
+    this.currentIcon = icon;
   }
 
   public editorLoad(view: View, tab: Tab) {
@@ -30,7 +91,7 @@ class PluginManagement {
     log.debug('PluginManagement isEditor');
     let result = true;
     for (const value of this.plugins) {
-      if (value.state.component && value.state.component.name === component.name) {
+      if (value.state.editor && value.state.editor.component.name === component.name) {
         result = false;
         break;
       }
@@ -38,50 +99,11 @@ class PluginManagement {
     return result;
   }
 
-  public themeLoad(theme: Theme) {
-    log.debug('PluginManagement themeLoad');
-    this.currentTheme = theme;
-    themeStore.commit(ThemeCommit.theme, theme);
-    const editors = this.editors;
-    editors.forEach((editor) => {
-      editor.editors.forEach((value) => {
-        value.parent.$data.color = themeStore.getters.color;
-      });
-    });
-  }
-
-  get themes(): Theme[] {
-    log.debug('PluginManagement themes');
-    const list: Theme[] = [];
-    this.plugins.forEach((plugin) => {
-      if (plugin.state.theme) {
-        list.push(plugin.state.theme);
-      }
-    });
-    return list;
-  }
-
-  get theme(): Theme | null {
-    log.debug('PluginManagement currentTheme');
-    return this.currentTheme;
-  }
-
-  get editors(): State[] {
-    log.debug('PluginManagement editors');
-    const list: State[] = [];
-    this.plugins.forEach((plugin) => {
-      if (plugin.state.component) {
-        list.push(plugin.state);
-      }
-    });
-    return list;
-  }
-
   public editorResize() {
     log.debug('PluginManagement editorResize');
     const list = this.editors;
     list.forEach((value) => {
-      value.editors.forEach((editor) => {
+      value.editorInstances.forEach((editor) => {
         const selector = `#editor-${editor.tab.view.id}`;
         const dataset = getDataset(selector);
         if (dataset) {
@@ -96,7 +118,7 @@ class PluginManagement {
     log.debug('PluginManagement editorFocusStart');
     const list = this.editors;
     list.forEach((value) => {
-      value.editors.forEach((editor) => {
+      value.editorInstances.forEach((editor) => {
         editor.parent.$data.focus = editor.tab.view.id === view.id;
       });
     });
@@ -106,7 +128,7 @@ class PluginManagement {
     log.debug('PluginManagement editorFocusEnd');
     const list = this.editors;
     list.forEach((value) => {
-      value.editors.forEach((editor) => editor.parent.$data.focus = false);
+      value.editorInstances.forEach((editor) => editor.parent.$data.focus = false);
     });
   }
 

@@ -22,15 +22,8 @@
         @dblclick="onOpenFile($event, node)"
       )
         span.icon
-          MDIcon(
-            v-if="node.children"
-            :size="16"
-          ) {{node.open ? 'mdi-folder-open' : 'mdi-folder'}}
-          MDIcon(
-            v-else
-            :size="16"
-            file
-          ) {{node.name}}
+          Icon(v-if="node.children" folder :open="node.open")
+          Icon(v-else :name="node.name")
         input.name(
           v-if="renameTree && node.id === renameTree.id"
           type="text"
@@ -66,6 +59,7 @@
   import AnimationFrame from '@/ts/AnimationFrame';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import MDIcon from '@/components/editor/MDIcon.vue';
+  import Icon from '@/components/editor/Icon.vue';
 
   import {fromEvent, Subscription} from 'rxjs';
   import {throttleTime} from 'rxjs/operators';
@@ -86,6 +80,7 @@
   @Component({
     components: {
       MDIcon,
+      Icon,
     },
     directives: {
       focus: {
@@ -308,7 +303,7 @@
     height: 100%;
 
     li {
-      padding: 1px 0 1px 10px;
+      padding-left: 10px;
       white-space: nowrap;
       overflow: hidden;
 
@@ -326,10 +321,11 @@
         cursor: pointer;
         display: inline-flex;
         align-items: center;
-        height: $size-tree-height - 2;
+        height: $size-tree-height;
 
         .icon {
           padding-right: 4px;
+          height: $size-tree-height;
         }
 
         .name {

@@ -1,16 +1,12 @@
 import {State} from '../store';
-import {EditorOption} from '@/types';
+import {Editor} from '@/types';
 import {View, Tab, TabView} from '@/store/view';
 import {loaded} from './handler';
 import {log} from '@/ts/util';
 
-export function editorAdd(state: State, option: EditorOption) {
+export function editorAdd(state: State, editor: Editor) {
   log.debug('editorController editorAdd');
-  state.component = option.component;
-  state.scope = option.scope;
-  if (option.exclude) {
-    state.exclude = option.exclude;
-  }
+  state.editor = editor;
 }
 
 export function editorLoad(state: State, payload: { view: View, tab: Tab }) {
@@ -22,13 +18,13 @@ export function editorLoad(state: State, payload: { view: View, tab: Tab }) {
   if (tabView.read && tabView.value === undefined) {
     tabView.read(tabView.path, tabView.id).then((value) => {
       tabView.value = value;
-      if (state.component) {
-        loaded(state.component, state.editors, tabView);
+      if (state.editor) {
+        loaded(state.editor.component, state.editorInstances, tabView);
       }
     }).catch((err) => {
       log.error(err);
     });
-  } else if (state.component && tabView.value !== undefined) {
-    loaded(state.component, state.editors, tabView);
+  } else if (state.editor && tabView.value !== undefined) {
+    loaded(state.editor.component, state.editorInstances, tabView);
   }
 }

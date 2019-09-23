@@ -11,7 +11,7 @@ export interface Tree {
   read?(path: string, id: string): Promise<string>;
 }
 
-export interface EditorOption {
+export interface Editor {
   component: Component;
   scope: Array<string | RegExp>;
   exclude?: Array<string | RegExp>;
@@ -41,9 +41,16 @@ export interface Color {
   tabActive: string;
 }
 
+export interface Icon {
+  name: string;
+  getFile?(name: string): string;
+  getFolder?(name: string, open?: boolean): string;
+}
+
 export declare class Command {
-  public editorAdd(option: EditorOption): Command;
-  public themeAdd(theme: Theme): Command;
+  editorAdd(editor: Editor): Command;
+  themeAdd(theme: Theme): Command;
+  iconAdd(icon: Icon): Command;
 }
 
 export interface Plugin {

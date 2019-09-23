@@ -188,14 +188,14 @@
       if (event.key === Key.Tab) {
         event.preventDefault();
       }
-      if (!this.renameTree && event.key === Key.F2) {
+      if (!this.renameTree && event.key === Key.F2) { // F2
         treeStore.commit(Commit.fileRenameStart, this.lastSelect);
       } else if (this.renameTree
         && (event.key === Key.Escape
           || event.key === Key.Enter
           || event.key === Key.Tab)) {
         treeStore.commit(Commit.fileRenameEnd);
-      } else if (!this.renameTree && event.key === Key.Delete) {
+      } else if (!this.renameTree && event.key === Key.Delete) { // Delete
         this.selects.forEach((tree: TreeSelect) => {
           if (tree.children) {
             treeStore.commit(Commit.folderDelete, tree);
@@ -206,13 +206,13 @@
         eventBus.$emit(Bus.VuerdCore.changeTree);
       } else if (!this.renameTree
         && (event.key === Key.ArrowUp
-          || event.key === Key.ArrowDown)) {
+          || event.key === Key.ArrowDown)) { // ArrowUp, ArrowDown
         treeStore.commit(Commit.fileSelectMove, event.key);
       } else if (!this.renameTree
         && (event.key === Key.ArrowLeft
-          || event.key === Key.ArrowRight)) {
+          || event.key === Key.ArrowRight)) { // ArrowLeft, ArrowRight
         treeStore.commit(Commit.folderSelectOpen, event.key);
-      } else if (!this.renameTree && event.key === Key.Enter) {
+      } else if (!this.renameTree && event.key === Key.Enter) { // Enter
         treeStore.commit(Commit.fileSelectTabAddPreview);
       }
     }

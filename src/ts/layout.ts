@@ -8,5 +8,5 @@ export const SIZE_VIEW_TAB_HEIGHT = 31;
 export const SIZE_SPLIT_MIN = 30;
 export const SIZE_SPLIT_MIN_HEIGHT = SIZE_SPLIT_MIN + SIZE_VIEW_TAB_HEIGHT;
 export const SIZE_FONT = 11;
-export const SIZE_TREE_HEIGHT = 24;
+export const SIZE_TREE_HEIGHT = 22;
 export const SIZE_SCROLLBAR = 8;

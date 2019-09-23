@@ -209,11 +209,19 @@
     private created() {
       const themes = pluginManagement.themes;
       for (const theme of themes) {
-        if (theme.name === 'VSCode') {
+        if (theme.name === 'AtomOneDark') {
           pluginManagement.themeLoad(theme);
           break;
         }
       }
+      const icons = pluginManagement.icons;
+      for (const icon of icons) {
+        if (icon.name === 'VSCodeIcons') {
+          pluginManagement.iconLoad(icon);
+          break;
+        }
+      }
+
       treeStore.commit(Commit.folderInit, this.value);
       eventBus.$on(Bus.VuerdCore.sidebarStart, this.onSidebarStart);
       eventBus.$on(Bus.VuerdCore.sidebarEnd, this.onSidebarEnd);

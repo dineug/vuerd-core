@@ -22,7 +22,7 @@
         @dragend="onDragend"
       )
         span.icon
-          MDIcon(:size="16" :color="tab.active ? theme.fontActive : theme.font" file) {{tab.name}}
+          Icon(:name="tab.name")
         span.name {{tab.name}}
         span.close(@click="onClose($event, tab)")
           MDIcon(:size="12") mdi-close
@@ -37,6 +37,7 @@
   import pluginManagement from '@/plugin/PluginManagement';
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
   import MDIcon from '@/components/editor/MDIcon.vue';
+  import Icon from '@/components/editor/Icon.vue';
 
   import {fromEvent, Observable, Subscription, Subject} from 'rxjs';
   import {throttleTime, debounceTime} from 'rxjs/operators';
@@ -46,6 +47,7 @@
   @Component({
     components: {
       MDIcon,
+      Icon,
     },
   })
   export default class ViewTab extends Vue {
@@ -234,10 +236,13 @@
       overflow-y: hidden;
 
       li {
+        box-sizing: border-box;
         padding: 5px;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
+        vertical-align: middle;
+        height: $size_view-tab-height;
 
         &.draggable {
           opacity: 0.5;

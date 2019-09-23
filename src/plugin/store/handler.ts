@@ -1,6 +1,6 @@
 import Vue, {Component} from 'vue';
 import {Store} from 'vuex';
-import {State, Editor} from '../store';
+import {State, EditorInstance} from '../store';
 import {TabView} from '@/store/view';
 import {isData} from '@/ts/util';
 import {tabGroups} from '@/store/view/viewHandler';
@@ -16,8 +16,8 @@ export function getEditor(name: string, plugins: Array<Store<State>>): Store<Sta
 function getScopeEditors(name: string, plugins: Array<Store<State>>): Array<Store<State>> {
   const editors: Array<Store<State>> = [];
   plugins.forEach((store) => {
-    if (store.state.component && store.state.scope && store.state.scope.length !== 0) {
-      if (isScope(name, store.state.scope, store.state.exclude)) {
+    if (store.state.editor && store.state.editor.scope.length !== 0) {
+      if (isScope(name, store.state.editor.scope, store.state.editor.exclude)) {
         editors.push(store);
       }
     }
@@ -25,7 +25,7 @@ function getScopeEditors(name: string, plugins: Array<Store<State>>): Array<Stor
   return editors;
 }
 
-function isScope(name: string, scope: Array<string | RegExp>, exclude: Array<string | RegExp> | null): boolean {
+function isScope(name: string, scope: Array<string | RegExp>, exclude?: Array<string | RegExp>): boolean {
   let result = false;
   if (exclude) {
     const scopeRegExps = createRegExp(scope);
@@ -80,7 +80,7 @@ function asterisk(scope: Array<string | RegExp>): boolean {
   return false;
 }
 
-export function loaded(component: Component, editors: Editor[], tabView: TabView) {
+export function loaded(component: Component, editors: EditorInstance[], tabView: TabView) {
   log.debug('plugin handler loaded');
 
   for (let i = 0; i < editors.length; i++) {

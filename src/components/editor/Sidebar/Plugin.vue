@@ -6,7 +6,7 @@
       li(
         v-for="theme of themes"
         :key="theme.id"
-        :style="themeActive() && themeActive().name === theme.name ? activeStyle : ''"
+        :style="themeActive().name === theme.name ? activeStyle : ''"
         @click="onTheme(theme)"
       ) {{theme.name}}
 </template>
@@ -41,7 +41,7 @@
       `;
     }
 
-    private themeActive(): Theme | null {
+    private themeActive(): Theme {
       return pluginManagement.theme;
     }
 
