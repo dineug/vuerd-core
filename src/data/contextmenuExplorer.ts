@@ -1,6 +1,6 @@
 import {Menu} from '@/store/contextmenu';
 import treeStore, {TreeSelect, Commit} from '@/store/tree';
-import {lastSelect} from '@/store/tree/treeHandler';
+import {lastSelect} from '@/store/tree/treeHelper';
 import {uuid} from '@/ts/util';
 import eventBus, {Bus} from '@/ts/EventBus';
 

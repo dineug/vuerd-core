@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {lastSelect} from './tree/treeHandler';
+import {lastSelect} from './tree/treeHelper';
 import {
   folderMove,
   folderActiveStart,

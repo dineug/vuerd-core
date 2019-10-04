@@ -14,7 +14,7 @@ export default {
         }
         return '';
       },
-      getFolder(name: string, open?: boolean): string {
+      getFolder(name: string, open: boolean): string {
         if (open) {
           return `${url}/${getIconForOpenFolder(name)}`;
         }

@@ -52,7 +52,7 @@
   import {SIZE_TREE_HEIGHT, SIZE_SCROLLBAR} from '@/ts/layout';
   import {log, getData, validFileName} from '@/ts/util';
   import eventBus, {Bus} from '@/ts/EventBus';
-  import {findById, childrenCount} from '@/store/tree/treeHandler';
+  import {findById, childrenCount} from '@/store/tree/treeHelper';
   import treeStore, {Tree, Commit} from '@/store/tree';
   import viewStore, {Commit as ViewCommit} from '@/store/view';
   import themeStore, {State as ThemeState} from '@/store/theme';

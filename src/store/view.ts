@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {tabGroups} from './view/viewHandler';
+import {tabGroups} from './view/viewHelper';
 import {Tree} from './tree';
 import {
   tabClose,

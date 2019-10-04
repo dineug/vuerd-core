@@ -1,6 +1,6 @@
 import {State, View, Tab, TabView} from '@/store/view';
 import {Tree} from '@/store/tree';
-import {addView, deleteByView, resetSize, tabGroups} from './viewHandler';
+import {addView, deleteByView, resetSize, tabGroups} from './viewHelper';
 import {log, isData, getDataIndex, getData} from '@/ts/util';
 import eventBus, {Bus} from '@/ts/EventBus';
 import TreeToTab from '@/models/TreeToTab';

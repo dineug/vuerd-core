@@ -11,7 +11,7 @@
   import {SIZE_TITLEBAR_HEIGHT, SIZE_ACTIVITYBAR_WIDTH} from '@/ts/layout';
   import themeStore, {State as ThemeState} from '@/store/theme';
   import viewStore, {View} from '@/store/view';
-  import {resetSize, resetWidthRatio, resetHeightRatio} from '@/store/view/viewHandler';
+  import {resetSize, resetWidthRatio, resetHeightRatio} from '@/store/view/viewHelper';
   import {log} from '@/ts/util';
   import eventBus, {Bus} from '@/ts/EventBus';
   import pluginManagement from '@/plugin/PluginManagement';

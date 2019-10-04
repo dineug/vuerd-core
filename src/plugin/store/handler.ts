@@ -3,7 +3,7 @@ import {Store} from 'vuex';
 import {State, EditorInstance} from '../store';
 import {TabView} from '@/store/view';
 import {isData} from '@/ts/util';
-import {tabGroups} from '@/store/view/viewHandler';
+import {tabGroups} from '@/store/view/viewHelper';
 import viewStore, {Commit as ViewCommit} from '@/store/view';
 import themeStore from '@/store/theme';
 import {log} from '@/ts/util';

@@ -1,6 +1,6 @@
 {
   "name": "vuerd-core",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "description": "Editor Common UI",
   "main": "dist/vuerd-core.common.js",
   "typings": "src/types/index.d.ts",
@@ -19,7 +19,7 @@
     "@tweenjs/tween.js": "^18.1.2",
     "core-js": "^2.6.5",
     "rxjs": "^6.5.2",
-    "uuid": "^3.3.2",
+    "uuid": "^3.3.3",
     "vscode-icons-js": "^9.3.0",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
@@ -28,33 +28,22 @@
   },
   "devDependencies": {
     "@mdi/js": "^4.4.95",
-    "@types/chai": "^4.1.0",
-    "@types/mocha": "^5.2.4",
-    "@types/uuid": "^3.4.4",
-    "@vue/cli-plugin-babel": "^3.7.0",
-    "@vue/cli-plugin-typescript": "^3.7.0",
-    "@vue/cli-plugin-unit-mocha": "^3.7.0",
-    "@vue/cli-service": "^3.7.0",
+    "@types/jest": "^23.1.4",
+    "@types/uuid": "^3.4.5",
+    "@vue/cli-plugin-babel": "^3.11.0",
+    "@vue/cli-plugin-typescript": "^3.11.0",
+    "@vue/cli-plugin-unit-jest": "^3.11.0",
+    "@vue/cli-service": "^3.11.0",
     "@vue/test-utils": "1.0.0-beta.29",
-    "chai": "^4.1.2",
+    "babel-core": "7.0.0-bridge.0",
     "node-sass": "^4.9.0",
-    "pug": "^2.0.3",
+    "pug": "^2.0.4",
     "sass-loader": "^7.1.0",
-    "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.2",
+    "ts-jest": "^23.0.0",
     "typescript": "^3.4.3",
     "vue-cli-plugin-pug": "^1.0.7",
-    "vue-template-compiler": "^2.5.21"
+    "vue-template-compiler": "^2.6.10"
   },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions"
-  ],
   "files": [
     "dist/*",
     "src/*"

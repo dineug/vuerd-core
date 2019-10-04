@@ -29,7 +29,7 @@
   import Direction from '@/models/Direction';
   import {log} from '@/ts/util';
   import pluginManagement from '@/plugin/PluginManagement';
-  import {minHorizontal, minVertical, resetHeightRatio, resetWidthRatio} from '@/store/view/viewHandler';
+  import {minHorizontal, minVertical, resetHeightRatio, resetWidthRatio} from '@/store/view/viewHelper';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Sash from '../Sash.vue';
   import ViewView from './ViewView.vue';

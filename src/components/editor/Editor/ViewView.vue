@@ -27,7 +27,7 @@
   import Direction from '@/models/Direction';
   import {log} from '@/ts/util';
   import eventBus, {Bus} from '@/ts/EventBus';
-  import {split} from '@/store/view/viewHandler';
+  import {split} from '@/store/view/viewHelper';
   import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
   import themeStore, {State as ThemeState} from '@/store/theme';
   import pluginManagement from '@/plugin/PluginManagement';

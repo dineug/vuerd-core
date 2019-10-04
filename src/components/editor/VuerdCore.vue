@@ -25,7 +25,7 @@
   import * as layout from '@/ts/layout';
   import {log} from '@/ts/util';
   import eventBus, {Bus} from '@/ts/EventBus';
-  import {minVertical, minHorizontal} from '@/store/view/viewHandler';
+  import {minVertical, minHorizontal} from '@/store/view/viewHelper';
   import viewStore from '@/store/view';
   import treeStore, {Commit} from '@/store/tree';
   import themeStore, {State as ThemeState} from '@/store/theme';

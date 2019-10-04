@@ -31,7 +31,7 @@
   import viewStore, {View, Commit as ViewCommit} from '@/store/view';
   import themeStore, {State as ThemeState} from '@/store/theme';
   import contextmenuStore, {Menu, Scope} from '@/store/contextmenu';
-  import {findById} from '@/store/tree/treeHandler';
+  import {findById} from '@/store/tree/treeHelper';
   import Key from '@/models/Key';
   import eventBus, {Bus} from '@/ts/EventBus';
   import {log} from '@/ts/util';

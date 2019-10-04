@@ -1,5 +1,5 @@
 import {State, View} from '@/store/view';
-import {tabGroups} from './viewHandler';
+import {tabGroups} from './viewHelper';
 import {tabAddPreviewEnd} from './tabController';
 import {log} from '@/ts/util';
 import pluginManagement from '@/plugin/PluginManagement';

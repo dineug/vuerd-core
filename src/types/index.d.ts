@@ -44,7 +44,7 @@ export interface Color {
 export interface Icon {
   name: string;
   getFile?(name: string): string;
-  getFolder?(name: string, open?: boolean): string;
+  getFolder?(name: string, open: boolean): string;
 }
 
 export declare class Command {
