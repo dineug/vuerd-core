@@ -152,6 +152,11 @@ export function loaded(editor: Editor, editors: EditorInstance[], tabView: TabVi
   instance.parent.$data.color = themeStore.getters.color;
   instance.parent.$data.scope = tabView.name.substr(tabView.name.lastIndexOf('.') + 1);
   instance.parent.$data.value = tabView.value;
+  if (editor.option && editor.option.undoManager) {
+    const undoRedo = UndoRedoManager.getManager(tabView.id);
+    instance.parent.$data.undo = undoRedo.hasUndo();
+    instance.parent.$data.redo = undoRedo.hasRedo();
+  }
   instance.parent.$on('change', (value: string) => {
     addUndoRedo(editor, editors, tabView, value, instance.parent.$data.value);
     editors.forEach((target) => {
