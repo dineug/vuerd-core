@@ -188,8 +188,8 @@ export function loaded(editor: Editor, editors: EditorInstance[], tabView: TabVi
       const redo = undoRedo.hasRedo();
       editors.forEach((target) => {
         if (target.tab.id === tabView.id) {
-          instance.parent.$data.undo = undo;
-          instance.parent.$data.redo = redo;
+          target.parent.$data.undo = undo;
+          target.parent.$data.redo = redo;
         }
       });
     });
