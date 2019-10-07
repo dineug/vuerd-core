@@ -19,12 +19,12 @@ export function editorLoad(state: State, payload: { view: View, tab: Tab }) {
     tabView.read(tabView.path, tabView.id).then((value) => {
       tabView.value = value;
       if (state.editor) {
-        loaded(state.editor.component, state.editorInstances, tabView);
+        loaded(state.editor, state.editorInstances, tabView);
       }
     }).catch((err) => {
       log.error(err);
     });
   } else if (state.editor && tabView.value !== undefined) {
-    loaded(state.editor.component, state.editorInstances, tabView);
+    loaded(state.editor, state.editorInstances, tabView);
   }
 }

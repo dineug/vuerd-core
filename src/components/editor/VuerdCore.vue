@@ -10,7 +10,7 @@
           :height="editorHeight"
           :sidebarWidth="sidebarWidth"
         )
-        EditorBottom(:height="editorBottomHeight")
+        //EditorBottom(:height="editorBottomHeight")
           Sash(horizontal @mousemove="onMousemoveSash($event, 'horizontal')")
         Sash(
           v-if="activeMenu !== null"
@@ -74,7 +74,7 @@
     private sidebarWidthOld: number = 200;
     private mainWidth: number = 2000;
     private editorHeight: number = 1000;
-    private editorBottomHeight: number = 200;
+    private editorBottomHeight: number = 0;
 
     private resizeMovement: ResizeMovement = {
       x: 0, y: 0,

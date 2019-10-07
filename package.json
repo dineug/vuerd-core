@@ -1,6 +1,6 @@
 {
   "name": "vuerd-core",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "description": "Editor Common UI",
   "main": "dist/vuerd-core.common.js",
   "typings": "src/types/index.d.ts",
@@ -19,6 +19,7 @@
     "@tweenjs/tween.js": "^18.1.2",
     "core-js": "^2.6.5",
     "rxjs": "^6.5.2",
+    "undo-manager": "^1.0.5",
     "uuid": "^3.3.3",
     "vscode-icons-js": "^9.3.0",
     "vue": "^2.6.10",

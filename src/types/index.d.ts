@@ -15,6 +15,11 @@ export interface Editor {
   component: Component;
   scope: Array<string | RegExp>;
   exclude?: Array<string | RegExp>;
+  option?: EditorOption;
+}
+
+export interface EditorOption {
+  undoManager?: boolean;
 }
 
 export interface Theme {

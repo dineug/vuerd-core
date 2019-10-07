@@ -7,6 +7,8 @@ import {tabGroups} from '@/store/view/viewHelper';
 import viewStore, {Commit as ViewCommit} from '@/store/view';
 import themeStore from '@/store/theme';
 import {log} from '@/ts/util';
+import {Editor} from '@/types';
+import UndoRedoManager from '../UndoRedoManager';
 
 export function getEditor(name: string, plugins: Array<Store<State>>): Store<State> {
   const editors = getScopeEditors(name, plugins);
@@ -80,7 +82,7 @@ function asterisk(scope: Array<string | RegExp>): boolean {
   return false;
 }
 
-export function loaded(component: Component, editors: EditorInstance[], tabView: TabView) {
+export function loaded(editor: Editor, editors: EditorInstance[], tabView: TabView) {
   log.debug('plugin handler loaded');
 
   for (let i = 0; i < editors.length; i++) {
@@ -99,9 +101,11 @@ export function loaded(component: Component, editors: EditorInstance[], tabView:
       height: 0,
       focus: false,
       color: {},
+      undo: false,
+      redo: false,
     }),
     render(h) {
-      return h(component, {
+      return h(editor.component, {
         props: {
           value: this.value,
           scope: this.scope,
@@ -109,6 +113,8 @@ export function loaded(component: Component, editors: EditorInstance[], tabView:
           height: this.height,
           focus: this.focus,
           color: this.color,
+          undo: this.undo,
+          redo: this.redo,
         },
         on: {
           input: (value: string) => {
@@ -117,30 +123,37 @@ export function loaded(component: Component, editors: EditorInstance[], tabView:
           change: (value: string) => {
             this.$emit('change', value);
           },
+          undo: () => {
+            this.$emit('undo');
+          },
+          redo: () => {
+            this.$emit('redo');
+          },
         },
       });
     },
   });
   const selector = `#editor-${tabView.view.id}`;
   const dataset = getDataset(selector);
-  instanceReset(component, selector);
+  instanceReset(editor.component, selector);
   parent.$mount(`${selector} > div`);
   const node = parent.$children[0];
-  const editor = {
+  const instance = {
     tab: tabView,
     parent,
     node,
   };
-  editors.push(editor);
+  editors.push(instance);
 
   if (dataset) {
-    editor.parent.$data.width = dataset.width;
-    editor.parent.$data.height = dataset.height;
+    instance.parent.$data.width = dataset.width;
+    instance.parent.$data.height = dataset.height;
   }
-  editor.parent.$data.color = themeStore.getters.color;
-  editor.parent.$data.scope = tabView.name.substr(tabView.name.lastIndexOf('.') + 1);
-  editor.parent.$data.value = tabView.value;
-  editor.parent.$on('change', (value: string) => {
+  instance.parent.$data.color = themeStore.getters.color;
+  instance.parent.$data.scope = tabView.name.substr(tabView.name.lastIndexOf('.') + 1);
+  instance.parent.$data.value = tabView.value;
+  instance.parent.$on('change', (value: string) => {
+    addUndoRedo(editor, editors, tabView, value, instance.parent.$data.value);
     editors.forEach((target) => {
       if (target.tab.id === tabView.id) {
         target.parent.$data.value = value;
@@ -149,7 +162,8 @@ export function loaded(component: Component, editors: EditorInstance[], tabView:
     });
     viewStore.commit(ViewCommit.tabAddPreviewEnd);
   });
-  editor.parent.$on('input', (value: string) => {
+  instance.parent.$on('input', (value: string) => {
+    addUndoRedo(editor, editors, tabView, value, instance.parent.$data.value);
     editors.forEach((target) => {
       if (target.tab.id === tabView.id) {
         target.parent.$data.value = value;
@@ -157,6 +171,29 @@ export function loaded(component: Component, editors: EditorInstance[], tabView:
       }
     });
   });
+  instance.parent.$on('undo', () => {
+    if (editor.option && editor.option.undoManager) {
+      UndoRedoManager.undo(tabView.id);
+    }
+  });
+  instance.parent.$on('redo', () => {
+    if (editor.option && editor.option.undoManager) {
+      UndoRedoManager.redo(tabView.id);
+    }
+  });
+  if (editor.option && editor.option.undoManager) {
+    UndoRedoManager.setCallback(tabView.id, () => {
+      const undoRedo = UndoRedoManager.getManager(tabView.id);
+      const undo = undoRedo.hasUndo();
+      const redo = undoRedo.hasRedo();
+      editors.forEach((target) => {
+        if (target.tab.id === tabView.id) {
+          instance.parent.$data.undo = undo;
+          instance.parent.$data.redo = redo;
+        }
+      });
+    });
+  }
 
   const views = tabGroups(viewStore.state.container);
   for (let i = 0; i < editors.length; i++) {
@@ -165,6 +202,29 @@ export function loaded(component: Component, editors: EditorInstance[], tabView:
       editors.splice(i, 1);
       i--;
     }
+  }
+}
+
+function addUndoRedo(editor: Editor, editors: EditorInstance[], tabView: TabView, newValue: string, oldValue: string) {
+  if (editor.option && editor.option.undoManager && newValue !== oldValue) {
+    UndoRedoManager.add(tabView.id, {
+      undo: () => {
+        editors.forEach((target) => {
+          if (target.tab.id === tabView.id) {
+            target.parent.$data.value = oldValue;
+            target.tab.value = oldValue;
+          }
+        });
+      },
+      redo: () => {
+        editors.forEach((target) => {
+          if (target.tab.id === tabView.id) {
+            target.parent.$data.value = newValue;
+            target.tab.value = newValue;
+          }
+        });
+      },
+    });
   }
 }
 
