@@ -32,6 +32,7 @@ export interface State {
   folder: Tree | null;
   currentTree: Tree | null;
   renameTree: Tree | null;
+  oldRename: string | null;
 }
 
 export interface Tree {
@@ -75,6 +76,7 @@ export default new Vuex.Store<State>({
     folder: null,
     currentTree: null,
     renameTree: null,
+    oldRename: null,
   },
   getters: {
     lastSelect: (state: State): TreeSelect | null => lastSelect(state.selects),

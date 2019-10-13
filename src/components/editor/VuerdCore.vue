@@ -19,6 +19,7 @@
           @mouseup="onMouseupSash"
         )
     Statusbar
+    ToastBar
 </template>
 
 <script lang="ts">
@@ -39,6 +40,7 @@
   import EditorBottom from './EditorBottom.vue';
   import Sash from './Sash.vue';
   import Statusbar from './Statusbar.vue';
+  import ToastBar from './ToastBar.vue';
 
   import {fromEvent, Observable, Subscription} from 'rxjs';
 
@@ -63,9 +65,17 @@
       EditorBottom,
       Sash,
       Statusbar,
+      ToastBar,
     },
   })
   export default class VuerdCore extends Vue {
+    @Prop({type: String, default: 'VSCode'})
+    private themeName!: string;
+    @Prop({type: String, default: 'VSCodeIcons'})
+    private iconName!: string;
+    @Prop({type: String, default: ''})
+    private remoteName!: string;
+
     private sidebarWidth: number = 200;
     private sidebarWidthOld: number = 200;
     private mainWidth: number = 2000;
@@ -194,40 +204,35 @@
       this.onResize();
     }
 
-    private onChangeTree() {
-      log.debug('VuerdCore onChangeTree');
-      // this.$emit('input', {...this.value});
+    private onChangeTheme() {
+      log.debug('VuerdCore onChangeTheme');
+      this.$emit('changeTheme', pluginManagement.theme.name);
+    }
+
+    private onChangeIcon() {
+      log.debug('VuerdCore onChangeIcon');
+      this.$emit('changeIcon', pluginManagement.icon.name);
+    }
+
+    private onChangeRemote() {
+      log.debug('VuerdCore onChangeRemote');
+      this.$emit('changeRemote', pluginManagement.remote.name);
     }
 
     // ==================== Event Handler END ===================
 
     // ==================== Life Cycle ====================
     private created() {
-      const themes = pluginManagement.themes;
-      for (const theme of themes) {
-        if (theme.name === 'AtomOneDark') {
-          pluginManagement.themeLoad(theme);
-          break;
-        }
-      }
-      const icons = pluginManagement.icons;
-      for (const icon of icons) {
-        if (icon.name === 'VSCodeIcons') {
-          pluginManagement.iconLoad(icon);
-          break;
-        }
-      }
-      const remotes = pluginManagement.remotes;
-      for (const remote of remotes) {
-        if (remote.name === 'vuerd') {
-          pluginManagement.remoteLoad(remote);
-          break;
-        }
-      }
+      pluginManagement.themeLoad(this.themeName);
+      pluginManagement.iconLoad(this.iconName);
+      pluginManagement.remoteLoad(this.remoteName);
 
       treeStore.commit(Commit.folderInit);
       eventBus.$on(Bus.VuerdCore.sidebarStart, this.onSidebarStart);
       eventBus.$on(Bus.VuerdCore.sidebarEnd, this.onSidebarEnd);
+      eventBus.$on(Bus.VuerdCore.changeTheme, this.onChangeTheme);
+      eventBus.$on(Bus.VuerdCore.changeIcon, this.onChangeIcon);
+      eventBus.$on(Bus.VuerdCore.changeRemote, this.onChangeRemote);
     }
 
     private mounted() {

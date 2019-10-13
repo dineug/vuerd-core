@@ -3,9 +3,11 @@ import {State, Tree} from '@/store/tree';
 import viewStore, {Commit} from '@/store/view';
 import {folderDelete} from './folderController';
 import {lastSelect, select, childrenOpenArray, treeToSelect, orderByNameASC} from './treeHelper';
-import {deleteByTree} from './treeHelper';
+import {deleteByTree, path, pathOld} from './treeHelper';
 import Key from '@/models/Key';
 import {log, uuid, isData, autoName} from '@/ts/util';
+import pluginManagement from '@/plugin/PluginManagement';
+import eventBus, {Bus} from '@/ts/EventBus';
 
 export function fileSelectStart(state: State, payload: { event: MouseEvent, tree: Tree }) {
   log.debug('fileController fileSelectStart');
@@ -55,6 +57,9 @@ export function fileRenameStart(state: State, tree: Tree | null) {
   if (tree) {
     fileSelectEnd(state);
     state.renameTree = tree;
+    if (tree.name.trim() !== '') {
+      state.oldRename = tree.name;
+    }
   }
 }
 
@@ -62,11 +67,17 @@ export function fileRenameEnd(state: State) {
   log.debug('fileController fileRenameEnd');
   if (state.renameTree) {
     if (state.renameTree.name.trim() === '') {
-      if (state.renameTree.children) {
-        folderDelete(state, state.renameTree);
+      if (state.oldRename !== null) {
+        state.renameTree.name = state.oldRename;
       } else {
-        fileDelete(state, state.renameTree);
+        if (state.renameTree.children) {
+          folderDelete(state, state.renameTree);
+        } else {
+          fileDelete(state, state.renameTree);
+        }
       }
+      state.renameTree = null;
+      state.oldRename = null;
     } else {
       if (state.renameTree.parent && state.renameTree.parent.children) {
         const folders: Tree[] = [];
@@ -83,15 +94,46 @@ export function fileRenameEnd(state: State) {
         } else {
           state.renameTree.name = autoName(files, state.renameTree.id, state.renameTree.name);
         }
-        orderByNameASC(state.renameTree.parent);
-      }
-      const trees = childrenOpenArray(state.container);
-      const index = trees.indexOf(state.renameTree);
-      if (isData(state.selects, trees[index].id)) {
-        state.selects.push(treeToSelect(trees[index], index * SIZE_TREE_HEIGHT));
+        let oldPath: string | null = null;
+        if (state.oldRename !== null) {
+          oldPath = pathOld(state.renameTree, state.oldRename);
+        }
+        pluginManagement.remote.save({
+          oldPath,
+          path: path(state.renameTree),
+          name: state.renameTree.name,
+          value: state.renameTree.value,
+        }).then(() => {
+          if (state.renameTree && state.renameTree.parent) {
+            orderByNameASC(state.renameTree.parent);
+            const trees = childrenOpenArray(state.container);
+            const index = trees.indexOf(state.renameTree);
+            if (isData(state.selects, trees[index].id)) {
+              state.selects.push(treeToSelect(trees[index], index * SIZE_TREE_HEIGHT));
+            }
+          }
+        }).catch((err) => {
+          log.error(err);
+          eventBus.$emit(Bus.ToastBar.start, {
+            message: err.toString(),
+          });
+          if (state.renameTree) {
+            if (state.oldRename !== null) {
+              state.renameTree.name = state.oldRename;
+            } else {
+              if (state.renameTree.children) {
+                folderDelete(state, state.renameTree);
+              } else {
+                fileDelete(state, state.renameTree);
+              }
+            }
+          }
+        }).finally(() => {
+          state.renameTree = null;
+          state.oldRename = null;
+        });
       }
     }
-    state.renameTree = null;
   }
 }
 

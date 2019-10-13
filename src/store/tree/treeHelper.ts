@@ -55,6 +55,14 @@ export function path(tree: Tree, buffer: string[] = []): string {
   return buffer.join('/');
 }
 
+export function pathOld(tree: Tree, oldName: string, buffer: string[] = []): string {
+  if (tree.parent) {
+    buffer.unshift(oldName);
+    path(tree.parent, buffer);
+  }
+  return buffer.join('/');
+}
+
 export function select(container: Tree, selects: TreeSelect[], tree: Tree, event: MouseEvent): TreeSelect[] {
   const trees = childrenOpenArray(container);
   // none display delete
@@ -224,15 +232,15 @@ export function orderByNameASC(folder: Tree) {
         files.push(tree);
       }
     });
-    folders.sort(nameASC);
-    files.sort(nameASC);
+    folders.sort(treeSortNameASC);
+    files.sort(treeSortNameASC);
     sortTrees.push.apply(sortTrees, folders);
     sortTrees.push.apply(sortTrees, files);
     folder.children = sortTrees;
   }
 }
 
-function nameASC(a: Tree, b: Tree): number {
+function treeSortNameASC(a: Tree, b: Tree): number {
   return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
 }
 
@@ -273,4 +281,24 @@ export function modelToTree(treeModel: TreeModel): Tree {
     });
   }
   return tree;
+}
+
+export function deleteTrees(selects: TreeSelect[]): TreeSelect[] {
+  const deleteList: TreeSelect[] = [];
+  selects.sort(selectSortTopASC);
+  selects.forEach((tree) => {
+    if (deleteList.length === 0) {
+      deleteList.push(tree);
+    } else {
+      const root = deleteList[deleteList.length - 1];
+      if (findByTree(root, tree) === null) {
+        deleteList.push(tree);
+      }
+    }
+  });
+  return deleteList;
+}
+
+function selectSortTopASC(a: TreeSelect, b: TreeSelect) {
+  return a.top - b.top;
 }

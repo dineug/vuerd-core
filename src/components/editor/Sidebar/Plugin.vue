@@ -47,7 +47,7 @@
 
     private onTheme(theme: Theme) {
       log.debug('Plugin onTheme');
-      pluginManagement.themeLoad(theme);
+      pluginManagement.themeLoad(theme.name);
       this.$nextTick(() => {
         this.$forceUpdate();
       });

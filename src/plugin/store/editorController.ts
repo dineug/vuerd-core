@@ -4,6 +4,8 @@ import {View, Tab, TabView} from '@/store/view';
 import {loaded} from './handler';
 import {log} from '@/ts/util';
 import pluginManagement from '@/plugin/PluginManagement';
+import viewStore, {Commit} from '@/store/view';
+import eventBus, {Bus} from '@/ts/EventBus';
 
 export function editorAdd(state: State, editor: Editor) {
   log.debug('editorController editorAdd');
@@ -25,6 +27,10 @@ export function editorLoad(state: State, payload: { view: View, tab: Tab }) {
       }
     }).catch((err) => {
       log.error(err);
+      eventBus.$emit(Bus.ToastBar.start, {
+        message: err.toString(),
+      });
+      viewStore.commit(Commit.tabDelete, tab.id);
     });
   } else if (state.editor && tabView.value !== undefined) {
     loaded(state.editor, state.editorInstances, tabView);

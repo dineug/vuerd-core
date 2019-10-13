@@ -31,10 +31,11 @@
   import viewStore, {View, Commit as ViewCommit} from '@/store/view';
   import themeStore, {State as ThemeState} from '@/store/theme';
   import contextmenuStore, {Menu, Scope} from '@/store/contextmenu';
-  import {findById} from '@/store/tree/treeHelper';
+  import {findById, deleteTrees, path} from '@/store/tree/treeHelper';
   import Key from '@/models/Key';
   import eventBus, {Bus} from '@/ts/EventBus';
   import {log} from '@/ts/util';
+  import pluginManagement from '@/plugin/PluginManagement';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import Title from './Title.vue';
   import TreeView from './Explorer/TreeView.vue';
@@ -196,13 +197,23 @@
           || event.key === Key.Tab)) {
         treeStore.commit(Commit.fileRenameEnd);
       } else if (!this.renameTree && event.key === Key.Delete) { // Delete
-        this.selects.forEach((tree: TreeSelect) => {
-          if (tree.children) {
-            treeStore.commit(Commit.folderDelete, tree);
-          } else {
-            treeStore.commit(Commit.fileDelete, tree);
-          }
-        });
+        if (window.confirm('Are you sure you want to delete it?')) {
+          const reTrees = deleteTrees(this.selects);
+          reTrees.forEach((tree: TreeSelect) => {
+            pluginManagement.remote.deleteBy(path(tree)).then(() => {
+              if (tree.children) {
+                treeStore.commit(Commit.folderDelete, tree);
+              } else {
+                treeStore.commit(Commit.fileDelete, tree);
+              }
+            }).catch((err) => {
+              log.error(err);
+              eventBus.$emit(Bus.ToastBar.start, {
+                message: err.toString(),
+              });
+            });
+          });
+        }
       } else if (!this.renameTree
         && (event.key === Key.ArrowUp
           || event.key === Key.ArrowDown)) { // ArrowUp, ArrowDown

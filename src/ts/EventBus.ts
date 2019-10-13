@@ -3,7 +3,7 @@ import {Subscription, Subject} from 'rxjs';
 interface Listener {
   sub: Subscription;
 
-  callback(...arg: any): void;
+  callback(data?: any): void;
 }
 
 interface Bus$ {
@@ -25,14 +25,14 @@ class EventBus {
     });
   }
 
-  public $on(event: string, callback: (...args: any) => void) {
+  public $on(event: string, callback: (data?: any) => void) {
     this.listeners.push({
       sub: this.bus$[event].subscribe(callback),
       callback,
     });
   }
 
-  public $off(event: string, callback: (...args: any) => void) {
+  public $off(event: string, callback: (data?: any) => void) {
     const len = this.listeners.length;
     for (let i = 0; i < len; i++) {
       if (this.listeners[i].callback === callback) {
@@ -43,8 +43,8 @@ class EventBus {
     }
   }
 
-  public $emit(event: string, ...args: any) {
-    this.bus$[event].next(...args);
+  public $emit(event: string, data?: any) {
+    this.bus$[event].next(data);
   }
 
   public destroyed() {
@@ -90,6 +90,13 @@ enum Explorer {
 enum VuerdCore {
   sidebarStart = 'VuerdCore.sidebarStart',
   sidebarEnd = 'VuerdCore.sidebarEnd',
+  changeTheme = 'VuerdCore.changeTheme',
+  changeIcon = 'VuerdCore.changeIcon',
+  changeRemote = 'VuerdCore.changeRemote',
+}
+
+enum ToastBar {
+  start = 'ToastBar.start',
 }
 
 export const Bus = {
@@ -100,6 +107,7 @@ export const Bus = {
   OpenFile,
   Explorer,
   VuerdCore,
+  ToastBar,
 };
 
 export default new EventBus();

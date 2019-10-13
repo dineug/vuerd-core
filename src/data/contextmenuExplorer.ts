@@ -1,7 +1,9 @@
 import {Menu} from '@/store/contextmenu';
 import treeStore, {TreeSelect, Commit} from '@/store/tree';
-import {lastSelect} from '@/store/tree/treeHelper';
-import {uuid} from '@/ts/util';
+import {lastSelect, deleteTrees, path} from '@/store/tree/treeHelper';
+import {log, uuid} from '@/ts/util';
+import pluginManagement from '@/plugin/PluginManagement';
+import eventBus, {Bus} from '@/ts/EventBus';
 
 const init: Array<Menu<TreeSelect[]>> = [
   {
@@ -47,13 +49,23 @@ const init: Array<Menu<TreeSelect[]>> = [
     keymap: 'Delete',
     execute(trees: TreeSelect[] | null): void {
       if (trees) {
-        trees.forEach((tree: TreeSelect) => {
-          if (tree.children) {
-            treeStore.commit(Commit.folderDelete, tree);
-          } else {
-            treeStore.commit(Commit.fileDelete, tree);
-          }
-        });
+        if (window.confirm('Are you sure you want to delete it?')) {
+          const reTrees = deleteTrees(trees);
+          reTrees.forEach((tree: TreeSelect) => {
+            pluginManagement.remote.deleteBy(path(tree)).then(() => {
+              if (tree.children) {
+                treeStore.commit(Commit.folderDelete, tree);
+              } else {
+                treeStore.commit(Commit.fileDelete, tree);
+              }
+            }).catch((err) => {
+              log.error(err);
+              eventBus.$emit(Bus.ToastBar.start, {
+                message: err.toString(),
+              });
+            });
+          });
+        }
       }
     },
     option: {

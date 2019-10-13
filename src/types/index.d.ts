@@ -47,7 +47,6 @@ export interface Icon {
   getFolder?(name: string, open: boolean): string;
 }
 
-
 export interface Remote {
   name: string;
   findTreeBy(): Promise<Tree>;
@@ -58,10 +57,10 @@ export interface Remote {
 }
 
 export interface TreeSave {
+  oldPath: string | null;
   path: string;
   name: string;
   value?: string;
-  folder: boolean;
 }
 
 export interface TreeMove {

@@ -6,6 +6,7 @@ import {fileSelectEnd, fileDelete, fileRenameStart} from './fileController';
 import {log, setParent, uuid} from '@/ts/util';
 import Key from '@/models/Key';
 import pluginManagement from '@/plugin/PluginManagement';
+import eventBus, {Bus} from '@/ts/EventBus';
 
 export function folderMove(state: State) {
   log.debug('folderController folderMove');
@@ -120,5 +121,8 @@ export function folderInit(state: State) {
     state.container.children = [root];
   }).catch((err) => {
     log.error(err);
+    eventBus.$emit(Bus.ToastBar.start, {
+      message: err.toString(),
+    });
   });
 }

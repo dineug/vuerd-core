@@ -6,6 +6,7 @@ import {getEditor, getDataset} from './store/handler';
 import {Theme, Icon, Remote} from '@/types';
 import themeStore, {Commit as ThemeCommit} from '@/store/theme';
 import {log} from '@/ts/util';
+import eventBus, {Bus} from '@/ts/EventBus';
 
 class PluginManagement {
   private plugins: Array<Store<State>> = [];
@@ -75,21 +76,41 @@ class PluginManagement {
     this.plugins.push(store);
   }
 
-  public themeLoad(theme: Theme) {
+  public themeLoad(themeName: string) {
     log.debug('PluginManagement themeLoad');
-    this.currentTheme = theme;
-    themeStore.commit(ThemeCommit.theme, theme);
+    const themes = this.themes;
+    for (const theme of themes) {
+      if (theme.name === themeName) {
+        this.currentTheme = theme;
+        break;
+      }
+      if (theme.name === 'VSCode') {
+        this.currentTheme = theme;
+      }
+    }
+    themeStore.commit(ThemeCommit.theme, this.currentTheme);
     const editors = this.editors;
     editors.forEach((editor) => {
       editor.editorInstances.forEach((value) => {
         value.parent.$data.color = themeStore.getters.color;
       });
     });
+    eventBus.$emit(Bus.VuerdCore.changeTheme);
   }
 
-  public iconLoad(icon: Icon) {
+  public iconLoad(iconName: string) {
     log.debug('PluginManagement iconLoad');
-    this.currentIcon = icon;
+    const icons = this.icons;
+    for (const icon of icons) {
+      if (icon.name === iconName) {
+        this.currentIcon = icon;
+        break;
+      }
+      if (icon.name === 'VSCodeIcons') {
+        this.currentIcon = icon;
+      }
+    }
+    eventBus.$emit(Bus.VuerdCore.changeIcon);
   }
 
   public editorLoad(view: View, tab: Tab) {
@@ -102,9 +123,21 @@ class PluginManagement {
     this.editorResize();
   }
 
-  public remoteLoad(remote: Remote) {
+  public remoteLoad(remoteName: string) {
     log.debug('PluginManagement remoteLoad');
-    this.currentRemote = remote;
+    let result = true;
+    const remotes = this.remotes;
+    for (const remote of remotes) {
+      if (remote.name === remoteName) {
+        this.currentRemote = remote;
+        result = false;
+        break;
+      }
+    }
+    if (result) {
+      this.currentRemote = remotes[remotes.length - 1];
+    }
+    eventBus.$emit(Bus.VuerdCore.changeRemote);
   }
 
   public isEditor(component: Component): boolean {
