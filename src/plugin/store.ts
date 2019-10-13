@@ -6,8 +6,9 @@ import {
 } from './store/editorController';
 import {themeAdd} from './store/themeController';
 import {iconAdd} from './store/iconController';
+import {remoteAdd} from './store/remoteController';
 import {TabView} from '@/store/view';
-import {Theme, Icon, Editor} from '@/types';
+import {Theme, Icon, Editor, Remote} from '@/types';
 
 Vue.use(Vuex);
 
@@ -16,6 +17,7 @@ export interface State {
   editorInstances: EditorInstance[];
   theme: Theme | null;
   icon: Icon | null;
+  remote: Remote | null;
 }
 
 export interface EditorInstance {
@@ -29,6 +31,7 @@ export const enum Commit {
   editorLoad = 'editorLoad',
   themeAdd = 'themeAdd',
   iconAdd = 'iconAdd',
+  remoteAdd = 'remoteAdd',
 }
 
 export function createStore() {
@@ -38,6 +41,7 @@ export function createStore() {
       editorInstances: [],
       theme: null,
       icon: null,
+      remote: null,
     },
     getters: {},
     mutations: {
@@ -45,6 +49,7 @@ export function createStore() {
       editorLoad,
       themeAdd,
       iconAdd,
+      remoteAdd,
     },
     actions: {},
   });

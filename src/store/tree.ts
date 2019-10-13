@@ -41,8 +41,6 @@ export interface Tree {
   parent: Tree | null;
   children?: Tree[];
   value?: string;
-
-  read?(path: string, id: string): Promise<string>;
 }
 
 export interface TreeSelect extends Tree {

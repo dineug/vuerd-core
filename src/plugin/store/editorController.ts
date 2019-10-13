@@ -3,6 +3,7 @@ import {Editor} from '@/types';
 import {View, Tab, TabView} from '@/store/view';
 import {loaded} from './handler';
 import {log} from '@/ts/util';
+import pluginManagement from '@/plugin/PluginManagement';
 
 export function editorAdd(state: State, editor: Editor) {
   log.debug('editorController editorAdd');
@@ -15,8 +16,9 @@ export function editorLoad(state: State, payload: { view: View, tab: Tab }) {
   const tabView = tab as TabView;
   tabView.view = view;
 
-  if (tabView.read && tabView.value === undefined) {
-    tabView.read(tabView.path, tabView.id).then((value) => {
+  if (tabView.value === undefined) {
+    const remote = pluginManagement.remote;
+    remote.findFileByPath(tabView.path).then((value) => {
       tabView.value = value;
       if (state.editor) {
         loaded(state.editor, state.editorInstances, tabView);

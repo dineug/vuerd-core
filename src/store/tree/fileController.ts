@@ -6,7 +6,6 @@ import {lastSelect, select, childrenOpenArray, treeToSelect, orderByNameASC} fro
 import {deleteByTree} from './treeHelper';
 import Key from '@/models/Key';
 import {log, uuid, isData, autoName} from '@/ts/util';
-import eventBus, {Bus} from '@/ts/EventBus';
 
 export function fileSelectStart(state: State, payload: { event: MouseEvent, tree: Tree }) {
   log.debug('fileController fileSelectStart');
@@ -94,7 +93,6 @@ export function fileRenameEnd(state: State) {
     }
     state.renameTree = null;
   }
-  eventBus.$emit(Bus.VuerdCore.changeTree);
 }
 
 export function fileCreateStart(state: State, targetTree: Tree | null) {

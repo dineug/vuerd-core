@@ -3,15 +3,14 @@ import {Tree as TreeModel} from '@/types';
 import {lastSelect, move, orderByNameASC,
   childrenArray, deleteByTree, treeToSelect, modelToTree} from './treeHelper';
 import {fileSelectEnd, fileDelete, fileRenameStart} from './fileController';
-import {log, uuid} from '@/ts/util';
-import eventBus, {Bus} from '@/ts/EventBus';
+import {log, setParent, uuid} from '@/ts/util';
 import Key from '@/models/Key';
+import pluginManagement from '@/plugin/PluginManagement';
 
 export function folderMove(state: State) {
   log.debug('folderController folderMove');
   if (state.folder && state.currentTree) {
     state.selects = move(state.container, state.selects, state.folder, state.currentTree);
-    eventBus.$emit(Bus.VuerdCore.changeTree);
   }
 }
 
@@ -111,9 +110,15 @@ export function folderDelete(state: State, folder: Tree) {
   }
 }
 
-export function folderInit(state: State, rootTree: TreeModel) {
+export function folderInit(state: State) {
   log.debug('folderController folderInit');
-  const root = modelToTree(rootTree);
-  root.parent = state.container;
-  state.container.children = [root];
+  const remote = pluginManagement.remote;
+  remote.findTreeBy().then((rootTree: TreeModel) => {
+    const root = modelToTree(rootTree);
+    setParent(root, root.children);
+    root.parent = state.container;
+    state.container.children = [root];
+  }).catch((err) => {
+    log.error(err);
+  });
 }

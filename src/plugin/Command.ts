@@ -2,9 +2,9 @@ import {Store} from 'vuex';
 import pluginManagement from './PluginManagement';
 import {createStore, Commit, State} from './store';
 import {log} from '@/ts/util';
-import {Editor, Theme, Icon} from '@/types';
+import {Command, Editor, Theme, Icon, Remote} from '@/types';
 
-export default class Command {
+export default class CommandImpl implements Command {
   private readonly store: Store<State>;
 
   constructor() {
@@ -31,4 +31,8 @@ export default class Command {
     return this;
   }
 
+  public remoteAdd(remote: Remote): Command {
+    this.store.commit(Commit.remoteAdd, remote);
+    return this;
+  }
 }

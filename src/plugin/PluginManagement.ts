@@ -3,7 +3,7 @@ import {Store} from 'vuex';
 import {Commit, State} from './store';
 import {View, Tab} from '@/store/view';
 import {getEditor, getDataset} from './store/handler';
-import {Theme, Icon} from '@/types';
+import {Theme, Icon, Remote} from '@/types';
 import themeStore, {Commit as ThemeCommit} from '@/store/theme';
 import {log} from '@/ts/util';
 
@@ -11,6 +11,7 @@ class PluginManagement {
   private plugins: Array<Store<State>> = [];
   private currentTheme!: Theme;
   private currentIcon!: Icon;
+  private currentRemote!: Remote;
 
   get themes(): Theme[] {
     log.debug('PluginManagement themes');
@@ -40,7 +41,7 @@ class PluginManagement {
   }
 
   get icon(): Icon {
-    log.debug('PluginManagement icon');
+    // log.debug('PluginManagement icon');
     return this.currentIcon;
   }
 
@@ -53,6 +54,20 @@ class PluginManagement {
       }
     });
     return list;
+  }
+
+  get remotes(): Remote[] {
+    const list: Remote[] = [];
+    this.plugins.forEach((plugin) => {
+      if (plugin.state.remote) {
+        list.push(plugin.state.remote);
+      }
+    });
+    return list;
+  }
+
+  get remote(): Remote {
+    return this.currentRemote;
   }
 
   public add(store: Store<State>) {
@@ -85,6 +100,11 @@ class PluginManagement {
       tab,
     });
     this.editorResize();
+  }
+
+  public remoteLoad(remote: Remote) {
+    log.debug('PluginManagement remoteLoad');
+    this.currentRemote = remote;
   }
 
   public isEditor(component: Component): boolean {

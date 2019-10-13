@@ -31,7 +31,6 @@
   import themeStore, {State as ThemeState} from '@/store/theme';
   import activityBarStore, {ActivityMenu, Commit as ActivityBarCommit} from '@/store/activityBar';
   import pluginManagement from '@/plugin/PluginManagement';
-  import {Tree as TreeModel} from '@/types';
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import TitleBar from './TitleBar.vue';
   import ActivityBar from './ActivityBar.vue';
@@ -67,9 +66,6 @@
     },
   })
   export default class VuerdCore extends Vue {
-    @Prop({type: Object, default: () => ({name: 'unnamed', open: false, children: []})})
-    private value!: TreeModel;
-
     private sidebarWidth: number = 200;
     private sidebarWidthOld: number = 200;
     private mainWidth: number = 2000;
@@ -200,7 +196,7 @@
 
     private onChangeTree() {
       log.debug('VuerdCore onChangeTree');
-      this.$emit('input', {...this.value});
+      // this.$emit('input', {...this.value});
     }
 
     // ==================== Event Handler END ===================
@@ -221,11 +217,17 @@
           break;
         }
       }
+      const remotes = pluginManagement.remotes;
+      for (const remote of remotes) {
+        if (remote.name === 'vuerd') {
+          pluginManagement.remoteLoad(remote);
+          break;
+        }
+      }
 
-      treeStore.commit(Commit.folderInit, this.value);
+      treeStore.commit(Commit.folderInit);
       eventBus.$on(Bus.VuerdCore.sidebarStart, this.onSidebarStart);
       eventBus.$on(Bus.VuerdCore.sidebarEnd, this.onSidebarEnd);
-      eventBus.$on(Bus.VuerdCore.changeTree, this.onChangeTree);
     }
 
     private mounted() {

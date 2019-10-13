@@ -203,7 +203,6 @@
             treeStore.commit(Commit.fileDelete, tree);
           }
         });
-        eventBus.$emit(Bus.VuerdCore.changeTree);
       } else if (!this.renameTree
         && (event.key === Key.ArrowUp
           || event.key === Key.ArrowDown)) { // ArrowUp, ArrowDown

@@ -1,14 +1,9 @@
 import _Vue, {Component} from 'vue';
 
 export interface Tree {
-  readonly id?: string;
-  readonly parent?: Tree;
-  readonly value?: string;
   name: string;
   open?: boolean;
   children?: Tree[];
-
-  read?(path: string, id: string): Promise<string>;
 }
 
 export interface Editor {
@@ -52,25 +47,46 @@ export interface Icon {
   getFolder?(name: string, open: boolean): string;
 }
 
-export declare class Command {
+
+export interface Remote {
+  name: string;
+  findTreeBy(): Promise<Tree>;
+  findFileByPath(path: string): Promise<string>;
+  save(treeSave: TreeSave): Promise<void>;
+  deleteBy(path: string): Promise<void>;
+  move(treeMove: TreeMove): Promise<void>;
+}
+
+export interface TreeSave {
+  path: string;
+  name: string;
+  value?: string;
+  folder: boolean;
+}
+
+export interface TreeMove {
+  fromPath: string;
+  toPath: string;
+}
+
+export interface Command {
   editorAdd(editor: Editor): Command;
   themeAdd(theme: Theme): Command;
   iconAdd(icon: Icon): Command;
+  remoteAdd(remote: Remote): Command;
 }
 
+export declare function install(Vue: typeof _Vue, option?: Option): void;
+export interface Option {
+  logLevel?: LogLevel;
+}
+export type LogLevel = 'debug';
+
+export declare function use(plugin: Plugin): void;
 export interface Plugin {
   install(command: Command): void;
 }
 
-export declare function use(plugin: Plugin): void;
-
-export type LogLevel = 'debug';
-
-export interface Option {
-  logLevel?: LogLevel;
-}
-
-export declare function install(Vue: typeof _Vue, option?: Option): void;
 declare const _default: {
   install: typeof install;
   use: typeof use;

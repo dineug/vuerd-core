@@ -258,13 +258,19 @@ export function treeToSelect(tree: Tree, top: number = 0, order: number = 0): Tr
 }
 
 export function modelToTree(treeModel: TreeModel): Tree {
-  const tree = treeModel as Tree;
-  if (!tree.id) {
-    tree.id = uuid();
-  }
+  const tree: Tree = {
+    id: uuid(),
+    parent: null,
+    name: treeModel.name,
+    open: treeModel.open,
+  };
   if (treeModel.children) {
-    treeModel.children.forEach((value: TreeModel) => modelToTree(value));
+    tree.children = [];
+    treeModel.children.forEach((value: TreeModel) => {
+      if (tree.children) {
+        tree.children.push(modelToTree(value));
+      }
+    });
   }
-  setParent(tree, tree.children);
   return tree;
 }

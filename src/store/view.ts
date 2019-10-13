@@ -60,7 +60,6 @@ export interface Tab {
   value?: string;
 
   setTree(tree: Tree): void;
-  read?(path: string, id: string): Promise<string>;
 }
 
 export interface TabView extends Tab {

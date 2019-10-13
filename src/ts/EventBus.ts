@@ -90,7 +90,6 @@ enum Explorer {
 enum VuerdCore {
   sidebarStart = 'VuerdCore.sidebarStart',
   sidebarEnd = 'VuerdCore.sidebarEnd',
-  changeTree = 'VuerdCore.changeTree',
 }
 
 export const Bus = {

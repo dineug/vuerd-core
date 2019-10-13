@@ -32,7 +32,4 @@ export default class TreeToTab implements Tab {
   public setTree(tree: Tree) {
     this.tree = tree;
   }
-  get read() {
-    return this.tree.read;
-  }
 }

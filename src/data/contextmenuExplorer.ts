@@ -2,7 +2,6 @@ import {Menu} from '@/store/contextmenu';
 import treeStore, {TreeSelect, Commit} from '@/store/tree';
 import {lastSelect} from '@/store/tree/treeHelper';
 import {uuid} from '@/ts/util';
-import eventBus, {Bus} from '@/ts/EventBus';
 
 const init: Array<Menu<TreeSelect[]>> = [
   {
@@ -55,7 +54,6 @@ const init: Array<Menu<TreeSelect[]>> = [
             treeStore.commit(Commit.fileDelete, tree);
           }
         });
-        eventBus.$emit(Bus.VuerdCore.changeTree);
       }
     },
     option: {

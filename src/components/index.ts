@@ -12,13 +12,13 @@ import AtomOneLight from './plugins/theme/AtomOneLight';
 import VSCodeIcons from './plugins/icon/VSCodeIcons';
 
 const VuerdCore = {
-  install: (Vue: typeof _Vue, option?: Option) => {
+  install(Vue: typeof _Vue, option?: Option) {
     if (option && option.logLevel) {
       Logger.logLevel = option.logLevel;
     }
     Vue.component('VuerdCore', _VuerdCore);
   },
-  use: (plugin: Plugin) => {
+  use(plugin: Plugin) {
     plugin.install(new Command());
   },
 };
