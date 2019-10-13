@@ -98,12 +98,12 @@ export function fileRenameEnd(state: State) {
         if (state.oldRename !== null) {
           oldPath = pathOld(state.renameTree, state.oldRename);
         }
-        pluginManagement.remote.save({
+        pluginManagement.remote.save([{
           oldPath,
           path: path(state.renameTree),
           name: state.renameTree.name,
           value: state.renameTree.value,
-        }).then(() => {
+        }]).then(() => {
           if (state.renameTree && state.renameTree.parent) {
             orderByNameASC(state.renameTree.parent);
             const trees = childrenOpenArray(state.container);

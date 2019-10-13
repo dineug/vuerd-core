@@ -51,9 +51,9 @@ export interface Remote {
   name: string;
   findTreeBy(): Promise<Tree>;
   findFileByPath(path: string): Promise<string>;
-  save(treeSave: TreeSave): Promise<void>;
-  deleteBy(path: string): Promise<void>;
-  move(treeMove: TreeMove): Promise<void>;
+  save(treeSaves: TreeSave[]): Promise<void>;
+  deleteByPaths(paths: string[]): Promise<void>;
+  move(treeMoves: TreeMove[]): Promise<void>;
 }
 
 export interface TreeSave {

@@ -1,6 +1,6 @@
 import {Menu} from '@/store/contextmenu';
 import treeStore, {TreeSelect, Commit} from '@/store/tree';
-import {lastSelect, deleteTrees, path} from '@/store/tree/treeHelper';
+import {lastSelect, selectParentTrees, path} from '@/store/tree/treeHelper';
 import {log, uuid} from '@/ts/util';
 import pluginManagement from '@/plugin/PluginManagement';
 import eventBus, {Bus} from '@/ts/EventBus';
@@ -50,19 +50,21 @@ const init: Array<Menu<TreeSelect[]>> = [
     execute(trees: TreeSelect[] | null): void {
       if (trees) {
         if (window.confirm('Are you sure you want to delete it?')) {
-          const reTrees = deleteTrees(trees);
-          reTrees.forEach((tree: TreeSelect) => {
-            pluginManagement.remote.deleteBy(path(tree)).then(() => {
+          const reTrees = selectParentTrees(trees);
+          const paths: string[] = [];
+          reTrees.forEach((tree: TreeSelect) => paths.push(path(tree)));
+          pluginManagement.remote.deleteByPaths(paths).then(() => {
+            reTrees.forEach((tree: TreeSelect) => {
               if (tree.children) {
                 treeStore.commit(Commit.folderDelete, tree);
               } else {
                 treeStore.commit(Commit.fileDelete, tree);
               }
-            }).catch((err) => {
-              log.error(err);
-              eventBus.$emit(Bus.ToastBar.start, {
-                message: err.toString(),
-              });
+            });
+          }).catch((err) => {
+            log.error(err);
+            eventBus.$emit(Bus.ToastBar.start, {
+              message: err.toString(),
             });
           });
         }

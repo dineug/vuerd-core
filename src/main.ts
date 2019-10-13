@@ -2,7 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 import VuerdCore from '@/components';
 import {Command} from './types';
-import {findFileByPath, findTreeBy, save, deleteBy, move} from './data/tree';
+import {findFileByPath, findTreeBy, save, deleteByPaths, move} from './data/tree';
 
 Vue.config.productionTip = false;
 Vue.use(VuerdCore);
@@ -14,7 +14,7 @@ VuerdCore.use({
       findTreeBy,
       findFileByPath,
       save,
-      deleteBy,
+      deleteByPaths,
       move,
     });
   },

@@ -1,5 +1,5 @@
 import {State, Tree} from '@/store/tree';
-import {Tree as TreeModel} from '@/types';
+import {Tree as TreeModel, TreeMove} from '@/types';
 import {lastSelect, move, orderByNameASC,
   childrenArray, deleteByTree, treeToSelect, modelToTree} from './treeHelper';
 import {fileSelectEnd, fileDelete, fileRenameStart} from './fileController';
@@ -11,7 +11,9 @@ import eventBus, {Bus} from '@/ts/EventBus';
 export function folderMove(state: State) {
   log.debug('folderController folderMove');
   if (state.folder && state.currentTree) {
+
     state.selects = move(state.container, state.selects, state.folder, state.currentTree);
+
   }
 }
 

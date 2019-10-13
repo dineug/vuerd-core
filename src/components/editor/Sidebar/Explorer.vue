@@ -31,7 +31,7 @@
   import viewStore, {View, Commit as ViewCommit} from '@/store/view';
   import themeStore, {State as ThemeState} from '@/store/theme';
   import contextmenuStore, {Menu, Scope} from '@/store/contextmenu';
-  import {findById, deleteTrees, path} from '@/store/tree/treeHelper';
+  import {findById, selectParentTrees, path} from '@/store/tree/treeHelper';
   import Key from '@/models/Key';
   import eventBus, {Bus} from '@/ts/EventBus';
   import {log} from '@/ts/util';
@@ -198,19 +198,21 @@
         treeStore.commit(Commit.fileRenameEnd);
       } else if (!this.renameTree && event.key === Key.Delete) { // Delete
         if (window.confirm('Are you sure you want to delete it?')) {
-          const reTrees = deleteTrees(this.selects);
-          reTrees.forEach((tree: TreeSelect) => {
-            pluginManagement.remote.deleteBy(path(tree)).then(() => {
+          const reTrees = selectParentTrees(this.selects);
+          const paths: string[] = [];
+          reTrees.forEach((tree: TreeSelect) => paths.push(path(tree)));
+          pluginManagement.remote.deleteByPaths(paths).then(() => {
+            reTrees.forEach((tree: TreeSelect) => {
               if (tree.children) {
                 treeStore.commit(Commit.folderDelete, tree);
               } else {
                 treeStore.commit(Commit.fileDelete, tree);
               }
-            }).catch((err) => {
-              log.error(err);
-              eventBus.$emit(Bus.ToastBar.start, {
-                message: err.toString(),
-              });
+            });
+          }).catch((err) => {
+            log.error(err);
+            eventBus.$emit(Bus.ToastBar.start, {
+              message: err.toString(),
             });
           });
         }

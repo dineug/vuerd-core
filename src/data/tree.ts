@@ -95,23 +95,23 @@ async function findTreeBy(): Promise<TreeModel> {
   } as TreeModel;
 }
 
-async function save(treeSave: TreeSave): Promise<void> {
-  log.debug(`tree save`, treeSave);
+async function save(treeSaves: TreeSave[]): Promise<void> {
+  log.debug(`tree save`, treeSaves);
 }
 
-async function deleteBy(path: string): Promise<void> {
-  log.debug(`tree deleteBy: ${path}`);
+async function deleteByPaths(paths: string[]): Promise<void> {
+  log.debug(`tree deleteBy: ${paths}`);
 }
 
-async function move(treeMove: TreeMove): Promise<void> {
-  log.debug(`tree move`, treeMove);
+async function move(treeMoves: TreeMove[]): Promise<void> {
+  log.debug(`tree move`, treeMoves);
 }
 
 export {
   findTreeBy,
   findFileByPath,
   save,
-  deleteBy,
+  deleteByPaths,
   move,
 };
 

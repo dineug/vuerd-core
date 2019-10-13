@@ -283,20 +283,20 @@ export function modelToTree(treeModel: TreeModel): Tree {
   return tree;
 }
 
-export function deleteTrees(selects: TreeSelect[]): TreeSelect[] {
-  const deleteList: TreeSelect[] = [];
+export function selectParentTrees(selects: TreeSelect[]): TreeSelect[] {
+  const selectParentList: TreeSelect[] = [];
   selects.sort(selectSortTopASC);
   selects.forEach((tree) => {
-    if (deleteList.length === 0) {
-      deleteList.push(tree);
+    if (selectParentList.length === 0) {
+      selectParentList.push(tree);
     } else {
-      const root = deleteList[deleteList.length - 1];
+      const root = selectParentList[selectParentList.length - 1];
       if (findByTree(root, tree) === null) {
-        deleteList.push(tree);
+        selectParentList.push(tree);
       }
     }
   });
-  return deleteList;
+  return selectParentList;
 }
 
 function selectSortTopASC(a: TreeSelect, b: TreeSelect) {
