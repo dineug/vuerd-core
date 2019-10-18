@@ -6,19 +6,19 @@
 </template>
 
 <script lang="ts">
-  import {Component, Prop, Vue} from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator'
 
-  @Component
-  export default class ImagePreview extends Vue {
-    @Prop({type: String, default: ''})
-    private value!: string;
-    @Prop({type: String, default: ''})
-    private scope!: string;
-    @Prop({type: Number, default: 0})
-    private width!: number;
-    @Prop({type: Number, default: 0})
-    private height!: number;
-  }
+@Component
+export default class ImagePreview extends Vue {
+  @Prop({type: String, default: ''})
+  private value!: string
+  @Prop({type: String, default: ''})
+  private scope!: string
+  @Prop({type: Number, default: 0})
+  private width!: number
+  @Prop({type: Number, default: 0})
+  private height!: number
+}
 </script>
 
 <style scoped lang="scss">

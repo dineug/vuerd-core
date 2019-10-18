@@ -11,30 +11,29 @@
 </template>
 
 <script lang="ts">
-  import themeStore, {State as ThemeState} from '@/store/theme';
-  import activityBarStore, {ActivityMenu} from '@/store/activityBar';
-  import { Component, Prop, Vue } from 'vue-property-decorator';
-  import MDIcon from '@/components/editor/MDIcon.vue';
+import themeStore, { State as ThemeState } from '@/store/theme'
+import activityBarStore, { ActivityMenu } from '@/store/activityBar'
+import { Component, Vue } from 'vue-property-decorator'
+import MDIcon from '@/components/editor/MDIcon.vue'
 
-  @Component({
-    components: {
-      MDIcon,
-    },
-  })
-  export default class ActionsContainer extends Vue {
-
-    get menus(): ActivityMenu[] {
-      return activityBarStore.state.menus;
-    }
-
-    get activeMenu(): ActivityMenu | null {
-      return activityBarStore.state.activeMenu;
-    }
-
-    get theme(): ThemeState {
-      return themeStore.state;
-    }
+@Component({
+  components: {
+    MDIcon
   }
+})
+export default class ActionsContainer extends Vue {
+  get menus (): ActivityMenu[] {
+    return activityBarStore.state.menus
+  }
+
+  get activeMenu (): ActivityMenu | null {
+    return activityBarStore.state.activeMenu
+  }
+
+  get theme (): ThemeState {
+    return themeStore.state
+  }
+}
 </script>
 
 <style scoped lang="scss">

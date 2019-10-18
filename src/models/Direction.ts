@@ -6,4 +6,4 @@ enum Direction {
   all = 'all',
 }
 
-export default Direction;
+export default Direction

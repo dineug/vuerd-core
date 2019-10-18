@@ -1,23 +1,23 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import IconType from '@/models/IconType';
-import eventBus, {Bus} from '@/ts/EventBus';
-import init from '@/data/activityBar';
+import Vue from 'vue'
+import Vuex from 'vuex'
+import IconType from '@/models/IconType'
+import eventBus, { Bus } from '@/ts/EventBus'
+import init from '@/data/activityBar'
 
-Vue.use(Vuex);
+Vue.use(Vuex)
 
 export interface State {
-  menus: ActivityMenu[];
-  activeMenu: ActivityMenu | null;
+  menus: ActivityMenu[]
+  activeMenu: ActivityMenu | null
 }
 
 export interface ActivityMenu {
-  readonly id: string;
-  name: string;
-  icon: string;
-  iconType: IconType;
+  readonly id: string
+  name: string
+  icon: string
+  iconType: IconType
 
-  execute(): void;
+  execute (): void
 }
 
 export const enum Commit {
@@ -29,41 +29,41 @@ export const enum Commit {
 export default new Vuex.Store<State>({
   state: {
     menus: init,
-    activeMenu: init[0],
+    activeMenu: init[0]
   },
   getters: {},
   mutations: {
-    close(state: State) {
-      state.activeMenu = null;
+    close (state: State) {
+      state.activeMenu = null
     },
-    explorer(state: State) {
+    explorer (state: State) {
       if (state.activeMenu && state.activeMenu.name === 'explorer') {
-        state.activeMenu = null;
-        eventBus.$emit(Bus.VuerdCore.sidebarEnd);
+        state.activeMenu = null
+        eventBus.$emit(Bus.VuerdCore.sidebarEnd)
       } else {
         for (const menu of state.menus) {
           if (menu.name === 'explorer') {
-            state.activeMenu = menu;
-            eventBus.$emit(Bus.VuerdCore.sidebarStart);
-            break;
+            state.activeMenu = menu
+            eventBus.$emit(Bus.VuerdCore.sidebarStart)
+            break
           }
         }
       }
     },
-    plugin(state: State) {
+    plugin (state: State) {
       if (state.activeMenu && state.activeMenu.name === 'plugin') {
-        state.activeMenu = null;
-        eventBus.$emit(Bus.VuerdCore.sidebarEnd);
+        state.activeMenu = null
+        eventBus.$emit(Bus.VuerdCore.sidebarEnd)
       } else {
         for (const menu of state.menus) {
           if (menu.name === 'plugin') {
-            state.activeMenu = menu;
-            eventBus.$emit(Bus.VuerdCore.sidebarStart);
-            break;
+            state.activeMenu = menu
+            eventBus.$emit(Bus.VuerdCore.sidebarStart)
+            break
           }
         }
       }
-    },
+    }
   },
-  actions: {},
-});
+  actions: {}
+})

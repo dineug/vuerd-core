@@ -1,26 +1,26 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import {Theme, Color} from '@/types';
+import Vue from 'vue'
+import Vuex from 'vuex'
+import { Theme, Color } from '@/types'
 
-Vue.use(Vuex);
+Vue.use(Vuex)
 
 export interface State {
-  drop: string;
-  sash: string;
-  active: string;
-  editor: string;
-  titleBar: string;
-  activityBar: string;
-  statusbar: string;
-  font: string;
-  fontActive: string;
-  contextmenu: string;
-  contextmenuActive: string;
-  sidebar: string;
-  sidebarActive: string;
-  tabBar: string;
-  tab: string;
-  tabActive: string;
+  drop: string
+  sash: string
+  active: string
+  editor: string
+  titleBar: string
+  activityBar: string
+  statusbar: string
+  font: string
+  fontActive: string
+  contextmenu: string
+  contextmenuActive: string
+  sidebar: string
+  sidebarActive: string
+  tabBar: string
+  tab: string
+  tabActive: string
 }
 
 export const enum Commit {
@@ -64,29 +64,29 @@ export default new Vuex.Store<State>({
     sidebarActive: '#282C34',
     tabBar: '#21252B',
     tab: '#21252B',
-    tabActive: '#282C34',
+    tabActive: '#282C34'
   },
   getters: {
-    color(state: State): Color {
-      const color: Color | any = {};
+    color (state: State): Color {
+      const color: Color | any = {}
       Object.keys(state).forEach((key) => {
-        const colorKey = key as ColorKey;
-        color[colorKey] = state[colorKey];
-      });
-      return color;
-    },
+        const colorKey = key as ColorKey
+        color[colorKey] = state[colorKey]
+      })
+      return color
+    }
   },
   mutations: {
-    change(state: State, payload: { colorKey: ColorKey, color: string }) {
-      const {colorKey, color} = payload;
-      state[colorKey] = color;
+    change (state: State, payload: { colorKey: ColorKey, color: string }) {
+      const {colorKey, color} = payload
+      state[colorKey] = color
     },
-    theme(state: State, theme: Theme) {
+    theme (state: State, theme: Theme) {
       Object.keys(state).forEach((key) => {
-        const colorKey = key as ColorKey;
-        state[colorKey] = theme.color[colorKey];
-      });
-    },
+        const colorKey = key as ColorKey
+        state[colorKey] = theme.color[colorKey]
+      })
+    }
   },
-  actions: {},
-});
+  actions: {}
+})

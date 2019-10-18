@@ -1,25 +1,25 @@
-import {Command} from '@/types';
-import { getIconForFile, getIconForFolder, getIconForOpenFolder } from 'vscode-icons-js';
+import { Command } from '@/types'
+import { getIconForFile, getIconForFolder, getIconForOpenFolder } from 'vscode-icons-js'
 
-const url = 'https://dderevjanik.github.io/vscode-icons-js-example/icons';
+const url = 'https://dderevjanik.github.io/vscode-icons-js-example/icons'
 
 export default {
-  install(command: Command) {
+  install (command: Command) {
     command.iconAdd({
       name: 'VSCodeIcons',
-      getFile(name: string): string {
-        const icon = getIconForFile(name);
+      getFile (name: string): string {
+        const icon = getIconForFile(name)
         if (icon) {
-          return `${url}/${icon}`;
+          return `${url}/${icon}`
         }
-        return '';
+        return ''
       },
-      getFolder(name: string, open: boolean): string {
+      getFolder (name: string, open: boolean): string {
         if (open) {
-          return `${url}/${getIconForOpenFolder(name)}`;
+          return `${url}/${getIconForOpenFolder(name)}`
         }
-        return `${url}/${getIconForFolder(name)}`;
-      },
-    });
-  },
-};
+        return `${url}/${getIconForFolder(name)}`
+      }
+    })
+  }
+}

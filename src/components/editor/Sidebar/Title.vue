@@ -5,17 +5,18 @@
 </template>
 
 <script lang="ts">
-  import themeStore, {State as ThemeState} from '@/store/theme';
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import themeStore, { State as ThemeState } from '@/store/theme'
+import { Component, Prop, Vue } from 'vue-property-decorator'
 
-  @Component
-  export default class Title extends Vue {
-    @Prop({type: String, default: ''})
-    private name!: string;
-    get theme(): ThemeState {
-      return themeStore.state;
-    }
+@Component
+export default class Title extends Vue {
+  @Prop({type: String, default: ''})
+  private name!: string
+
+  get theme (): ThemeState {
+    return themeStore.state
   }
+}
 </script>
 
 <style scoped lang="scss">

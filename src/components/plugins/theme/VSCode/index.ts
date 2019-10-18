@@ -1,7 +1,7 @@
-import {Command} from '@/types';
+import { Command } from '@/types'
 
 export default {
-  install(command: Command) {
+  install (command: Command) {
     command.themeAdd({
       name: 'VSCode',
       color: {
@@ -20,8 +20,8 @@ export default {
         sidebarActive: '#333333',
         tabBar: '#2D2D2D',
         tab: '#2D2D2D',
-        tabActive: '#1E1E1E',
-      },
-    });
-  },
-};
+        tabActive: '#1E1E1E'
+      }
+    })
+  }
+}

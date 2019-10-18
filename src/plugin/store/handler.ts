@@ -1,95 +1,93 @@
-import Vue, {Component} from 'vue';
-import {Store} from 'vuex';
-import {State, EditorInstance} from '../store';
-import {TabView} from '@/store/view';
-import {isData} from '@/ts/util';
-import {tabGroups} from '@/store/view/viewHelper';
-import viewStore, {Commit as ViewCommit} from '@/store/view';
-import themeStore from '@/store/theme';
-import {log} from '@/ts/util';
-import {Editor} from '@/types';
-import UndoRedoManager from '../UndoRedoManager';
+import Vue, { Component } from 'vue'
+import { Store } from 'vuex'
+import { State, EditorInstance } from '../store'
+import viewStore, { TabView, Commit as ViewCommit } from '@/store/view'
+import { isData, log } from '@/ts/util'
+import { tabGroups } from '@/store/view/viewHelper'
+import themeStore from '@/store/theme'
+import { Editor } from '@/types'
+import UndoRedoManager from '../UndoRedoManager'
 
-export function getEditor(name: string, plugins: Array<Store<State>>): Store<State> {
-  const editors = getScopeEditors(name, plugins);
-  return editors[editors.length - 1];
+export function getEditor (name: string, plugins: Array<Store<State>>): Store<State> {
+  const editors = getScopeEditors(name, plugins)
+  return editors[editors.length - 1]
 }
 
-function getScopeEditors(name: string, plugins: Array<Store<State>>): Array<Store<State>> {
-  const editors: Array<Store<State>> = [];
+function getScopeEditors (name: string, plugins: Array<Store<State>>): Array<Store<State>> {
+  const editors: Array<Store<State>> = []
   plugins.forEach((store) => {
     if (store.state.editor && store.state.editor.scope.length !== 0) {
       if (isScope(name, store.state.editor.scope, store.state.editor.exclude)) {
-        editors.push(store);
+        editors.push(store)
       }
     }
-  });
-  return editors;
+  })
+  return editors
 }
 
-function isScope(name: string, scope: Array<string | RegExp>, exclude?: Array<string | RegExp>): boolean {
-  let result = false;
+function isScope (name: string, scope: Array<string | RegExp>, exclude?: Array<string | RegExp>): boolean {
+  let result = false
   if (exclude) {
-    const scopeRegExps = createRegExp(scope);
-    const excludeRegExps = createRegExp(exclude);
+    const scopeRegExps = createRegExp(scope)
+    const excludeRegExps = createRegExp(exclude)
     if (!test(name, excludeRegExps) && asterisk(scope)) {
-      result = true;
+      result = true
     } else if (!test(name, excludeRegExps) && test(name, scopeRegExps)) {
-      result = true;
+      result = true
     }
   } else if (asterisk(scope)) {
-    result = true;
+    result = true
   } else {
-    const scopeRegExps = createRegExp(scope);
+    const scopeRegExps = createRegExp(scope)
     if (test(name, scopeRegExps)) {
-      result = true;
+      result = true
     }
   }
-  return result;
+  return result
 }
 
-function createRegExp(list: Array<string | RegExp>): RegExp[] {
-  const exts: string[] = [];
-  const regExps = [];
+function createRegExp (list: Array<string | RegExp>): RegExp[] {
+  const exts: string[] = []
+  const regExps = []
   list.forEach((value) => {
     if (typeof value === 'string' && value !== '*') {
-      exts.push(value);
+      exts.push(value)
     } else {
-      regExps.push(value);
+      regExps.push(value)
     }
-  });
+  })
   if (exts.length !== 0) {
-    regExps.push(new RegExp(`\\.(${exts.join('\\')})$`, 'i'));
+    regExps.push(new RegExp(`\\.(${exts.join('\\')})$`, 'i'))
   }
-  return regExps;
+  return regExps
 }
 
-function test(name: string, regExps: RegExp[]): boolean {
+function test (name: string, regExps: RegExp[]): boolean {
   for (const regExp of regExps) {
     if (regExp.test(name)) {
-      return true;
+      return true
     }
   }
-  return false;
+  return false
 }
 
-function asterisk(scope: Array<string | RegExp>): boolean {
+function asterisk (scope: Array<string | RegExp>): boolean {
   for (const value of scope) {
     if (typeof value === 'string' && value === '*') {
-      return true;
+      return true
     }
   }
-  return false;
+  return false
 }
 
-export function loaded(editor: Editor, editors: EditorInstance[], tabView: TabView) {
-  log.debug('plugin handler loaded');
+export function loaded (editor: Editor, editors: EditorInstance[], tabView: TabView) {
+  log.debug('plugin handler loaded')
 
   for (let i = 0; i < editors.length; i++) {
     if (editors[i].tab.view.id === tabView.view.id) {
-      editors[i].parent.$destroy();
-      editors.splice(i, 1);
-      break;
+      editors[i].parent.$destroy()
+      editors.splice(i, 1)
+      break
     }
   }
 
@@ -102,9 +100,9 @@ export function loaded(editor: Editor, editors: EditorInstance[], tabView: TabVi
       focus: false,
       color: {},
       undo: false,
-      redo: false,
+      redo: false
     }),
-    render(h) {
+    render (h) {
       return h(editor.component, {
         props: {
           value: this.value,
@@ -114,152 +112,152 @@ export function loaded(editor: Editor, editors: EditorInstance[], tabView: TabVi
           focus: this.focus,
           color: this.color,
           undo: this.undo,
-          redo: this.redo,
+          redo: this.redo
         },
         on: {
           input: (value: string) => {
-            this.$emit('input', value);
+            this.$emit('input', value)
           },
           change: (value: string) => {
-            this.$emit('change', value);
+            this.$emit('change', value)
           },
           undo: () => {
-            this.$emit('undo');
+            this.$emit('undo')
           },
           redo: () => {
-            this.$emit('redo');
-          },
-        },
-      });
-    },
-  });
-  const selector = `#editor-${tabView.view.id}`;
-  const dataset = getDataset(selector);
-  instanceReset(editor.component, selector);
-  parent.$mount(`${selector} > div`);
-  const node = parent.$children[0];
+            this.$emit('redo')
+          }
+        }
+      })
+    }
+  })
+  const selector = `#editor-${tabView.view.id}`
+  const dataset = getDataset(selector)
+  instanceReset(editor.component, selector)
+  parent.$mount(`${selector} > div`)
+  const node = parent.$children[0]
   const instance = {
     tab: tabView,
     parent,
-    node,
-  };
-  editors.push(instance);
+    node
+  }
+  editors.push(instance)
 
   if (dataset) {
-    instance.parent.$data.width = dataset.width;
-    instance.parent.$data.height = dataset.height;
+    instance.parent.$data.width = dataset.width
+    instance.parent.$data.height = dataset.height
   }
-  instance.parent.$data.color = themeStore.getters.color;
-  instance.parent.$data.scope = tabView.name.substr(tabView.name.lastIndexOf('.') + 1);
-  instance.parent.$data.value = tabView.value;
+  instance.parent.$data.color = themeStore.getters.color
+  instance.parent.$data.scope = tabView.name.substr(tabView.name.lastIndexOf('.') + 1)
+  instance.parent.$data.value = tabView.value
   if (editor.option && editor.option.undoManager) {
-    const undoRedo = UndoRedoManager.getManager(tabView.id);
-    instance.parent.$data.undo = undoRedo.hasUndo();
-    instance.parent.$data.redo = undoRedo.hasRedo();
+    const undoRedo = UndoRedoManager.getManager(tabView.id)
+    instance.parent.$data.undo = undoRedo.hasUndo()
+    instance.parent.$data.redo = undoRedo.hasRedo()
   }
   instance.parent.$on('change', (value: string) => {
-    addUndoRedo(editor, editors, tabView, value, instance.parent.$data.value);
+    addUndoRedo(editor, editors, tabView, value, instance.parent.$data.value)
     editors.forEach((target) => {
       if (target.tab.id === tabView.id) {
-        target.parent.$data.value = value;
-        target.tab.value = value;
+        target.parent.$data.value = value
+        target.tab.value = value
       }
-    });
-    viewStore.commit(ViewCommit.tabAddPreviewEnd);
-  });
+    })
+    viewStore.commit(ViewCommit.tabAddPreviewEnd)
+  })
   instance.parent.$on('input', (value: string) => {
-    addUndoRedo(editor, editors, tabView, value, instance.parent.$data.value);
+    addUndoRedo(editor, editors, tabView, value, instance.parent.$data.value)
     editors.forEach((target) => {
       if (target.tab.id === tabView.id) {
-        target.parent.$data.value = value;
-        target.tab.value = value;
+        target.parent.$data.value = value
+        target.tab.value = value
       }
-    });
-  });
+    })
+  })
   instance.parent.$on('undo', () => {
     if (editor.option && editor.option.undoManager) {
-      UndoRedoManager.undo(tabView.id);
+      UndoRedoManager.undo(tabView.id)
     }
-  });
+  })
   instance.parent.$on('redo', () => {
     if (editor.option && editor.option.undoManager) {
-      UndoRedoManager.redo(tabView.id);
+      UndoRedoManager.redo(tabView.id)
     }
-  });
+  })
   if (editor.option && editor.option.undoManager) {
     UndoRedoManager.setCallback(tabView.id, () => {
-      const undoRedo = UndoRedoManager.getManager(tabView.id);
-      const undo = undoRedo.hasUndo();
-      const redo = undoRedo.hasRedo();
+      const undoRedo = UndoRedoManager.getManager(tabView.id)
+      const undo = undoRedo.hasUndo()
+      const redo = undoRedo.hasRedo()
       editors.forEach((target) => {
         if (target.tab.id === tabView.id) {
-          target.parent.$data.undo = undo;
-          target.parent.$data.redo = redo;
+          target.parent.$data.undo = undo
+          target.parent.$data.redo = redo
         }
-      });
-    });
+      })
+    })
   }
 
-  const views = tabGroups(viewStore.state.container);
+  const views = tabGroups(viewStore.state.container)
   for (let i = 0; i < editors.length; i++) {
     if (isData(views, editors[i].tab.view.id)) {
-      editors[i].parent.$destroy();
-      editors.splice(i, 1);
-      i--;
+      editors[i].parent.$destroy()
+      editors.splice(i, 1)
+      i--
     }
   }
 }
 
-function addUndoRedo(editor: Editor, editors: EditorInstance[], tabView: TabView, newValue: string, oldValue: string) {
+function addUndoRedo (editor: Editor, editors: EditorInstance[], tabView: TabView, newValue: string, oldValue: string) {
   if (editor.option && editor.option.undoManager && newValue !== oldValue) {
     UndoRedoManager.add(tabView.id, {
       undo: () => {
         editors.forEach((target) => {
           if (target.tab.id === tabView.id) {
-            target.parent.$data.value = oldValue;
-            target.tab.value = oldValue;
+            target.parent.$data.value = oldValue
+            target.tab.value = oldValue
           }
-        });
+        })
       },
       redo: () => {
         editors.forEach((target) => {
           if (target.tab.id === tabView.id) {
-            target.parent.$data.value = newValue;
-            target.tab.value = newValue;
+            target.parent.$data.value = newValue
+            target.tab.value = newValue
           }
-        });
-      },
-    });
+        })
+      }
+    })
   }
 }
 
-function instanceReset(component: Component, selector: string) {
-  const el = document.querySelector(selector) as HTMLElement;
+function instanceReset (component: Component, selector: string) {
+  const el = document.querySelector(selector) as HTMLElement
   if (el) {
-    el.dataset.editor = component.name;
-    el.childNodes[0].remove();
-    el.append(document.createElement('div'));
+    el.dataset.editor = component.name
+    el.childNodes[0].remove()
+    el.append(document.createElement('div'))
   }
 }
 
 interface Dataset {
-  editor: string | null;
-  width: number;
-  height: number;
+  editor: string | null
+  width: number
+  height: number
 }
 
-export function getDataset(selector: string): Dataset | null {
-  const el = document.querySelector(selector) as HTMLElement;
-  let dataset: Dataset | null = null;
+export function getDataset (selector: string): Dataset | null {
+  const el = document.querySelector(selector) as HTMLElement
+  let dataset: Dataset | null = null
   if (el && el.dataset.width && el.dataset.height) {
     dataset = {
       editor: null,
       width: Number(el.dataset.width),
-      height: Number(el.dataset.height),
-    };
+      height: Number(el.dataset.height)
+    }
     if (el.dataset.editor) {
-      dataset.editor = el.dataset.editor;
+      dataset.editor = el.dataset.editor
     }
   }
-  return dataset;
+  return dataset
 }

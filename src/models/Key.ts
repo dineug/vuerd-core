@@ -20,4 +20,5 @@ enum Key {
   ArrowDown = 'ArrowDown',
   ArrowLeft = 'ArrowLeft',
 }
-export default Key;
+
+export default Key

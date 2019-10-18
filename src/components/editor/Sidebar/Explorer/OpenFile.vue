@@ -35,148 +35,148 @@
 </template>
 
 <script lang="ts">
-  import themeStore, {State as ThemeState} from '@/store/theme';
-  import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
-  import {log, getData, findParentLiByElement} from '@/ts/util';
-  import eventBus, {Bus} from '@/ts/EventBus';
-  import pluginManagement from '@/plugin/PluginManagement';
-  import {Component, Prop, Vue} from 'vue-property-decorator';
-  import MDIcon from '@/components/editor/MDIcon.vue';
-  import Icon from '@/components/editor/Icon.vue';
+import themeStore, { State as ThemeState } from '@/store/theme'
+import viewStore, { View, Tab, TabView, Commit } from '@/store/view'
+import { log, getData, findParentLiByElement } from '@/ts/util'
+import eventBus, { Bus } from '@/ts/EventBus'
+import pluginManagement from '@/plugin/PluginManagement'
+import { Component, Prop, Vue } from 'vue-property-decorator'
+import MDIcon from '@/components/editor/MDIcon.vue'
+import Icon from '@/components/editor/Icon.vue'
 
-  import {fromEvent, Subscription, Subject} from 'rxjs';
-  import {throttleTime, debounceTime} from 'rxjs/operators';
+import { fromEvent, Subscription, Subject } from 'rxjs'
+import { throttleTime, debounceTime } from 'rxjs/operators'
 
-  @Component({
-    components: {
-      MDIcon,
-      Icon,
-    },
-  })
-  export default class OpenFile extends Vue {
-    @Prop({type: Array, default: () => []})
-    private tabGroups!: View[];
+@Component({
+  components: {
+    MDIcon,
+    Icon
+  }
+})
+export default class OpenFile extends Vue {
+  @Prop({type: Array, default: () => []})
+  private tabGroups!: View[]
 
-    private draggableListener: Subscription[] = [];
-    private draggable$: Subject<DragEvent> = new Subject();
-    private subDraggable: Subscription | null = null;
+  private draggableListener: Subscription[] = []
+  private draggable$: Subject<DragEvent> = new Subject()
+  private subDraggable: Subscription | null = null
 
-    get tabDraggable(): TabView | null {
-      return viewStore.state.tabDraggable;
+  get tabDraggable (): TabView | null {
+    return viewStore.state.tabDraggable
+  }
+
+  get theme (): ThemeState {
+    return themeStore.state
+  }
+
+  // ==================== Event Handler ===================
+  private onActive (view: View, tab?: Tab) {
+    log.debug('OpenFile onActive')
+    viewStore.commit(Commit.tabActive, {view, tab})
+  }
+
+  private onClose (event: Event, view: View, tab: Tab) {
+    log.debug('OpenFile onClose')
+    event.stopPropagation()
+    viewStore.commit(Commit.tabClose, {view, tab})
+  }
+
+  private onMousedown () {
+    log.debug('OpenFile onMousedown')
+    const selection = window.getSelection()
+    if (selection) {
+      selection.removeAllRanges()
     }
+  }
 
-    get theme(): ThemeState {
-      return themeStore.state;
+  private onDragstart (event: DragEvent, view: View, tab: Tab) {
+    log.debug('OpenFile onDragstart')
+    const tabDraggable = tab as TabView
+    tabDraggable.view = view
+    viewStore.commit(Commit.tabDraggableStart, tabDraggable)
+    this.onDraggableStart()
+    eventBus.$emit(Bus.ViewTab.draggableStart)
+    eventBus.$emit(Bus.ViewView.dropStart)
+    eventBus.$emit(Bus.Editor.dragstart)
+    // firefox
+    if (event.dataTransfer) {
+      event.dataTransfer.setData('text/plain', tab.id)
     }
+  }
 
-    // ==================== Event Handler ===================
-    private onActive(view: View, tab?: Tab) {
-      log.debug('OpenFile onActive');
-      viewStore.commit(Commit.tabActive, {view, tab});
-    }
+  private onDragend (event: DragEvent) {
+    log.debug('OpenFile onDragend')
+    eventBus.$emit(Bus.ViewView.dropEnd, this.tabDraggable)
+    eventBus.$emit(Bus.ViewTab.draggableEnd)
+    eventBus.$emit(Bus.Editor.dragend)
+    this.onDraggableEnd()
+    viewStore.commit(Commit.tabDraggableEnd)
+  }
 
-    private onClose(event: Event, view: View, tab: Tab) {
-      log.debug('OpenFile onClose');
-      event.stopPropagation();
-      viewStore.commit(Commit.tabClose, {view, tab});
-    }
+  private onDraggableStart () {
+    log.debug('OpenFile onDraggableStart')
+    const list = this.$el.querySelectorAll('.draggable')
+    list.forEach((li: Element) => {
+      this.draggableListener.push(
+        fromEvent<DragEvent>(li as HTMLElement, 'dragover').pipe(
+          throttleTime(300)
+        ).subscribe(this.onDragoverGroup)
+      )
+    })
+  }
 
-    private onMousedown() {
-      log.debug('OpenFile onMousedown');
-      const selection = window.getSelection();
-      if (selection) {
-        selection.removeAllRanges();
-      }
-    }
+  private onDraggableEnd () {
+    log.debug('OpenFile onDraggableEnd')
+    this.draggableListener.forEach((draggable: Subscription) => draggable.unsubscribe())
+    this.draggableListener = []
+  }
 
-    private onDragstart(event: DragEvent, view: View, tab: Tab) {
-      log.debug('OpenFile onDragstart');
-      const tabDraggable = tab as TabView;
-      tabDraggable.view = view;
-      viewStore.commit(Commit.tabDraggableStart, tabDraggable);
-      this.onDraggableStart();
-      eventBus.$emit(Bus.ViewTab.draggableStart);
-      eventBus.$emit(Bus.ViewView.dropStart);
-      eventBus.$emit(Bus.Editor.dragstart);
-      // firefox
-      if (event.dataTransfer) {
-        event.dataTransfer.setData('text/plain', tab.id);
-      }
-    }
+  private onDragoverGroup (event: DragEvent) {
+    log.debug('OpenFile onDragoverGroup')
+    this.draggable$.next(event)
+  }
 
-    private onDragend(event: DragEvent) {
-      log.debug('OpenFile onDragend');
-      eventBus.$emit(Bus.ViewView.dropEnd, this.tabDraggable);
-      eventBus.$emit(Bus.ViewTab.draggableEnd);
-      eventBus.$emit(Bus.Editor.dragend);
-      this.onDraggableEnd();
-      viewStore.commit(Commit.tabDraggableEnd);
-    }
-
-    private onDraggableStart() {
-      log.debug('OpenFile onDraggableStart');
-      const list = this.$el.querySelectorAll('.draggable');
-      list.forEach((li: Element) => {
-        this.draggableListener.push(
-          fromEvent<DragEvent>(li as HTMLElement, 'dragover').pipe(
-            throttleTime(300),
-          ).subscribe(this.onDragoverGroup),
-        );
-      });
-    }
-
-    private onDraggableEnd() {
-      log.debug('OpenFile onDraggableEnd');
-      this.draggableListener.forEach((draggable: Subscription) => draggable.unsubscribe());
-      this.draggableListener = [];
-    }
-
-    private onDragoverGroup(event: DragEvent) {
-      log.debug('OpenFile onDragoverGroup');
-      this.draggable$.next(event);
-    }
-
-    private onDragover(event: DragEvent) {
-      log.debug('OpenFile onDragover');
-      const li = findParentLiByElement(event.target as HTMLElement);
-      if (li && li.dataset.id && li.dataset.viewId && this.tabDraggable) {
-        const view = getData(this.tabGroups, li.dataset.viewId);
-        if (view) {
-          const tab = getData(view.tabs, li.dataset.id);
-          if (tab) {
-            viewStore.commit(Commit.tabMove, {view, tab});
-            this.$nextTick(() => {
-              pluginManagement.editorResize();
-            });
-          }
+  private onDragover (event: DragEvent) {
+    log.debug('OpenFile onDragover')
+    const li = findParentLiByElement(event.target as HTMLElement)
+    if (li && li.dataset.id && li.dataset.viewId && this.tabDraggable) {
+      const view = getData(this.tabGroups, li.dataset.viewId)
+      if (view) {
+        const tab = getData(view.tabs, li.dataset.id)
+        if (tab) {
+          viewStore.commit(Commit.tabMove, {view, tab})
+          this.$nextTick(() => {
+            pluginManagement.editorResize()
+          })
         }
       }
     }
-
-    // ==================== Event Handler END ===================
-
-    // ==================== Life Cycle ====================
-    private created() {
-      eventBus.$on(Bus.OpenFile.draggableStart, this.onDraggableStart);
-      eventBus.$on(Bus.OpenFile.draggableEnd, this.onDraggableEnd);
-    }
-
-    private mounted() {
-      this.subDraggable = this.draggable$.pipe(
-        debounceTime(50),
-      ).subscribe(this.onDragover);
-    }
-
-    private destroyed() {
-      eventBus.$off(Bus.OpenFile.draggableStart, this.onDraggableStart);
-      eventBus.$off(Bus.OpenFile.draggableEnd, this.onDraggableEnd);
-      if (this.subDraggable) {
-        this.subDraggable.unsubscribe();
-      }
-    }
-
-    // ==================== Life Cycle END ====================
   }
+
+  // ==================== Event Handler END ===================
+
+  // ==================== Life Cycle ====================
+  private created () {
+    eventBus.$on(Bus.OpenFile.draggableStart, this.onDraggableStart)
+    eventBus.$on(Bus.OpenFile.draggableEnd, this.onDraggableEnd)
+  }
+
+  private mounted () {
+    this.subDraggable = this.draggable$.pipe(
+      debounceTime(50)
+    ).subscribe(this.onDragover)
+  }
+
+  private destroyed () {
+    eventBus.$off(Bus.OpenFile.draggableStart, this.onDraggableStart)
+    eventBus.$off(Bus.OpenFile.draggableEnd, this.onDraggableEnd)
+    if (this.subDraggable) {
+      this.subDraggable.unsubscribe()
+    }
+  }
+
+  // ==================== Life Cycle END ====================
+}
 </script>
 
 <style scoped lang="scss">

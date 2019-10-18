@@ -3,15 +3,15 @@
 </template>
 
 <script lang="ts">
-  import themeStore, {State as ThemeState} from '@/store/theme';
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import themeStore, { State as ThemeState } from '@/store/theme'
+import { Component, Vue } from 'vue-property-decorator'
 
-  @Component
-  export default class TitleBar extends Vue {
-    get theme(): ThemeState {
-      return themeStore.state;
-    }
+@Component
+export default class TitleBar extends Vue {
+  get theme (): ThemeState {
+    return themeStore.state
   }
+}
 </script>
 
 <style scoped lang="scss">

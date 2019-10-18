@@ -1,13 +1,13 @@
-import ImagePreview from './ImagePreview.vue';
-import {Command} from '@/types';
+import ImagePreview from './ImagePreview.vue'
+import { Command } from '@/types'
 
 export default {
-  install(command: Command) {
+  install (command: Command) {
     command.editorAdd({
       component: ImagePreview,
       scope: [
-        /\.(jpe?g|png|gif|svg|ico)$/i,
-      ],
-    });
-  },
-};
+        /\.(jpe?g|png|gif|svg|ico)$/i
+      ]
+    })
+  }
+}

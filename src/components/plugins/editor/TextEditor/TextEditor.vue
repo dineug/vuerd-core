@@ -9,39 +9,38 @@
 </template>
 
 <script lang="ts">
-  import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
-  import {Color} from '@/types';
+import { Component, Prop, Watch, Vue } from 'vue-property-decorator'
+import { Color } from '@/types'
 
-  @Component
-  export default class TextEditor extends Vue {
-    @Prop({type: String, default: ''})
-    private value!: string;
-    @Prop({type: Object, default: () => ({})})
-    private color!: Color;
-    @Prop({type: Boolean, default: false})
-    private focus!: boolean;
+@Component
+export default class TextEditor extends Vue {
+  @Prop({type: String, default: ''})
+  private value!: string
+  @Prop({type: Object, default: () => ({})})
+  private color!: Color
+  @Prop({type: Boolean, default: false})
+  private focus!: boolean
 
-    @Watch('focus')
-    private watchFocus(focus: boolean) {
-      const textarea = this.$el as HTMLTextAreaElement;
-      if (focus) {
-        textarea.focus();
-      } else {
-        textarea.blur();
-      }
+  @Watch('focus')
+  private watchFocus (focus: boolean) {
+    const textarea = this.$el as HTMLTextAreaElement
+    if (focus) {
+      textarea.focus()
+    } else {
+      textarea.blur()
     }
-
-    private onChange(event: Event) {
-      const textarea = event.target as HTMLTextAreaElement;
-      this.$emit('change', textarea.value);
-    }
-
-    private onInput(event: Event) {
-      const textarea = event.target as HTMLTextAreaElement;
-      this.$emit('input', textarea.value);
-    }
-
   }
+
+  private onChange (event: Event) {
+    const textarea = event.target as HTMLTextAreaElement
+    this.$emit('change', textarea.value)
+  }
+
+  private onInput (event: Event) {
+    const textarea = event.target as HTMLTextAreaElement
+    this.$emit('input', textarea.value)
+  }
+}
 </script>
 
 <style scoped lang="scss">

@@ -1,7 +1,7 @@
-import {Command} from '@/types';
+import { Command } from '@/types'
 
 export default {
-  install(command: Command) {
+  install (command: Command) {
     command.themeAdd({
       name: 'AtomOneDark',
       color: {
@@ -20,8 +20,8 @@ export default {
         sidebarActive: '#282C34',
         tabBar: '#21252B',
         tab: '#21252B',
-        tabActive: '#282C34',
-      },
-    });
-  },
-};
+        tabActive: '#282C34'
+      }
+    })
+  }
+}

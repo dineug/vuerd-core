@@ -29,195 +29,194 @@
 </template>
 
 <script lang="ts">
-  import {SIZE_VIEW_TAB_HEIGHT} from '@/ts/layout';
-  import {log, getData, findParentLiByElement} from '@/ts/util';
-  import eventBus, {Bus} from '@/ts/EventBus';
-  import themeStore, {State as ThemeState} from '@/store/theme';
-  import viewStore, {View, Tab, TabView, Commit} from '@/store/view';
-  import pluginManagement from '@/plugin/PluginManagement';
-  import {Component, Prop, Watch, Vue} from 'vue-property-decorator';
-  import MDIcon from '@/components/editor/MDIcon.vue';
-  import Icon from '@/components/editor/Icon.vue';
+import { SIZE_VIEW_TAB_HEIGHT } from '@/ts/layout'
+import { log, getData, findParentLiByElement } from '@/ts/util'
+import eventBus, { Bus } from '@/ts/EventBus'
+import themeStore, { State as ThemeState } from '@/store/theme'
+import viewStore, { View, Tab, TabView, Commit } from '@/store/view'
+import pluginManagement from '@/plugin/PluginManagement'
+import { Component, Prop, Watch, Vue } from 'vue-property-decorator'
+import MDIcon from '@/components/editor/MDIcon.vue'
+import Icon from '@/components/editor/Icon.vue'
 
-  import {fromEvent, Observable, Subscription, Subject} from 'rxjs';
-  import {throttleTime, debounceTime} from 'rxjs/operators';
+import { fromEvent, Observable, Subscription, Subject } from 'rxjs'
+import { throttleTime, debounceTime } from 'rxjs/operators'
 
-  const TAB_PADDING = 42.5;
+const TAB_PADDING = 42.5
 
-  @Component({
-    components: {
-      MDIcon,
-      Icon,
-    },
-  })
-  export default class ViewTab extends Vue {
-    @Prop({type: Object, default: () => ({})})
-    private view!: View;
-
-    private SIZE_VIEW_TAB_HEIGHT = SIZE_VIEW_TAB_HEIGHT;
-
-    private minWidth: number = 0;
-    private draggableListener: Subscription[] = [];
-    private dragenter$!: Observable<DragEvent>;
-    private draggable$: Subject<DragEvent> = new Subject();
-    private subDragenter: Subscription | null = null;
-    private subDraggable: Subscription | null = null;
-
-    get tabDraggable(): TabView | null {
-      return viewStore.state.tabDraggable;
-    }
-
-    get theme(): ThemeState {
-      return themeStore.state;
-    }
-
-    @Watch('view.tabs')
-    private watchTabs() {
-      this.$nextTick(() => {
-        this.setMinWidth();
-      });
-    }
-
-    private setMinWidth() {
-      log.debug('ViewTab setMinWidth');
-      if (this.view.tabs.length !== 0) {
-        const ul = this.$el.childNodes[0];
-        this.minWidth = 0;
-        ul.childNodes.forEach((child: ChildNode) => {
-          const li = child as HTMLElement;
-          const span = li.querySelector<HTMLElement>('.name');
-          if (span) {
-            this.minWidth += span.offsetWidth + TAB_PADDING;
-          }
-        });
-      }
-    }
-
-    // ==================== Event Handler ===================
-    private onActive(tab?: Tab) {
-      log.debug('ViewTab onActive');
-      viewStore.commit(Commit.tabActive, {view: this.view, tab});
-    }
-
-    private onClose(event: Event, tab: Tab) {
-      log.debug('ViewTab onClose');
-      event.stopPropagation();
-      viewStore.commit(Commit.tabClose, {view: this.view, tab});
-      this.$nextTick(() => {
-        pluginManagement.editorResize();
-      });
-    }
-
-    private onMousedown() {
-      log.debug('ViewTab onMousedown');
-      const selection = window.getSelection();
-      if (selection) {
-        selection.removeAllRanges();
-      }
-      viewStore.commit(Commit.tabAddPreviewEnd);
-    }
-
-    private onDragstart(event: DragEvent, tab: Tab) {
-      log.debug('ViewTab onDragstart');
-      const tabDraggable = tab as TabView;
-      tabDraggable.view = this.view;
-      viewStore.commit(Commit.tabDraggableStart, tabDraggable);
-      this.$emit('dragstart', event);
-      eventBus.$emit(Bus.ViewTab.draggableStart);
-      eventBus.$emit(Bus.OpenFile.draggableStart);
-      eventBus.$emit(Bus.Editor.dragstart);
-      // firefox
-      if (event.dataTransfer) {
-        event.dataTransfer.setData('text/plain', tab.id);
-      }
-    }
-
-    private onDragend() {
-      log.debug('ViewTab onDragend');
-      eventBus.$emit(Bus.ViewView.dropEnd, this.tabDraggable);
-      eventBus.$emit(Bus.ViewTab.draggableEnd);
-      eventBus.$emit(Bus.OpenFile.draggableEnd);
-      eventBus.$emit(Bus.Editor.dragend);
-      viewStore.commit(Commit.tabDraggableEnd);
-    }
-
-    private onDraggableStart() {
-      log.debug('ViewTab onDraggableStart');
-      this.subDragenter = this.dragenter$.subscribe(this.onDragenter);
-      const ul = this.$el.childNodes[0];
-      ul.childNodes.forEach((li: ChildNode) => {
-        this.draggableListener.push(
-          fromEvent<DragEvent>(li as HTMLElement, 'dragover').pipe(
-            throttleTime(300),
-          ).subscribe(this.onDragoverGroup),
-        );
-      });
-    }
-
-    private onDraggableEnd() {
-      log.debug('ViewTab onDraggableEnd');
-      if (this.subDragenter) {
-        this.subDragenter.unsubscribe();
-      }
-      this.draggableListener.forEach((draggable: Subscription) => draggable.unsubscribe());
-      this.draggableListener = [];
-    }
-
-    private onDragoverGroup(event: DragEvent) {
-      log.debug('ViewTab onDragoverGroup');
-      this.draggable$.next(event);
-    }
-
-    private onDragover(event: DragEvent) {
-      log.debug('ViewTab onDragover');
-      const li = findParentLiByElement(event.target as HTMLElement);
-      if (li && li.dataset.id && this.tabDraggable && this.tabDraggable.id !== li.dataset.id) {
-        const tab = getData(this.view.tabs, li.dataset.id);
-        if (tab) {
-          viewStore.commit(Commit.tabMove, {view: this.view, tab});
-        }
-      }
-    }
-
-    private onDragenter(event: DragEvent) {
-      log.debug('ViewTab onDragenter');
-      if (this.tabDraggable && this.tabDraggable.view.id !== this.view.id) {
-        viewStore.commit(Commit.tabMove, {view: this.view});
-        this.$nextTick(() => {
-          pluginManagement.editorResize();
-        });
-      }
-      this.$emit('dragenter', event);
-    }
-
-    // ==================== Event Handler END ===================
-
-    // ==================== Life Cycle ====================
-    private created() {
-      viewStore.commit(Commit.tabViewDelete, {view: this.view});
-      eventBus.$on(Bus.ViewTab.draggableStart, this.onDraggableStart);
-      eventBus.$on(Bus.ViewTab.draggableEnd, this.onDraggableEnd);
-    }
-
-    private mounted() {
-      this.setMinWidth();
-      this.dragenter$ = fromEvent<DragEvent>(this.$el, 'dragenter');
-      this.subDraggable = this.draggable$.pipe(
-        debounceTime(50),
-      ).subscribe(this.onDragover);
-    }
-
-    private destroyed() {
-      eventBus.$off(Bus.ViewTab.draggableStart, this.onDraggableStart);
-      eventBus.$off(Bus.ViewTab.draggableEnd, this.onDraggableEnd);
-      if (this.subDraggable) {
-        this.subDraggable.unsubscribe();
-      }
-    }
-
-    // ==================== Life Cycle END ====================
-
+@Component({
+  components: {
+    MDIcon,
+    Icon
   }
+})
+export default class ViewTab extends Vue {
+  @Prop({type: Object, default: () => ({})})
+  private view!: View
+
+  private SIZE_VIEW_TAB_HEIGHT = SIZE_VIEW_TAB_HEIGHT
+
+  private minWidth: number = 0
+  private draggableListener: Subscription[] = []
+  private dragenter$!: Observable<DragEvent>
+  private draggable$: Subject<DragEvent> = new Subject()
+  private subDragenter: Subscription | null = null
+  private subDraggable: Subscription | null = null
+
+  get tabDraggable (): TabView | null {
+    return viewStore.state.tabDraggable
+  }
+
+  get theme (): ThemeState {
+    return themeStore.state
+  }
+
+  @Watch('view.tabs')
+  private watchTabs () {
+    this.$nextTick(() => {
+      this.setMinWidth()
+    })
+  }
+
+  private setMinWidth () {
+    log.debug('ViewTab setMinWidth')
+    if (this.view.tabs.length !== 0) {
+      const ul = this.$el.childNodes[0]
+      this.minWidth = 0
+      ul.childNodes.forEach((child: ChildNode) => {
+        const li = child as HTMLElement
+        const span = li.querySelector<HTMLElement>('.name')
+        if (span) {
+          this.minWidth += span.offsetWidth + TAB_PADDING
+        }
+      })
+    }
+  }
+
+  // ==================== Event Handler ===================
+  private onActive (tab?: Tab) {
+    log.debug('ViewTab onActive')
+    viewStore.commit(Commit.tabActive, {view: this.view, tab})
+  }
+
+  private onClose (event: Event, tab: Tab) {
+    log.debug('ViewTab onClose')
+    event.stopPropagation()
+    viewStore.commit(Commit.tabClose, {view: this.view, tab})
+    this.$nextTick(() => {
+      pluginManagement.editorResize()
+    })
+  }
+
+  private onMousedown () {
+    log.debug('ViewTab onMousedown')
+    const selection = window.getSelection()
+    if (selection) {
+      selection.removeAllRanges()
+    }
+    viewStore.commit(Commit.tabAddPreviewEnd)
+  }
+
+  private onDragstart (event: DragEvent, tab: Tab) {
+    log.debug('ViewTab onDragstart')
+    const tabDraggable = tab as TabView
+    tabDraggable.view = this.view
+    viewStore.commit(Commit.tabDraggableStart, tabDraggable)
+    this.$emit('dragstart', event)
+    eventBus.$emit(Bus.ViewTab.draggableStart)
+    eventBus.$emit(Bus.OpenFile.draggableStart)
+    eventBus.$emit(Bus.Editor.dragstart)
+    // firefox
+    if (event.dataTransfer) {
+      event.dataTransfer.setData('text/plain', tab.id)
+    }
+  }
+
+  private onDragend () {
+    log.debug('ViewTab onDragend')
+    eventBus.$emit(Bus.ViewView.dropEnd, this.tabDraggable)
+    eventBus.$emit(Bus.ViewTab.draggableEnd)
+    eventBus.$emit(Bus.OpenFile.draggableEnd)
+    eventBus.$emit(Bus.Editor.dragend)
+    viewStore.commit(Commit.tabDraggableEnd)
+  }
+
+  private onDraggableStart () {
+    log.debug('ViewTab onDraggableStart')
+    this.subDragenter = this.dragenter$.subscribe(this.onDragenter)
+    const ul = this.$el.childNodes[0]
+    ul.childNodes.forEach((li: ChildNode) => {
+      this.draggableListener.push(
+        fromEvent<DragEvent>(li as HTMLElement, 'dragover').pipe(
+          throttleTime(300)
+        ).subscribe(this.onDragoverGroup)
+      )
+    })
+  }
+
+  private onDraggableEnd () {
+    log.debug('ViewTab onDraggableEnd')
+    if (this.subDragenter) {
+      this.subDragenter.unsubscribe()
+    }
+    this.draggableListener.forEach((draggable: Subscription) => draggable.unsubscribe())
+    this.draggableListener = []
+  }
+
+  private onDragoverGroup (event: DragEvent) {
+    log.debug('ViewTab onDragoverGroup')
+    this.draggable$.next(event)
+  }
+
+  private onDragover (event: DragEvent) {
+    log.debug('ViewTab onDragover')
+    const li = findParentLiByElement(event.target as HTMLElement)
+    if (li && li.dataset.id && this.tabDraggable && this.tabDraggable.id !== li.dataset.id) {
+      const tab = getData(this.view.tabs, li.dataset.id)
+      if (tab) {
+        viewStore.commit(Commit.tabMove, {view: this.view, tab})
+      }
+    }
+  }
+
+  private onDragenter (event: DragEvent) {
+    log.debug('ViewTab onDragenter')
+    if (this.tabDraggable && this.tabDraggable.view.id !== this.view.id) {
+      viewStore.commit(Commit.tabMove, {view: this.view})
+      this.$nextTick(() => {
+        pluginManagement.editorResize()
+      })
+    }
+    this.$emit('dragenter', event)
+  }
+
+  // ==================== Event Handler END ===================
+
+  // ==================== Life Cycle ====================
+  private created () {
+    viewStore.commit(Commit.tabViewDelete, {view: this.view})
+    eventBus.$on(Bus.ViewTab.draggableStart, this.onDraggableStart)
+    eventBus.$on(Bus.ViewTab.draggableEnd, this.onDraggableEnd)
+  }
+
+  private mounted () {
+    this.setMinWidth()
+    this.dragenter$ = fromEvent<DragEvent>(this.$el, 'dragenter')
+    this.subDraggable = this.draggable$.pipe(
+      debounceTime(50)
+    ).subscribe(this.onDragover)
+  }
+
+  private destroyed () {
+    eventBus.$off(Bus.ViewTab.draggableStart, this.onDraggableStart)
+    eventBus.$off(Bus.ViewTab.draggableEnd, this.onDraggableEnd)
+    if (this.subDraggable) {
+      this.subDraggable.unsubscribe()
+    }
+  }
+
+  // ==================== Life Cycle END ====================
+}
 </script>
 
 <style scoped lang="scss">

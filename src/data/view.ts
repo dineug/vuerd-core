@@ -1,5 +1,5 @@
-import {View} from '@/store/view';
-import {uuid} from '@/ts/util';
+import { View } from '@/store/view'
+import { uuid } from '@/ts/util'
 
 const init: View = {
   id: uuid(),
@@ -11,6 +11,6 @@ const init: View = {
   heightRatio: 1,
   parent: null,
   children: [],
-  tabs: [],
-};
-export default init;
+  tabs: []
+}
+export default init

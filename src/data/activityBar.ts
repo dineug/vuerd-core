@@ -1,6 +1,6 @@
-import activityBarStore, {ActivityMenu, Commit} from '@/store/activityBar';
-import IconType from '@/models/IconType';
-import {uuid} from '@/ts/util';
+import activityBarStore, { ActivityMenu, Commit } from '@/store/activityBar'
+import IconType from '@/models/IconType'
+import { uuid } from '@/ts/util'
 
 const init: ActivityMenu[] = [
   {
@@ -8,18 +8,18 @@ const init: ActivityMenu[] = [
     name: 'explorer',
     icon: 'mdi-file-multiple',
     iconType: IconType.mdi,
-    execute(): void {
-      activityBarStore.commit(Commit.explorer);
-    },
+    execute (): void {
+      activityBarStore.commit(Commit.explorer)
+    }
   },
   {
     id: uuid(),
     name: 'plugin',
     icon: 'mdi-shape',
     iconType: IconType.mdi,
-    execute(): void {
-      activityBarStore.commit(Commit.plugin);
-    },
-  },
-];
-export default init;
+    execute (): void {
+      activityBarStore.commit(Commit.plugin)
+    }
+  }
+]
+export default init

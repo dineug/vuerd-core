@@ -7,61 +7,61 @@
 </template>
 
 <script lang="ts">
-  import {SIZE_SASH} from '@/ts/layout';
-  import {Component, Prop, Vue} from 'vue-property-decorator';
+import { SIZE_SASH } from '@/ts/layout'
+import { Component, Prop, Vue } from 'vue-property-decorator'
 
-  import {fromEvent, Observable, Subscription} from 'rxjs';
+import { fromEvent, Observable, Subscription } from 'rxjs'
 
-  @Component
-  export default class Sash extends Vue {
-    @Prop({type: Boolean, default: false})
-    private vertical!: boolean;
-    @Prop({type: Boolean, default: false})
-    private horizontal!: boolean;
-    @Prop({type: Number, default: 0})
-    private top!: number;
-    @Prop({type: Number, default: 0})
-    private left!: number;
+@Component
+export default class Sash extends Vue {
+  @Prop({type: Boolean, default: false})
+  private vertical!: boolean
+  @Prop({type: Boolean, default: false})
+  private horizontal!: boolean
+  @Prop({type: Number, default: 0})
+  private top!: number
+  @Prop({type: Number, default: 0})
+  private left!: number
 
-    private mouseup$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mouseup');
-    private mousemove$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mousemove');
-    private subMouseup: Subscription | null = null;
-    private subMousemove: Subscription | null = null;
+  private mouseup$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mouseup')
+  private mousemove$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mousemove')
+  private subMouseup: Subscription | null = null
+  private subMousemove: Subscription | null = null
 
-    get centerTop() {
-      return this.top === 0 && !this.horizontal
-        ? this.top
-        : this.top - (SIZE_SASH / 2);
-    }
-
-    get centerLeft() {
-      return this.left === 0 && !this.vertical
-        ? this.left
-        : this.left - (SIZE_SASH / 2);
-    }
-
-    // ==================== Event Handler ===================
-    private onMousedown(event: MouseEvent) {
-      this.subMouseup = this.mouseup$.subscribe(this.onMouseup);
-      this.subMousemove = this.mousemove$.subscribe(this.onMousemove);
-      this.$emit('mousedown', event);
-    }
-
-    private onMouseup(event: MouseEvent) {
-      if (this.subMouseup && this.subMousemove) {
-        this.subMouseup.unsubscribe();
-        this.subMousemove.unsubscribe();
-      }
-      this.$emit('mouseup', event);
-    }
-
-    private onMousemove(event: MouseEvent) {
-      event.preventDefault();
-      this.$emit('mousemove', event);
-    }
-
-    // ==================== Event Handler END ===================
+  get centerTop () {
+    return this.top === 0 && !this.horizontal
+      ? this.top
+      : this.top - (SIZE_SASH / 2)
   }
+
+  get centerLeft () {
+    return this.left === 0 && !this.vertical
+      ? this.left
+      : this.left - (SIZE_SASH / 2)
+  }
+
+  // ==================== Event Handler ===================
+  private onMousedown (event: MouseEvent) {
+    this.subMouseup = this.mouseup$.subscribe(this.onMouseup)
+    this.subMousemove = this.mousemove$.subscribe(this.onMousemove)
+    this.$emit('mousedown', event)
+  }
+
+  private onMouseup (event: MouseEvent) {
+    if (this.subMouseup && this.subMousemove) {
+      this.subMouseup.unsubscribe()
+      this.subMousemove.unsubscribe()
+    }
+    this.$emit('mouseup', event)
+  }
+
+  private onMousemove (event: MouseEvent) {
+    event.preventDefault()
+    this.$emit('mousemove', event)
+  }
+
+  // ==================== Event Handler END ===================
+}
 </script>
 
 <style scoped lang="scss">

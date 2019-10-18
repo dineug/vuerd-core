@@ -8,58 +8,58 @@
 </template>
 
 <script lang="ts">
-  import eventBus, {Bus} from '@/ts/EventBus';
-  import themeStore, {State as ThemeState} from '@/store/theme';
-  import ToastBarImpl, {ToastBar as ToastBarModel} from '@/models/ToastBar';
-  import {Component, Prop, Vue} from 'vue-property-decorator';
-  import MDIcon from './MDIcon.vue';
+import eventBus, { Bus } from '@/ts/EventBus'
+import themeStore, { State as ThemeState } from '@/store/theme'
+import ToastBarImpl, { ToastBar as ToastBarModel } from '@/models/ToastBar'
+import { Component, Vue } from 'vue-property-decorator'
+import MDIcon from './MDIcon.vue'
 
-  @Component({
-    components: {
-      MDIcon,
-    },
-  })
-  export default class ToastBar extends Vue {
-    private toastBars: ToastBarImpl[] = [];
+@Component({
+  components: {
+    MDIcon
+  }
+})
+export default class ToastBar extends Vue {
+  private toastBars: ToastBarImpl[] = []
 
-    get theme(): ThemeState {
-      return themeStore.state;
-    }
+  get theme (): ThemeState {
+    return themeStore.state
+  }
 
-    get toastStyle(): string {
-      return `
+  get toastStyle (): string {
+    return `
         background-color: ${this.theme.sidebar};
-      `;
-    }
+      `
+  }
 
-    private onStart(toastBar: ToastBarModel) {
-      const toastBarModel = new ToastBarImpl(toastBar);
-      this.toastBars.push(toastBarModel);
-      if (toastBarModel.millisecond !== 0) {
-        setTimeout(() => {
-          const index = this.toastBars.indexOf(toastBarModel);
-          if (index !== -1) {
-            this.toastBars.splice(index, 1);
-          }
-        }, toastBarModel.millisecond);
-      }
-    }
-
-    private onClose(toastBar: ToastBarImpl) {
-      const index = this.toastBars.indexOf(toastBar);
-      if (index !== -1) {
-        this.toastBars.splice(index, 1);
-      }
-    }
-
-    private created() {
-      eventBus.$on(Bus.ToastBar.start, this.onStart);
-    }
-
-    private destroyed() {
-      eventBus.$off(Bus.ToastBar.start, this.onStart);
+  private onStart (toastBar: ToastBarModel) {
+    const toastBarModel = new ToastBarImpl(toastBar)
+    this.toastBars.push(toastBarModel)
+    if (toastBarModel.millisecond !== 0) {
+      setTimeout(() => {
+        const index = this.toastBars.indexOf(toastBarModel)
+        if (index !== -1) {
+          this.toastBars.splice(index, 1)
+        }
+      }, toastBarModel.millisecond)
     }
   }
+
+  private onClose (toastBar: ToastBarImpl) {
+    const index = this.toastBars.indexOf(toastBar)
+    if (index !== -1) {
+      this.toastBars.splice(index, 1)
+    }
+  }
+
+  private created () {
+    eventBus.$on(Bus.ToastBar.start, this.onStart)
+  }
+
+  private destroyed () {
+    eventBus.$off(Bus.ToastBar.start, this.onStart)
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -67,7 +67,7 @@
     position: fixed;
     z-index: 9999999;
     right: 50px;
-    bottom:50px;
+    bottom: 50px;
     display: flex;
     flex-direction: column;
 

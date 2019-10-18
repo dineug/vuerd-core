@@ -2,4 +2,4 @@ enum IconType {
   mdi = 'mdi',
 }
 
-export default IconType;
+export default IconType

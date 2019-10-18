@@ -1,6 +1,6 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import {lastSelect} from './tree/treeHelper';
+import Vue from 'vue'
+import Vuex from 'vuex'
+import { lastSelect } from './tree/treeHelper'
 import {
   folderMove,
   folderActiveStart,
@@ -10,8 +10,8 @@ import {
   folderSelectOpen,
   folderCreateStart,
   folderDelete,
-  folderInit,
-} from './tree/folderController';
+  folderInit
+} from './tree/folderController'
 import {
   fileSelectStart,
   fileSelectEnd,
@@ -20,33 +20,33 @@ import {
   fileRenameStart,
   fileRenameEnd,
   fileCreateStart,
-  fileDelete,
-} from './tree/fileController';
-import init from '@/data/tree';
+  fileDelete
+} from './tree/fileController'
+import init from '@/data/tree'
 
-Vue.use(Vuex);
+Vue.use(Vuex)
 
 export interface State {
-  container: Tree;
-  selects: TreeSelect[];
-  folder: Tree | null;
-  currentTree: Tree | null;
-  renameTree: Tree | null;
-  oldRename: string | null;
+  container: Tree
+  selects: TreeSelect[]
+  folder: Tree | null
+  currentTree: Tree | null
+  renameTree: Tree | null
+  oldRename: string | null
 }
 
 export interface Tree {
-  id: string;
-  name: string;
-  open?: boolean;
-  parent: Tree | null;
-  children?: Tree[];
-  value?: string;
+  id: string
+  name: string
+  open?: boolean
+  parent: Tree | null
+  children?: Tree[]
+  value?: string
 }
 
 export interface TreeSelect extends Tree {
-  top: number;
-  order: number;
+  top: number
+  order: number
 }
 
 export const enum Commit {
@@ -76,10 +76,10 @@ export default new Vuex.Store<State>({
     folder: null,
     currentTree: null,
     renameTree: null,
-    oldRename: null,
+    oldRename: null
   },
   getters: {
-    lastSelect: (state: State): TreeSelect | null => lastSelect(state.selects),
+    lastSelect: (state: State): TreeSelect | null => lastSelect(state.selects)
   },
   mutations: {
     folderMove,
@@ -98,7 +98,7 @@ export default new Vuex.Store<State>({
     fileRenameStart,
     fileRenameEnd,
     fileCreateStart,
-    fileDelete,
+    fileDelete
   },
-  actions: {},
-});
+  actions: {}
+})

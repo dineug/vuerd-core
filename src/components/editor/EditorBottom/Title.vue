@@ -11,20 +11,20 @@
 </template>
 
 <script lang="ts">
-  import themeStore, {State as ThemeState} from '@/store/theme';
-  import { Component, Prop, Vue } from 'vue-property-decorator';
-  import MDIcon from '@/components/editor/MDIcon.vue';
+import themeStore, { State as ThemeState } from '@/store/theme'
+import { Component, Vue } from 'vue-property-decorator'
+import MDIcon from '@/components/editor/MDIcon.vue'
 
-  @Component({
-    components: {
-      MDIcon,
-    },
-  })
-  export default class Title extends Vue {
-    get theme(): ThemeState {
-      return themeStore.state;
-    }
+@Component({
+  components: {
+    MDIcon
   }
+})
+export default class Title extends Vue {
+  get theme (): ThemeState {
+    return themeStore.state
+  }
+}
 </script>
 
 <style scoped lang="scss">
