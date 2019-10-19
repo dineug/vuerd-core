@@ -1,13 +1,15 @@
 import { State, Tree } from "@/store/tree";
-import { Tree as TreeModel, TreeMove } from "@/types";
+import { Tree as TreeModel } from "@/types";
 import {
   lastSelect,
   move,
+  movePaths,
   orderByNameASC,
   childrenArray,
   deleteByTree,
   treeToSelect,
-  modelToTree
+  modelToTree,
+  path
 } from "./treeHelper";
 import { fileSelectEnd, fileDelete, fileRenameStart } from "./fileController";
 import { log, setParent, uuid } from "@/ts/util";
@@ -18,12 +20,26 @@ import eventBus, { Bus } from "@/ts/EventBus";
 export function folderMove(state: State) {
   log.debug("folderController folderMove");
   if (state.folder && state.currentTree) {
-    state.selects = move(
-      state.container,
-      state.selects,
-      state.folder,
-      state.currentTree
-    );
+    const selects = state.selects;
+    const folder = state.folder;
+    const currentTree = state.currentTree;
+    const fromPaths = movePaths(selects, folder, currentTree);
+    if (fromPaths.length !== 0) {
+      pluginManagement.remote
+        .move({
+          fromPaths,
+          toPath: path(state.folder)
+        })
+        .then(() => {
+          state.selects = move(selects, folder, currentTree);
+        })
+        .catch(err => {
+          log.error(err);
+          eventBus.$emit(Bus.ToastBar.start, {
+            message: err.toString()
+          });
+        });
+    }
   }
 }
 

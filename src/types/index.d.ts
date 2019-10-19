@@ -53,7 +53,7 @@ export interface Remote {
   findFileByPath(path: string): Promise<string>;
   save(treeSaves: TreeSave[]): Promise<void>;
   deleteByPaths(paths: string[]): Promise<void>;
-  move(treeMoves: TreeMove[]): Promise<void>;
+  move(treeMove: TreeMove): Promise<void>;
 }
 
 export interface TreeSave {
@@ -64,7 +64,7 @@ export interface TreeSave {
 }
 
 export interface TreeMove {
-  fromPath: string;
+  fromPaths: string[];
   toPath: string;
 }
 

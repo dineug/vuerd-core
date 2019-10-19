@@ -97,8 +97,8 @@ async function deleteByPaths(paths: string[]): Promise<void> {
   log.debug(`tree deleteBy: ${paths}`);
 }
 
-async function move(treeMoves: TreeMove[]): Promise<void> {
-  log.debug(`tree move`, treeMoves);
+async function move(treeMove: TreeMove): Promise<void> {
+  log.debug(`tree move`, treeMove);
 }
 
 VuerdCore.use({

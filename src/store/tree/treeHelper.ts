@@ -202,7 +202,6 @@ export function childrenArray(container: Tree, stack?: Tree[]): Tree[] {
 }
 
 export function move(
-  container: Tree,
   selects: TreeSelect[],
   folder: Tree,
   currentTree: Tree
@@ -236,6 +235,28 @@ export function move(
     }
   }
   return selects;
+}
+
+export function movePaths(
+  selects: TreeSelect[],
+  folder: Tree,
+  currentTree: Tree
+): string[] {
+  const paths: string[] = [];
+  if (folder.children && folder.id !== currentTree.id) {
+    if (isData(selects, currentTree.id)) {
+      // single
+      if (!findByTree(currentTree, folder)) {
+        paths.push(path(currentTree));
+      }
+    } else {
+      // select
+      selects.forEach((treeSelect: TreeSelect) => {
+        paths.push(path(treeSelect));
+      });
+    }
+  }
+  return paths;
 }
 
 export function deleteByTree(tree: Tree) {
