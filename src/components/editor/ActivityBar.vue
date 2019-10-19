@@ -5,9 +5,9 @@
 </template>
 
 <script lang="ts">
-import themeStore, { State as ThemeState } from '@/store/theme'
-import { Component, Prop, Vue } from 'vue-property-decorator'
-import ActionsContainer from './ActivityBar/ActionsContainer.vue'
+import themeStore, { State as ThemeState } from "@/store/theme";
+import { Component, Prop, Vue } from "vue-property-decorator";
+import ActionsContainer from "./ActivityBar/ActionsContainer.vue";
 
 @Component({
   components: {
@@ -15,22 +15,22 @@ import ActionsContainer from './ActivityBar/ActionsContainer.vue'
   }
 })
 export default class ActivityBar extends Vue {
-  get theme (): ThemeState {
-    return themeStore.state
+  get theme(): ThemeState {
+    return themeStore.state;
   }
 }
 </script>
 
 <style scoped lang="scss">
-  .activitybar {
-    width: $size-activitybar-width;
-    height: 100%;
-    position: absolute;
+.activitybar {
+  width: $size-activitybar-width;
+  height: 100%;
+  position: absolute;
 
-    .content {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
+  .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
+}
 </style>

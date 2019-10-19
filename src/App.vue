@@ -4,9 +4,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch, Vue } from 'vue-property-decorator'
+import { Component, Watch, Vue } from "vue-property-decorator";
 
 @Component
-export default class App extends Vue {
-}
+export default class App extends Vue {}
 </script>

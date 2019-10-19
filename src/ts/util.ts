@@ -1,89 +1,96 @@
-import log from './Logger'
-import { v4 as uuid } from 'uuid'
+import log from "./Logger";
+import { v4 as uuid } from "uuid";
 
-export {
-  log,
-  uuid
-}
+export { log, uuid };
 
 interface List {
-  id: string
+  id: string;
 }
 
-export function getData<T extends List> (list: T[], id: string): T | null {
+export function getData<T extends List>(list: T[], id: string): T | null {
   for (const v of list) {
     if (v.id === id) {
-      return v
+      return v;
     }
   }
-  return null
+  return null;
 }
 
-export function getDataIndex<T extends List> (list: T[], id: string): number | null {
+export function getDataIndex<T extends List>(
+  list: T[],
+  id: string
+): number | null {
   for (let i = 0; i < list.length; i++) {
     if (list[i].id === id) {
-      return i
+      return i;
     }
   }
-  return null
+  return null;
 }
 
-export function isData<T extends List> (list: T[], id: string): boolean {
+export function isData<T extends List>(list: T[], id: string): boolean {
   for (const v of list) {
     if (v.id === id) {
-      return false
+      return false;
     }
   }
-  return true
+  return true;
 }
 
 interface Node<T> {
-  parent: T | null
-  children?: T[]
+  parent: T | null;
+  children?: T[];
 }
 
-export function setParent<T extends Node<T>> (parent: T, children?: T[]): T {
+export function setParent<T extends Node<T>>(parent: T, children?: T[]): T {
   if (children) {
     children.forEach((node: T) => {
       if (parent) {
-        node.parent = parent
+        node.parent = parent;
       }
       if (node.children && node.children.length !== 0) {
-        setParent(node, node.children)
+        setParent(node, node.children);
       }
-    })
+    });
   }
-  return parent
+  return parent;
 }
 
-export function findParentLiByElement (el: HTMLElement | null): HTMLElement | null {
+export function findParentLiByElement(
+  el: HTMLElement | null
+): HTMLElement | null {
   if (el === null) {
-    return null
-  } else if (el.localName === 'li') {
-    return el
+    return null;
+  } else if (el.localName === "li") {
+    return el;
   }
-  return findParentLiByElement(el.parentElement)
+  return findParentLiByElement(el.parentElement);
 }
 
-export function validFileName (name: string): string {
-  return name.replace(/[<>:"\/\\|?*\x00-\x1F]/g, '')
+export function validFileName(name: string): string {
+  return name.replace(/[<>:"\/\\|?*\x00-\x1F]/g, "");
 }
 
 interface Name {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
-export function autoName<T extends Name> (list: T[], id: string, name: string, num: number = 1): string {
-  let result = true
+export function autoName<T extends Name>(
+  list: T[],
+  id: string,
+  name: string,
+  num: number = 1
+): string {
+  let result = true;
   for (const value of list) {
     if (name === value.name && value.id !== id) {
-      result = false
-      break
+      result = false;
+      break;
     }
   }
   if (result) {
-    return name
+    return name;
   }
-  return autoName(list, id, name.replace(/[0-9]/g, '') + num, num + 1)
+  return autoName(list, id, name.replace(/[0-9]/g, "") + num, num + 1);
 }

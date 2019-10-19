@@ -1,6 +1,6 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import { lastSelect } from './tree/treeHelper'
+import Vue from "vue";
+import Vuex from "vuex";
+import { lastSelect } from "./tree/treeHelper";
 import {
   folderMove,
   folderActiveStart,
@@ -11,7 +11,7 @@ import {
   folderCreateStart,
   folderDelete,
   folderInit
-} from './tree/folderController'
+} from "./tree/folderController";
 import {
   fileSelectStart,
   fileSelectEnd,
@@ -21,52 +21,52 @@ import {
   fileRenameEnd,
   fileCreateStart,
   fileDelete
-} from './tree/fileController'
-import init from '@/data/tree'
+} from "./tree/fileController";
+import init from "@/data/tree";
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export interface State {
-  container: Tree
-  selects: TreeSelect[]
-  folder: Tree | null
-  currentTree: Tree | null
-  renameTree: Tree | null
-  oldRename: string | null
+  container: Tree;
+  selects: TreeSelect[];
+  folder: Tree | null;
+  currentTree: Tree | null;
+  renameTree: Tree | null;
+  oldRename: string | null;
 }
 
 export interface Tree {
-  id: string
-  name: string
-  open?: boolean
-  parent: Tree | null
-  children?: Tree[]
-  value?: string
+  id: string;
+  name: string;
+  open?: boolean;
+  parent: Tree | null;
+  children?: Tree[];
+  value?: string;
 }
 
 export interface TreeSelect extends Tree {
-  top: number
-  order: number
+  top: number;
+  order: number;
 }
 
 export const enum Commit {
-  folderMove = 'folderMove',
-  folderActiveStart = 'folderActiveStart',
-  folderActiveEnd = 'folderActiveEnd',
-  folderDraggableStart = 'folderDraggableStart',
-  folderDraggableEnd = 'folderDraggableEnd',
-  folderSelectOpen = 'folderSelectOpen',
-  folderCreateStart = 'folderCreateStart',
-  folderDelete = 'folderDelete',
-  folderInit = 'folderInit',
-  fileSelectStart = 'fileSelectStart',
-  fileSelectEnd = 'fileSelectEnd',
-  fileSelectMove = 'fileSelectMove',
-  fileSelectTabAddPreview = 'fileSelectTabAddPreview',
-  fileRenameStart = 'fileRenameStart',
-  fileRenameEnd = 'fileRenameEnd',
-  fileCreateStart = 'fileCreateStart',
-  fileDelete = 'fileDelete',
+  folderMove = "folderMove",
+  folderActiveStart = "folderActiveStart",
+  folderActiveEnd = "folderActiveEnd",
+  folderDraggableStart = "folderDraggableStart",
+  folderDraggableEnd = "folderDraggableEnd",
+  folderSelectOpen = "folderSelectOpen",
+  folderCreateStart = "folderCreateStart",
+  folderDelete = "folderDelete",
+  folderInit = "folderInit",
+  fileSelectStart = "fileSelectStart",
+  fileSelectEnd = "fileSelectEnd",
+  fileSelectMove = "fileSelectMove",
+  fileSelectTabAddPreview = "fileSelectTabAddPreview",
+  fileRenameStart = "fileRenameStart",
+  fileRenameEnd = "fileRenameEnd",
+  fileCreateStart = "fileCreateStart",
+  fileDelete = "fileDelete"
 }
 
 export default new Vuex.Store<State>({
@@ -101,4 +101,4 @@ export default new Vuex.Store<State>({
     fileDelete
   },
   actions: {}
-})
+});

@@ -1,16 +1,12 @@
-import TextEditor from './TextEditor.vue'
-import { Command } from '@/types'
+import TextEditor from "./TextEditor.vue";
+import { Command } from "@/types";
 
 export default {
-  install (command: Command) {
+  install(command: Command) {
     command.editorAdd({
       component: TextEditor,
-      scope: [
-        '*'
-      ],
-      exclude: [
-        /\.(jpe?g|png|gif|ico|mp4|webm|ogg)$/i
-      ]
-    })
+      scope: ["*"],
+      exclude: [/\.(jpe?g|png|gif|ico|mp4|webm|ogg)$/i]
+    });
   }
-}
+};

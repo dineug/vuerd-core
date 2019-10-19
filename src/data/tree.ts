@@ -1,11 +1,11 @@
-import { Tree } from '@/store/tree'
-import { uuid } from '@/ts/util'
+import { Tree } from "@/store/tree";
+import { uuid } from "@/ts/util";
 
 const init: Tree = {
   id: uuid(),
-  name: '',
+  name: "",
   open: true,
   parent: null,
   children: []
-}
-export default init
+};
+export default init;

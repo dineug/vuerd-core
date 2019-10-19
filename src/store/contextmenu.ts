@@ -1,35 +1,33 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import { TreeSelect } from './tree'
-import init from '@/data/contextmenuExplorer'
+import Vue from "vue";
+import Vuex from "vuex";
+import { TreeSelect } from "./tree";
+import init from "@/data/contextmenuExplorer";
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export interface State {
-  explorer: Array<Menu<TreeSelect[]>>
+  explorer: Array<Menu<TreeSelect[]>>;
 }
 
 export interface Menu<T> {
-  readonly id: string
-  name: string
-  keymap?: string
-  children?: Array<Menu<T>>
-  option?: Option
+  readonly id: string;
+  name: string;
+  keymap?: string;
+  children?: Array<Menu<T>>;
+  option?: Option;
 
-  execute? (arg: T | null): void
+  execute?(arg: T | null): void;
 }
 
 export interface Option {
-  selectOnly?: boolean
+  selectOnly?: boolean;
 }
 
 export const enum Scope {
-  explorer = 'explorer',
+  explorer = "explorer"
 }
 
-export const enum Commit {
-
-}
+export const enum Commit {}
 
 export default new Vuex.Store<State>({
   state: {
@@ -38,4 +36,4 @@ export default new Vuex.Store<State>({
   getters: {},
   mutations: {},
   actions: {}
-})
+});

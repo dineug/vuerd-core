@@ -7,57 +7,63 @@
 </template>
 
 <script lang="ts">
-import { SIZE_SASH } from '@/ts/layout'
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { SIZE_SASH } from "@/ts/layout";
+import { Component, Prop, Vue } from "vue-property-decorator";
 
-import { fromEvent, Observable, Subscription } from 'rxjs'
+import { fromEvent, Observable, Subscription } from "rxjs";
 
 @Component
 export default class Sash extends Vue {
-  @Prop({type: Boolean, default: false})
-  private vertical!: boolean
-  @Prop({type: Boolean, default: false})
-  private horizontal!: boolean
-  @Prop({type: Number, default: 0})
-  private top!: number
-  @Prop({type: Number, default: 0})
-  private left!: number
+  @Prop({ type: Boolean, default: false })
+  private vertical!: boolean;
+  @Prop({ type: Boolean, default: false })
+  private horizontal!: boolean;
+  @Prop({ type: Number, default: 0 })
+  private top!: number;
+  @Prop({ type: Number, default: 0 })
+  private left!: number;
 
-  private mouseup$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mouseup')
-  private mousemove$: Observable<MouseEvent> = fromEvent<MouseEvent>(window, 'mousemove')
-  private subMouseup: Subscription | null = null
-  private subMousemove: Subscription | null = null
+  private mouseup$: Observable<MouseEvent> = fromEvent<MouseEvent>(
+    window,
+    "mouseup"
+  );
+  private mousemove$: Observable<MouseEvent> = fromEvent<MouseEvent>(
+    window,
+    "mousemove"
+  );
+  private subMouseup: Subscription | null = null;
+  private subMousemove: Subscription | null = null;
 
-  get centerTop () {
+  get centerTop() {
     return this.top === 0 && !this.horizontal
       ? this.top
-      : this.top - (SIZE_SASH / 2)
+      : this.top - SIZE_SASH / 2;
   }
 
-  get centerLeft () {
+  get centerLeft() {
     return this.left === 0 && !this.vertical
       ? this.left
-      : this.left - (SIZE_SASH / 2)
+      : this.left - SIZE_SASH / 2;
   }
 
   // ==================== Event Handler ===================
-  private onMousedown (event: MouseEvent) {
-    this.subMouseup = this.mouseup$.subscribe(this.onMouseup)
-    this.subMousemove = this.mousemove$.subscribe(this.onMousemove)
-    this.$emit('mousedown', event)
+  private onMousedown(event: MouseEvent) {
+    this.subMouseup = this.mouseup$.subscribe(this.onMouseup);
+    this.subMousemove = this.mousemove$.subscribe(this.onMousemove);
+    this.$emit("mousedown", event);
   }
 
-  private onMouseup (event: MouseEvent) {
+  private onMouseup(event: MouseEvent) {
     if (this.subMouseup && this.subMousemove) {
-      this.subMouseup.unsubscribe()
-      this.subMousemove.unsubscribe()
+      this.subMouseup.unsubscribe();
+      this.subMousemove.unsubscribe();
     }
-    this.$emit('mouseup', event)
+    this.$emit("mouseup", event);
   }
 
-  private onMousemove (event: MouseEvent) {
-    event.preventDefault()
-    this.$emit('mousemove', event)
+  private onMousemove(event: MouseEvent) {
+    event.preventDefault();
+    this.$emit("mousemove", event);
   }
 
   // ==================== Event Handler END ===================
@@ -65,20 +71,20 @@ export default class Sash extends Vue {
 </script>
 
 <style scoped lang="scss">
-  .sash {
-    position: absolute;
-    z-index: 1000;
+.sash {
+  position: absolute;
+  z-index: 1000;
 
-    &.vertical {
-      width: $size-sash;
-      height: 100%;
-      cursor: ew-resize;
-    }
-
-    &.horizontal {
-      width: 100%;
-      height: $size-sash;
-      cursor: ns-resize;
-    }
+  &.vertical {
+    width: $size-sash;
+    height: 100%;
+    cursor: ew-resize;
   }
+
+  &.horizontal {
+    width: 100%;
+    height: $size-sash;
+    cursor: ns-resize;
+  }
+}
 </style>

@@ -16,7 +16,7 @@ import {
   mdiChevronRight,
   mdiFolder,
   mdiClose
-} from '@mdi/js'
+} from "@mdi/js";
 
 export default {
   mdiFileDocument,
@@ -36,4 +36,4 @@ export default {
   mdiChevronRight,
   mdiFolder,
   mdiClose
-} as any
+} as any;

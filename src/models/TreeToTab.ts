@@ -1,43 +1,43 @@
-import { Tree } from '@/store/tree'
-import { Tab } from '@/store/view'
-import { path } from '@/store/tree/treeHelper'
+import { Tree } from "@/store/tree";
+import { Tab } from "@/store/view";
+import { path } from "@/store/tree/treeHelper";
 
 export default class TreeToTab implements Tab {
-  public active: boolean
-  private tree: Tree
+  public active: boolean;
+  private tree: Tree;
 
-  constructor (tree: Tree) {
-    this.tree = tree
-    this.active = false
+  constructor(tree: Tree) {
+    this.tree = tree;
+    this.active = false;
   }
 
-  get id (): string {
-    return this.tree.id
+  get id(): string {
+    return this.tree.id;
   }
 
-  get name (): string {
-    return this.tree.name
+  get name(): string {
+    return this.tree.name;
   }
 
-  set name (name: string) {
-    this.tree.name = name
+  set name(name: string) {
+    this.tree.name = name;
   }
 
-  get value (): string | undefined {
-    return this.tree.value
+  get value(): string | undefined {
+    return this.tree.value;
   }
 
-  set value (value: string | undefined) {
+  set value(value: string | undefined) {
     if (value) {
-      this.tree.value = value
+      this.tree.value = value;
     }
   }
 
-  get path (): string {
-    return path(this.tree)
+  get path(): string {
+    return path(this.tree);
   }
 
-  public setTree (tree: Tree) {
-    this.tree = tree
+  public setTree(tree: Tree) {
+    this.tree = tree;
   }
 }
