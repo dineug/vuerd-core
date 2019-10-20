@@ -6,6 +6,7 @@ import Command from "@/plugin/Command";
 import TextEditor from "./plugins/editor/TextEditor";
 import ImagePreview from "./plugins/editor/ImagePreview";
 import VideoPreview from "./plugins/editor/VideoPreview";
+import Readme from "./plugins/editor/Readme";
 import VSCode from "./plugins/theme/VSCode";
 import AtomOneDark from "./plugins/theme/AtomOneDark";
 import AtomOneLight from "./plugins/theme/AtomOneLight";
@@ -27,6 +28,7 @@ const VuerdCore = {
 VuerdCore.use(TextEditor);
 VuerdCore.use(ImagePreview);
 VuerdCore.use(VideoPreview);
+VuerdCore.use(Readme);
 
 // default theme
 VuerdCore.use(VSCode);

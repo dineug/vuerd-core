@@ -13,13 +13,12 @@ export default class CommandImpl implements Command {
   }
 
   public editorAdd(editor: Editor): Command {
-    if (pluginManagement.isEditor(editor.component)) {
-      this.store.commit(Commit.editorAdd, editor);
-    } else {
+    if (!pluginManagement.isEditor(editor.component)) {
       log.warn(
-        `Command editorAdd: component '${editor.component.name}' duplication`
+        `Command editorAdd: component name '${editor.component.name}' duplication`
       );
     }
+    this.store.commit(Commit.editorAdd, editor);
     return this;
   }
 

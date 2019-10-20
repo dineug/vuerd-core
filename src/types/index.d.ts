@@ -1,11 +1,5 @@
 import _Vue, { Component } from "vue";
 
-export interface Tree {
-  name: string;
-  open?: boolean;
-  children?: Tree[];
-}
-
 export interface Editor {
   component: Component;
   scope: Array<string | RegExp>;
@@ -15,6 +9,12 @@ export interface Editor {
 
 export interface EditorOption {
   undoManager?: boolean;
+  readme?: EditorReadme;
+}
+
+export interface EditorReadme {
+  owner: string;
+  repo: string;
 }
 
 export interface Theme {
@@ -54,6 +54,12 @@ export interface Remote {
   save(treeSaves: TreeSave[]): Promise<void>;
   deleteByPaths(paths: string[]): Promise<void>;
   move(treeMove: TreeMove): Promise<void>;
+}
+
+export interface Tree {
+  name: string;
+  open?: boolean;
+  children?: Tree[];
 }
 
 export interface TreeSave {

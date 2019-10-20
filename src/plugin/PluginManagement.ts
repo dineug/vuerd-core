@@ -3,7 +3,7 @@ import { Store } from "vuex";
 import { Commit, State } from "./store";
 import { View, Tab } from "@/store/view";
 import { getEditor, getDataset } from "./store/handler";
-import { Theme, Icon, Remote } from "@/types";
+import { Tree, TreeSave, TreeMove, Theme, Icon, Remote } from "@/types";
 import themeStore, { Commit as ThemeCommit } from "@/store/theme";
 import { log } from "@/ts/util";
 import eventBus, { Bus } from "@/ts/EventBus";
@@ -125,19 +125,41 @@ class PluginManagement {
 
   public remoteLoad(remoteName: string) {
     log.debug("PluginManagement remoteLoad");
-    let result = true;
     const remotes = this.remotes;
-    for (const remote of remotes) {
-      if (remote.name === remoteName) {
-        this.currentRemote = remote;
-        result = false;
-        break;
+    if (remotes.length === 0) {
+      log.warn(
+        `not found remote plugin \ndocument: https://vuerd.github.io/vuerd-docs/?path=/story/plugin-command--remote`
+      );
+      this.currentRemote = {
+        name: "example",
+        async findTreeBy(): Promise<Tree> {
+          return {
+            name: "unnamed",
+            open: true,
+            children: []
+          };
+        },
+        async findFileByPath(path: string): Promise<string> {
+          return "";
+        },
+        async save(treeSaves: TreeSave[]): Promise<void> {},
+        async deleteByPaths(paths: string[]): Promise<void> {},
+        async move(treeMove: TreeMove): Promise<void> {}
+      };
+    } else {
+      let result = true;
+      for (const remote of remotes) {
+        if (remote.name === remoteName) {
+          this.currentRemote = remote;
+          result = false;
+          break;
+        }
       }
+      if (result) {
+        this.currentRemote = remotes[remotes.length - 1];
+      }
+      eventBus.$emit(Bus.VuerdCore.changeRemote);
     }
-    if (result) {
-      this.currentRemote = remotes[remotes.length - 1];
-    }
-    eventBus.$emit(Bus.VuerdCore.changeRemote);
   }
 
   public isEditor(component: Component): boolean {

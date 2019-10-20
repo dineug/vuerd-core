@@ -278,7 +278,6 @@ export default class Explorer extends Vue {
       this.$el,
       "contextmenu"
     ).subscribe(this.onContextmenu);
-    window.dispatchEvent(new Event("resize"));
     eventBus.$on(Bus.Explorer.contextmenuEnd, this.onContextmenuEnd);
   }
 
