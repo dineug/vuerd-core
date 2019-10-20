@@ -128,8 +128,15 @@ class PluginManagement {
     const remotes = this.remotes;
     if (remotes.length === 0) {
       log.warn(
-        `not found remote plugin \ndocument: https://vuerd.github.io/vuerd-docs/?path=/story/plugin-command--remote`
+        "not found remote plugin \ndocument: https://vuerd.github.io/vuerd-docs/?path=/story/plugin-command--remote"
       );
+      eventBus.$emit(Bus.ToastBar.start, {
+        message: `
+        <p>not found remote plugin</p>
+        <a style="color: white;" href="https://vuerd.github.io/vuerd-docs/?path=/story/plugin-command--remote" target="_blank">document</a>
+        `,
+        millisecond: 0
+      });
       this.currentRemote = {
         name: "example",
         async findTreeBy(): Promise<Tree> {

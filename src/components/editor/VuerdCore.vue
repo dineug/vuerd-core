@@ -239,11 +239,6 @@ export default class VuerdCore extends Vue {
 
   // ==================== Life Cycle ====================
   private created() {
-    pluginManagement.themeLoad(this.themeName);
-    pluginManagement.iconLoad(this.iconName);
-    pluginManagement.remoteLoad(this.remoteName);
-
-    treeStore.commit(Commit.folderInit);
     eventBus.$on(Bus.VuerdCore.sidebarStart, this.onSidebarStart);
     eventBus.$on(Bus.VuerdCore.sidebarEnd, this.onSidebarEnd);
     eventBus.$on(Bus.VuerdCore.changeTheme, this.onChangeTheme);
@@ -252,6 +247,12 @@ export default class VuerdCore extends Vue {
   }
 
   private mounted() {
+    pluginManagement.themeLoad(this.themeName);
+    pluginManagement.iconLoad(this.iconName);
+    pluginManagement.remoteLoad(this.remoteName);
+
+    treeStore.commit(Commit.folderInit);
+
     this.subResizeMovement = this.resize$.subscribe(this.onResizeMovement);
     this.subResize = this.resize$.subscribe(this.onResize);
     window.dispatchEvent(new Event("resize"));
