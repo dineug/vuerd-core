@@ -133,7 +133,7 @@ class PluginManagement {
       eventBus.$emit(Bus.ToastBar.start, {
         message: `
         <p>not found remote plugin</p>
-        <a style="color: white;" href="https://vuerd.github.io/vuerd-docs/?path=/story/plugin-command--remote" target="_blank">document</a>
+        <a style="color: ${this.theme.color.font};" href="https://vuerd.github.io/vuerd-docs/?path=/story/plugin-command--remote" target="_blank">document</a>
         `,
         millisecond: 0
       });
