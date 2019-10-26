@@ -21,7 +21,6 @@
       :menus="menus"
       :x="contextmenuX"
       :y="contextmenuY"
-      :scope="contextmenuScope"
     )
 </template>
 
@@ -34,11 +33,12 @@ import {
 import treeStore, { Commit, Tree, TreeSelect } from "@/store/tree";
 import viewStore, { View, Commit as ViewCommit } from "@/store/view";
 import themeStore, { State as ThemeState } from "@/store/theme";
-import contextmenuStore, { Menu, Scope } from "@/store/contextmenu";
+import contextmenuStore, { Menu } from "@/store/contextmenu";
 import { findById, selectParentTrees, path } from "@/store/tree/treeHelper";
 import Key from "@/models/Key";
 import eventBus, { Bus } from "@/ts/EventBus";
 import { log } from "@/ts/util";
+import MenuModel from "@/models/MenuModel";
 import pluginManagement from "@/plugin/PluginManagement";
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Title from "./Title.vue";
@@ -106,12 +106,20 @@ export default class Explorer extends Vue {
     return treeStore.state.renameTree;
   }
 
-  get menus(): Array<Menu<TreeSelect[]>> {
+  get menus(): Array<Menu<TreeSelect[] | string[]>> {
+    if (
+      pluginManagement.remote.option &&
+      pluginManagement.remote.option.explorerContextmenu
+    ) {
+      const list = [...contextmenuStore.state.explorer] as Array<
+        Menu<TreeSelect[] | string[]>
+      >;
+      pluginManagement.remote.option.explorerContextmenu.forEach(value => {
+        list.push(new MenuModel(value));
+      });
+      return list;
+    }
     return contextmenuStore.state.explorer;
-  }
-
-  get contextmenuScope(): Scope {
-    return Scope.explorer;
   }
 
   get lastSelect(): TreeSelect | null {

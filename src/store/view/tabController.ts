@@ -3,7 +3,7 @@ import { Tree } from "@/store/tree";
 import { addView, deleteByView, resetSize, tabGroups } from "./viewHelper";
 import { log, isData, getDataIndex, getData } from "@/ts/util";
 import eventBus, { Bus } from "@/ts/EventBus";
-import TreeToTab from "@/models/TreeToTab";
+import TabModel from "@/models/TabModel";
 import { viewFocusStart } from "./viewController";
 
 export function tabClose(state: State, payload: { view: View; tab: Tab }) {
@@ -119,14 +119,14 @@ export function tabAdd(state: State, tree: Tree) {
   log.debug("tabController tabAdd");
   if (state.viewFocus) {
     if (isData(state.viewFocus.tabs, tree.id)) {
-      state.viewFocus.tabs.push(new TreeToTab(tree));
+      state.viewFocus.tabs.push(new TabModel(tree));
     }
     state.viewFocus.tabs.forEach(
       (tab: Tab) => (tab.active = tab.id === tree.id)
     );
   } else {
     state.container.children.push(
-      addView(state.container, [new TreeToTab(tree)])
+      addView(state.container, [new TabModel(tree)])
     );
     resetSize(state.container);
   }
@@ -140,7 +140,7 @@ export function tabAddPreviewStart(state: State, tree: Tree) {
       if (state.tabPreview) {
         state.tabPreview.setTree(tree);
       } else {
-        const tab: Tab = new TreeToTab(tree);
+        const tab: Tab = new TabModel(tree);
         state.viewFocus.tabs.push(tab);
         const tabPreview = tab as TabView;
         tabPreview.view = state.viewFocus;
@@ -151,7 +151,7 @@ export function tabAddPreviewStart(state: State, tree: Tree) {
       (tab: Tab) => (tab.active = tab.id === tree.id)
     );
   } else {
-    const tab: Tab = new TreeToTab(tree);
+    const tab: Tab = new TabModel(tree);
     const view = addView(state.container, [tab]);
     state.container.children.push(view);
     const tabPreview = tab as TabView;

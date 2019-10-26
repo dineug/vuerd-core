@@ -54,6 +54,17 @@ export interface Remote {
   save(treeSaves: TreeSave[]): Promise<void>;
   deleteByPaths(paths: string[]): Promise<void>;
   move(treeMove: TreeMove): Promise<void>;
+  option?: RemoteOption;
+}
+
+export interface RemoteOption {
+  explorerContextmenu?: ExplorerContextmenu[];
+}
+
+export interface ExplorerContextmenu {
+  name: string;
+  children?: ExplorerContextmenu[];
+  execute?(selectPaths: string[]): void;
 }
 
 export interface Tree {

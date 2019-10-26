@@ -1,3 +1,5 @@
+import {MenuType} from '@/store/contextmenu' import {MenuType} from
+'@/store/contextmenu' import {MenuType} from '@/store/contextmenu'
 <template lang="pug">
   .contextmenu
     ul(:style="`top: ${y}px; left: ${x}px; background-color: ${theme.contextmenu};`" ref="ul")
@@ -18,16 +20,16 @@
       :menus="currentMenu.children"
       :x="childrenX"
       :y="childrenY"
-      :scope="scope"
     )
 </template>
 
 <script lang="ts">
 import themeStore, { State as ThemeState } from "@/store/theme";
-import { Menu, Scope } from "@/store/contextmenu";
+import { Menu, MenuType } from "@/store/contextmenu";
 import treeStore from "@/store/tree";
 import { log } from "@/ts/util";
 import eventBus, { Bus } from "@/ts/EventBus";
+import { path } from "@/store/tree/treeHelper";
 import { Component, Prop, Vue } from "vue-property-decorator";
 import MDIcon from "./MDIcon.vue";
 
@@ -45,25 +47,28 @@ export default class Contextmenu extends Vue {
   private y!: number;
   @Prop({ type: Array, default: () => [] })
   private menus!: Array<Menu<any>>;
-  @Prop({ type: String, default: "" })
-  private scope!: Scope;
 
   private windowHeight: number = window.innerHeight;
   private currentMenu: Menu<any> | null = null;
 
   get getMenus(): Array<Menu<any>> {
     let menus = this.menus;
-    switch (this.scope) {
-      case Scope.explorer:
-        if (treeStore.state.selects.length === 0) {
-          menus = [];
-          this.menus.forEach((menu: Menu<any>) => {
-            if (!menu.option || !menu.option.selectOnly) {
-              menus.push(menu);
-            }
-          });
+    if (
+      menus.length !== 0 &&
+      menus[0].type === MenuType.explorer &&
+      treeStore.state.selects.length === 0
+    ) {
+      const reMenus: Array<Menu<any>> = [];
+      menus.forEach(menu => {
+        if (menu.type === MenuType.explorer) {
+          if (!menu.option || !menu.option.selectOnly) {
+            reMenus.push(menu);
+          }
+        } else {
+          reMenus.push(menu);
         }
-        break;
+      });
+      menus = reMenus;
     }
     return menus;
   }
@@ -95,13 +100,21 @@ export default class Contextmenu extends Vue {
   private onExecute(menu: Menu<any>) {
     log.debug("Contextmenu onExecute");
     if (!menu.children && menu.execute && typeof menu.execute === "function") {
-      switch (this.scope) {
-        case Scope.explorer:
+      switch (menu.type) {
+        case MenuType.explorer:
           menu.execute(treeStore.state.selects);
           eventBus.$emit(Bus.Explorer.contextmenuEnd);
           break;
+        case MenuType.explorerRemote:
+          const paths: string[] = [];
+          treeStore.state.selects.forEach(value => {
+            paths.push(path(value));
+          });
+          menu.execute(paths);
+          eventBus.$emit(Bus.Explorer.contextmenuEnd);
+          break;
         default:
-          menu.execute(null);
+          menu.execute();
           break;
       }
     }

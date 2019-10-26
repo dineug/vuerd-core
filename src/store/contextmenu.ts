@@ -12,19 +12,20 @@ export interface State {
 export interface Menu<T> {
   readonly id: string;
   name: string;
+  type: MenuType | string;
   keymap?: string;
   children?: Array<Menu<T>>;
   option?: Option;
-
-  execute?(arg: T | null): void;
+  execute?(arg?: T): void;
 }
 
 export interface Option {
   selectOnly?: boolean;
 }
 
-export const enum Scope {
-  explorer = "explorer"
+export const enum MenuType {
+  explorer = "explorer",
+  explorerRemote = "explorerRemote"
 }
 
 export const enum Commit {}

@@ -2,7 +2,7 @@ import { Tree } from "@/store/tree";
 import { Tab } from "@/store/view";
 import { path } from "@/store/tree/treeHelper";
 
-export default class TreeToTab implements Tab {
+export default class TabModel implements Tab {
   public active: boolean;
   private tree: Tree;
 

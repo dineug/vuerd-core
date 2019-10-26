@@ -95,7 +95,6 @@ class PluginManagement {
         value.parent.$data.color = themeStore.getters.color;
       });
     });
-    eventBus.$emit(Bus.VuerdCore.changeTheme);
   }
 
   public iconLoad(iconName: string) {
@@ -110,7 +109,6 @@ class PluginManagement {
         this.currentIcon = icon;
       }
     }
-    eventBus.$emit(Bus.VuerdCore.changeIcon);
   }
 
   public editorLoad(view: View, tab: Tab) {
@@ -165,7 +163,6 @@ class PluginManagement {
       if (result) {
         this.currentRemote = remotes[remotes.length - 1];
       }
-      eventBus.$emit(Bus.VuerdCore.changeRemote);
     }
   }
 

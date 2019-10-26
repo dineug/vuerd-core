@@ -103,6 +103,7 @@ export default class Plugin extends Vue {
   private onTheme(theme: Theme) {
     log.debug("Plugin onTheme");
     pluginManagement.themeLoad(theme.name);
+    eventBus.$emit(Bus.VuerdCore.changeTheme);
     this.$nextTick(() => {
       this.$forceUpdate();
     });

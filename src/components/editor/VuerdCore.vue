@@ -35,7 +35,7 @@ import activityBarStore, {
   Commit as ActivityBarCommit
 } from "@/store/activityBar";
 import pluginManagement from "@/plugin/PluginManagement";
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Watch, Vue } from "vue-property-decorator";
 import TitleBar from "./TitleBar.vue";
 import ActivityBar from "./ActivityBar.vue";
 import Sidebar from "./Sidebar.vue";
@@ -102,6 +102,21 @@ export default class VuerdCore extends Vue {
 
   get activeMenu(): ActivityMenu | null {
     return activityBarStore.state.activeMenu;
+  }
+
+  @Watch("themeName")
+  private watchThemeName(value: string) {
+    pluginManagement.themeLoad(value);
+  }
+
+  @Watch("iconName")
+  private watchIconName(value: string) {
+    pluginManagement.iconLoad(value);
+  }
+
+  @Watch("remoteName")
+  private watchRemoteName(value: string) {
+    pluginManagement.remoteLoad(value);
   }
 
   // ==================== Event Handler ===================
