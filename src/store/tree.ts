@@ -42,6 +42,7 @@ export interface Tree {
   parent: Tree | null;
   children?: Tree[];
   value?: string;
+  edit: boolean;
 }
 
 export interface TreeSelect extends Tree {

@@ -172,23 +172,23 @@ export function loaded(
     instance.parent.$data.redo = undoRedo.hasRedo();
   }
   instance.parent.$on("change", (value: string) => {
-    addUndoRedo(editor, editors, tabView, value, instance.parent.$data.value);
-    editors.forEach(target => {
-      if (target.tab.id === tabView.id) {
-        target.parent.$data.value = value;
-        target.tab.value = value;
-      }
-    });
+    editorDataSync(
+      editor,
+      editors,
+      tabView,
+      value,
+      instance.parent.$data.value
+    );
     viewStore.commit(ViewCommit.tabAddPreviewEnd);
   });
   instance.parent.$on("input", (value: string) => {
-    addUndoRedo(editor, editors, tabView, value, instance.parent.$data.value);
-    editors.forEach(target => {
-      if (target.tab.id === tabView.id) {
-        target.parent.$data.value = value;
-        target.tab.value = value;
-      }
-    });
+    editorDataSync(
+      editor,
+      editors,
+      tabView,
+      value,
+      instance.parent.$data.value
+    );
   });
   instance.parent.$on("undo", () => {
     if (editor.option && editor.option.undoManager) {
@@ -251,6 +251,23 @@ function addUndoRedo(
       }
     });
   }
+}
+
+function editorDataSync(
+  editor: Editor,
+  editors: EditorInstance[],
+  tabView: TabView,
+  newValue: string,
+  oldValue: string
+) {
+  addUndoRedo(editor, editors, tabView, newValue, oldValue);
+  editors.forEach(target => {
+    if (target.tab.id === tabView.id) {
+      target.parent.$data.value = newValue;
+      target.tab.value = newValue;
+      target.tab.edit = true;
+    }
+  });
 }
 
 function instanceReset(component: Component, selector: string) {

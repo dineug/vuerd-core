@@ -84,7 +84,8 @@ export function folderCreateStart(state: State, targetTree: Tree | null) {
     name: "",
     open: false,
     parent: null,
-    children: []
+    children: [],
+    edit: true
   };
   if (targetTree) {
     if (targetTree.children) {

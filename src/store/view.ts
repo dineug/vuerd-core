@@ -58,6 +58,7 @@ export interface Tab {
   name: string;
   active: boolean;
   value?: string;
+  edit: boolean;
 
   setTree(tree: Tree): void;
 }

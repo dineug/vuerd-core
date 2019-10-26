@@ -1,6 +1,6 @@
 import { SIZE_TREE_HEIGHT } from "@/ts/layout";
 import { Tree, TreeSelect } from "@/store/tree";
-import { Tree as TreeModel } from "@/types";
+import { Tree as TreeModel, TreeSave } from "@/types";
 import { log, isData, getData, uuid } from "@/ts/util";
 
 export function findById(container: Tree, id: string): Tree | null {
@@ -324,7 +324,8 @@ export function modelToTree(treeModel: TreeModel): Tree {
     id: uuid(),
     parent: null,
     name: treeModel.name,
-    open: treeModel.open
+    open: treeModel.open,
+    edit: false
   };
   if (treeModel.children) {
     tree.children = [];
@@ -355,4 +356,28 @@ export function selectParentTrees(selects: TreeSelect[]): TreeSelect[] {
 
 function selectSortTopASC(a: TreeSelect, b: TreeSelect) {
   return a.top - b.top;
+}
+
+export function treeEdits(tree: Tree, treeSaves: TreeSave[] = []): TreeSave[] {
+  if (tree.edit) {
+    treeSaves.push({
+      oldPath: null,
+      path: path(tree),
+      name: tree.name,
+      value: tree.value
+    });
+  }
+  if (tree.children) {
+    tree.children.forEach(value => treeEdits(value, treeSaves));
+  }
+  return treeSaves;
+}
+
+export function treeEditAllEnd(tree: Tree) {
+  if (tree.edit) {
+    tree.edit = false;
+  }
+  if (tree.children) {
+    tree.children.forEach(value => treeEditAllEnd(value));
+  }
 }

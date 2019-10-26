@@ -15,10 +15,12 @@ enum Key {
   Enter = "Enter",
   Delete = "Delete",
   Tab = "Tab",
+  Control = "Control",
   ArrowUp = "ArrowUp",
   ArrowRight = "ArrowRight",
   ArrowDown = "ArrowDown",
-  ArrowLeft = "ArrowLeft"
+  ArrowLeft = "ArrowLeft",
+  KeyS = "KeyS"
 }
 
 export default Key;

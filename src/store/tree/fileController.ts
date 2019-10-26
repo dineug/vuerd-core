@@ -140,6 +140,7 @@ export function fileRenameEnd(state: State) {
                 state.selects.push(
                   treeToSelect(trees[index], index * SIZE_TREE_HEIGHT)
                 );
+                trees[index].edit = false;
               }
             }
           })
@@ -175,7 +176,8 @@ export function fileCreateStart(state: State, targetTree: Tree | null) {
     id: uuid(),
     name: "",
     parent: null,
-    value: ""
+    value: "",
+    edit: true
   };
   if (targetTree) {
     if (targetTree.children) {
@@ -205,7 +207,8 @@ export function fileCreateStart(state: State, targetTree: Tree | null) {
           name: "",
           open: false,
           parent: null,
-          children: []
+          children: [],
+          edit: true
         };
         const parent = state.container;
         parent.open = true;

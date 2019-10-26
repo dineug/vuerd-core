@@ -6,6 +6,7 @@ const init: Tree = {
   name: "",
   open: true,
   parent: null,
-  children: []
+  children: [],
+  edit: true
 };
 export default init;

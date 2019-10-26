@@ -33,11 +33,14 @@ Vue.use(VuerdCore);
   - [x] Editor
   - [x] Theme
 - Usage API
-  - [ ] Event
-  - [ ] Config Data
+  - [x] Event
+  - [x] Config Data
   - [ ] TitleBar
   - [ ] Sidebar
   - [ ] Statusbar
   - [ ] ActivityBar
   - [ ] EditorBottom
-  - [ ] Contextmenu
+  - [x] Contextmenu
+
+## License
+[MIT](https://github.com/vuerd/vuerd-core/blob/master/LICENSE)

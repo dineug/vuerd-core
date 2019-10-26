@@ -1,7 +1,7 @@
 import { State } from "../store";
 import { Editor } from "@/types";
 import viewStore, { View, Tab, TabView, Commit } from "@/store/view";
-import { loaded } from "./handler";
+import { loaded } from "./helper";
 import { log } from "@/ts/util";
 import pluginManagement from "@/plugin/PluginManagement";
 import eventBus, { Bus } from "@/ts/EventBus";

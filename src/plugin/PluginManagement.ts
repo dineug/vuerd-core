@@ -2,7 +2,7 @@ import { Component } from "vue";
 import { Store } from "vuex";
 import { Commit, State } from "./store";
 import { View, Tab } from "@/store/view";
-import { getEditor, getDataset } from "./store/handler";
+import { getEditor, getDataset } from "./store/helper";
 import { Tree, TreeSave, TreeMove, Theme, Icon, Remote } from "@/types";
 import themeStore, { Commit as ThemeCommit } from "@/store/theme";
 import { log } from "@/ts/util";

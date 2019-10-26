@@ -35,6 +35,8 @@ import activityBarStore, {
   Commit as ActivityBarCommit
 } from "@/store/activityBar";
 import pluginManagement from "@/plugin/PluginManagement";
+import Key from "@/models/Key";
+import { treeEditAllEnd, treeEdits } from "@/store/tree/treeHelper";
 import { Component, Prop, Watch, Vue } from "vue-property-decorator";
 import TitleBar from "./TitleBar.vue";
 import ActivityBar from "./ActivityBar.vue";
@@ -93,8 +95,13 @@ export default class VuerdCore extends Vue {
   };
 
   private resize$: Observable<Event> = fromEvent(window, "resize");
+  private keydown$: Observable<KeyboardEvent> = fromEvent<KeyboardEvent>(
+    window,
+    "keydown"
+  );
   private subResize!: Subscription;
   private subResizeMovement!: Subscription;
+  private subKeydown!: Subscription;
 
   get theme(): ThemeState {
     return themeStore.state;
@@ -250,6 +257,24 @@ export default class VuerdCore extends Vue {
     this.$emit("changeRemote", pluginManagement.remote.name);
   }
 
+  private onKeydown(event: KeyboardEvent) {
+    if (event.ctrlKey && event.code === Key.KeyS) {
+      // Ctrl + S
+      event.preventDefault();
+      pluginManagement.remote
+        .save(treeEdits(treeStore.state.container))
+        .then(() => {
+          treeEditAllEnd(treeStore.state.container);
+        })
+        .catch(err => {
+          log.error(err);
+          eventBus.$emit(Bus.ToastBar.start, {
+            message: err.toString()
+          });
+        });
+    }
+  }
+
   // ==================== Event Handler END ===================
 
   // ==================== Life Cycle ====================
@@ -259,6 +284,8 @@ export default class VuerdCore extends Vue {
     eventBus.$on(Bus.VuerdCore.changeTheme, this.onChangeTheme);
     eventBus.$on(Bus.VuerdCore.changeIcon, this.onChangeIcon);
     eventBus.$on(Bus.VuerdCore.changeRemote, this.onChangeRemote);
+
+    this.subKeydown = this.keydown$.subscribe(this.onKeydown);
   }
 
   private mounted() {
@@ -276,6 +303,7 @@ export default class VuerdCore extends Vue {
   private destroyed() {
     this.subResize.unsubscribe();
     this.subResizeMovement.unsubscribe();
+    this.subKeydown.unsubscribe();
     eventBus.destroyed();
   }
 

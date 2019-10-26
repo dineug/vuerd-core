@@ -33,7 +33,7 @@ export default class TextEditor extends Vue {
 
   private onChange(event: Event) {
     const textarea = event.target as HTMLTextAreaElement;
-    this.$emit("change", textarea.value);
+    // this.$emit("change", textarea.value);
   }
 
   private onInput(event: Event) {

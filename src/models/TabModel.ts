@@ -33,6 +33,14 @@ export default class TabModel implements Tab {
     }
   }
 
+  get edit(): boolean {
+    return this.tree.edit;
+  }
+
+  set edit(value: boolean) {
+    this.tree.edit = value;
+  }
+
   get path(): string {
     return path(this.tree);
   }

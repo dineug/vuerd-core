@@ -33,7 +33,10 @@
           @input="onInputName($event, node)"
           @blur="onRenameEnd"
         )
-        span.name(v-else) {{node.name}}
+        span.name(
+          v-else
+          :style="node.edit ? 'color: #ff5c5c;' : ''"
+        ) {{node.name}}
       transition(
         @before-enter="onBeforeEnter"
         @enter="onEnter"
