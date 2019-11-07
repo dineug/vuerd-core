@@ -100,11 +100,10 @@ export interface Option {
 
 export type LogLevel = "debug";
 
-export declare function use(plugin: Plugin): void;
-
-export interface Plugin {
-  install(command: Command): void;
+export interface Plugin<T> {
+  install(command: Command, option?: T): void;
 }
+export declare function use<T>(plugin: Plugin<T>, option?: T): void;
 
 declare const _default: {
   install: typeof install;

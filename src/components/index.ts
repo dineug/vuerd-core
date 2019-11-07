@@ -19,8 +19,8 @@ const VuerdCore = {
     }
     Vue.component("VuerdCore", _VuerdCore);
   },
-  use(plugin: Plugin) {
-    plugin.install(new Command());
+  use<T>(plugin: Plugin<T>, option?: T) {
+    plugin.install(new Command(), option);
   }
 };
 
