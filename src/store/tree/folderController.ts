@@ -148,6 +148,7 @@ export function folderInit(state: State) {
     .then((rootTree: TreeModel) => {
       const root = modelToTree(rootTree);
       setParent(root, root.children);
+      orderByNameASC(root);
       root.parent = state.container;
       state.container.children = [root];
     })
