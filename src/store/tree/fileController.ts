@@ -96,28 +96,11 @@ export function fileRenameEnd(state: State) {
       state.oldRename = null;
     } else {
       if (state.renameTree.parent && state.renameTree.parent.children) {
-        const folders: Tree[] = [];
-        const files: Tree[] = [];
-        state.renameTree.parent.children.forEach((tree: Tree) => {
-          if (tree.children) {
-            folders.push(tree);
-          } else {
-            files.push(tree);
-          }
-        });
-        if (state.renameTree.children) {
-          state.renameTree.name = autoName(
-            folders,
-            state.renameTree.id,
-            state.renameTree.name
-          );
-        } else {
-          state.renameTree.name = autoName(
-            files,
-            state.renameTree.id,
-            state.renameTree.name
-          );
-        }
+        state.renameTree.name = autoName(
+          state.renameTree.parent.children,
+          state.renameTree.id,
+          state.renameTree.name
+        );
         let oldPath: string | null = null;
         if (state.oldRename !== null) {
           oldPath = pathOld(state.renameTree, state.oldRename);
