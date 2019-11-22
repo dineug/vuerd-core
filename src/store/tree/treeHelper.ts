@@ -209,7 +209,11 @@ export function move(
   if (folder.children && folder.id !== currentTree.id) {
     if (isData(selects, currentTree.id)) {
       // single
-      if (!findByTree(currentTree, folder)) {
+      if (
+        !findByTree(currentTree, folder) &&
+        folder.children.filter(value => value.name === currentTree.name)
+          .length === 0
+      ) {
         deleteByTree(currentTree);
         folder.children.push(currentTree);
         currentTree.parent = folder;
@@ -223,13 +227,16 @@ export function move(
           i--;
         }
       }
-      selects.forEach((treeSelect: TreeSelect) => {
-        if (folder.children) {
+      for (const treeSelect of selects) {
+        if (
+          folder.children.filter(value => value.name === treeSelect.name)
+            .length === 0
+        ) {
           deleteByTree(treeSelect as Tree);
           folder.children.push(treeSelect as Tree);
           treeSelect.parent = folder;
         }
-      });
+      }
       orderByNameASC(folder);
       selects = [];
     }
@@ -246,14 +253,23 @@ export function movePaths(
   if (folder.children && folder.id !== currentTree.id) {
     if (isData(selects, currentTree.id)) {
       // single
-      if (!findByTree(currentTree, folder)) {
+      if (
+        !findByTree(currentTree, folder) &&
+        folder.children.filter(value => value.name === currentTree.name)
+          .length === 0
+      ) {
         paths.push(path(currentTree));
       }
     } else {
       // select
-      selects.forEach((treeSelect: TreeSelect) => {
-        paths.push(path(treeSelect));
-      });
+      for (const treeSelect of selects) {
+        if (
+          folder.children.filter(value => value.name === treeSelect.name)
+            .length === 0
+        ) {
+          paths.push(path(treeSelect));
+        }
+      }
     }
   }
   return paths;

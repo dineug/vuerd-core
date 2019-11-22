@@ -28,7 +28,7 @@ export function folderMove(state: State) {
       pluginManagement.remote
         .move({
           fromPaths,
-          toPath: path(state.folder)
+          toPath: path(folder)
         })
         .then(() => {
           state.selects = move(selects, folder, currentTree);
