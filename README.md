@@ -25,8 +25,10 @@ Vue.use(VuerdCore);
 ```
 
 ## Plugin
-- [vuerd-plugin-erd](https://github.com/vuerd/vuerd-plugin-erd)
-- [vuerd-plugin-tui.editor](https://github.com/vuerd/vuerd-plugin-tui.editor)
+| Project | Status | Description
+| --- | --- | --- |
+| [vuerd-plugin-erd](https://github.com/vuerd/vuerd-plugin-erd) | [![Build Status](https://travis-ci.com/vuerd/vuerd-plugin-erd.svg?branch=master)](https://travis-ci.com/vuerd/vuerd-plugin-erd) | ERD Editor |
+| [vuerd-plugin-tui.editor](https://github.com/vuerd/vuerd-plugin-tui.editor) | [![Build Status](https://travis-ci.com/vuerd/vuerd-plugin-tui.editor.svg?branch=master)](https://travis-ci.com/vuerd/vuerd-plugin-tui.editor) | Markdown WYSIWYG Editor |
 
 ## Development Status Prototype
 ### TODO
