@@ -2,7 +2,7 @@ import { Menu, MenuType } from "@/store/contextmenu";
 import { uuid } from "@/ts/util";
 import { ExplorerContextmenu } from "@/types";
 
-export default class MenuModel implements Menu<string[]> {
+export default class ExplorerMenuModel implements Menu<string[]> {
   readonly id: string = uuid();
   public name: string;
   public type: MenuType;
@@ -16,7 +16,7 @@ export default class MenuModel implements Menu<string[]> {
       this.children = [];
       explorerContextmenu.children.forEach(value => {
         if (this.children) {
-          this.children.push(new MenuModel(value));
+          this.children.push(new ExplorerMenuModel(value));
         }
       });
     } else {

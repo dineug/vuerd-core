@@ -1,5 +1,5 @@
 <template lang="pug">
-  .explorer(:style="`height: ${height}px; border-color: ${subKeydown !== null ? theme.active : theme.sidebar};`")
+  .explorer(:style="explorerStyle")
     Title(name="Explorer")
     Title(name="OPEN FILES")
     .content
@@ -38,7 +38,7 @@ import { findById, selectParentTrees, path } from "@/store/tree/treeHelper";
 import Key from "@/models/Key";
 import eventBus, { Bus } from "@/ts/EventBus";
 import { log } from "@/ts/util";
-import MenuModel from "@/models/MenuModel";
+import ExplorerMenuModel from "@/models/ExplorerMenuModel";
 import pluginManagement from "@/plugin/PluginManagement";
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Title from "./Title.vue";
@@ -84,6 +84,15 @@ export default class Explorer extends Vue {
   private contextmenuX: number = 0;
   private contextmenuY: number = 0;
 
+  get explorerStyle(): string {
+    return `
+    height: ${this.height}px;
+    border-color: ${
+      this.subKeydown !== null ? this.theme.active : this.theme.sidebar
+    };
+    `;
+  }
+
   get height(): number {
     return (
       this.windowHeight - SIZE_TITLEBAR_HEIGHT - SIZE_STATUSBAR_HEIGHT - BORDER
@@ -108,6 +117,7 @@ export default class Explorer extends Vue {
 
   get menus(): Array<Menu<TreeSelect[] | string[]>> {
     if (
+      pluginManagement.remote &&
       pluginManagement.remote.option &&
       pluginManagement.remote.option.explorerContextmenu
     ) {
@@ -115,7 +125,7 @@ export default class Explorer extends Vue {
         Menu<TreeSelect[] | string[]>
       >;
       pluginManagement.remote.option.explorerContextmenu.forEach(value => {
-        list.push(new MenuModel(value));
+        list.push(new ExplorerMenuModel(value));
       });
       return list;
     }

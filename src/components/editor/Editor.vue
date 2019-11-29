@@ -1,6 +1,6 @@
 <template lang="pug">
   .editor(
-    :style="`width: ${width}px; height: ${height}px; background-color: ${theme.editor};`"
+    :style="editorStyle"
     @dragover="onDragover"
     @drop="onDrop"
   )
@@ -43,6 +43,14 @@ export default class Editor extends Vue {
     "dragover"
   );
   private subDragover: Subscription | null = null;
+
+  get editorStyle(): string {
+    return `
+    width: ${this.width}px;
+    height: ${this.height}px;
+    background-color: ${this.theme.editor};
+    `;
+  }
 
   get container(): View {
     return viewStore.state.container;

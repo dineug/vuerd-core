@@ -23,7 +23,7 @@ export default class ActivityBar extends Vue {
 
 <style scoped lang="scss">
 .activitybar {
-  width: $size-activitybar-width;
+  width: $size-activity-bar-width;
   height: 100%;
   position: absolute;
 

@@ -38,7 +38,7 @@ Vue.use(VuerdCore);
 - Usage API
   - [x] Event
   - [x] Config Data
-  - [ ] TitleBar
+  - [x] TitleBar
   - [ ] Sidebar
   - [ ] Statusbar
   - [ ] ActivityBar

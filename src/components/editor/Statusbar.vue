@@ -1,5 +1,5 @@
 <template lang="pug">
-  .statusbar(:style="`color: ${theme.font}; background-color: ${theme.statusbar};`")
+  .statusbar(:style="statusbarStyle")
 </template>
 
 <script lang="ts">
@@ -8,6 +8,12 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class Statusbar extends Vue {
+  get statusbarStyle(): string {
+    return `
+    color: ${this.theme.font};
+    background-color: ${this.theme.statusbar};
+    `;
+  }
   get theme(): ThemeState {
     return themeStore.state;
   }

@@ -25,7 +25,8 @@ export interface Option {
 
 export const enum MenuType {
   explorer = "explorer",
-  explorerRemote = "explorerRemote"
+  explorerRemote = "explorerRemote",
+  titleBarRemote = "titleBarRemote"
 }
 
 export const enum Commit {}

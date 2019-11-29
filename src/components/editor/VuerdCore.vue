@@ -285,14 +285,14 @@ export default class VuerdCore extends Vue {
     eventBus.$on(Bus.VuerdCore.changeIcon, this.onChangeIcon);
     eventBus.$on(Bus.VuerdCore.changeRemote, this.onChangeRemote);
 
-    this.subKeydown = this.keydown$.subscribe(this.onKeydown);
-  }
-
-  private mounted() {
     pluginManagement.themeLoad(this.themeName);
     pluginManagement.iconLoad(this.iconName);
     pluginManagement.remoteLoad(this.remoteName);
 
+    this.subKeydown = this.keydown$.subscribe(this.onKeydown);
+  }
+
+  private mounted() {
     treeStore.commit(Commit.folderInit);
 
     this.subResizeMovement = this.resize$.subscribe(this.onResizeMovement);
@@ -324,7 +324,7 @@ export default class VuerdCore extends Vue {
   .workspace {
     height: 100%;
     position: relative;
-    left: $size-activitybar-width;
+    left: $size-activity-bar-width;
     overflow: hidden;
   }
 

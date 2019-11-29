@@ -1,6 +1,12 @@
 import Vue from "vue";
 import VuerdCore from "@/components";
-import { Command, Tree, TreeMove, TreeSave } from "@/types";
+import {
+  Command,
+  Tree,
+  TreeMove,
+  TreeSave,
+  TitleBarContextmenu
+} from "@/types";
 import { log } from "@/ts/util";
 
 const dataList: Array<{ path: string; value: string }> = [
@@ -101,6 +107,67 @@ async function move(treeMove: TreeMove): Promise<void> {
   log.debug(`tree move`, treeMove);
 }
 
+const titleBarContextmenu: TitleBarContextmenu[] = [
+  {
+    name: "File",
+    execute(): void {
+      alert("test");
+    }
+  },
+  {
+    name: "test2",
+    execute(): void {
+      alert("test2");
+    }
+  },
+  {
+    name: "test3",
+    children: [
+      {
+        name: "test4",
+        execute(): void {
+          alert("test4");
+        }
+      },
+      {
+        name: "test5",
+        execute(): void {
+          alert("test5");
+        }
+      },
+      {
+        name: "test6",
+        execute(): void {
+          alert("test6");
+        }
+      },
+      {
+        name: "test7",
+        children: [
+          {
+            name: "test4",
+            execute(): void {
+              alert("test4");
+            }
+          },
+          {
+            name: "test5",
+            execute(): void {
+              alert("test5");
+            }
+          },
+          {
+            name: "test6",
+            execute(): void {
+              alert("test6");
+            }
+          }
+        ]
+      }
+    ]
+  }
+];
+
 VuerdCore.use({
   install(command: Command): void {
     command.remoteAdd({
@@ -109,7 +176,10 @@ VuerdCore.use({
       findFileByPath,
       save,
       deleteByPaths,
-      move
+      move,
+      option: {
+        titleBarContextmenu
+      }
     });
   }
 });

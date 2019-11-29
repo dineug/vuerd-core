@@ -1,5 +1,5 @@
 <template lang="pug">
-  .editor-bottom(:style="`height: ${height}px; background-color: ${theme.editor};`")
+  .editor-bottom(:style="editorBottomStyle")
     slot
     Title
 </template>
@@ -17,6 +17,13 @@ import Title from "./EditorBottom/Title.vue";
 export default class EditorBottom extends Vue {
   @Prop({ type: Number, default: 200 })
   private height!: number;
+
+  get editorBottomStyle(): string {
+    return `
+    height: ${this.height}px;
+    background-color: ${this.theme.editor};
+    `;
+  }
 
   get theme(): ThemeState {
     return themeStore.state;

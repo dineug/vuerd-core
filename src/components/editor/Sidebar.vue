@@ -1,6 +1,6 @@
 <template lang="pug">
   .sidebar(
-    :style="`width: ${width}px; background-color: ${theme.sidebar};`"
+    :style="sidebarStyle"
     @dragover="onDragover"
     @drop="onDrop"
   )
@@ -24,6 +24,13 @@ import Plugin from "./Sidebar/Plugin.vue";
 export default class Sidebar extends Vue {
   @Prop({ type: Number, default: 200 })
   private width!: number;
+
+  get sidebarStyle(): string {
+    return `
+    width: ${this.width}px;
+    background-color: ${this.theme.sidebar};
+    `;
+  }
 
   get theme(): ThemeState {
     return themeStore.state;

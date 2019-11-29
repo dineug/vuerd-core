@@ -1,8 +1,6 @@
-import {MenuType} from '@/store/contextmenu' import {MenuType} from
-'@/store/contextmenu' import {MenuType} from '@/store/contextmenu'
 <template lang="pug">
   .contextmenu
-    ul(:style="`top: ${y}px; left: ${x}px; background-color: ${theme.contextmenu};`" ref="ul")
+    ul(:style="contextmenuStyle" ref="ul")
       li(
         v-for="menu in getMenus"
         :key="menu.id"
@@ -50,6 +48,15 @@ export default class Contextmenu extends Vue {
 
   private windowHeight: number = window.innerHeight;
   private currentMenu: Menu<any> | null = null;
+
+  get contextmenuStyle(): string {
+    return `
+    top: ${this.y}px;
+    left: ${this.x}px;
+    color: ${this.theme.font};
+    background-color: ${this.theme.contextmenu};
+    `;
+  }
 
   get getMenus(): Array<Menu<any>> {
     let menus = this.menus;
@@ -133,8 +140,8 @@ export default class Contextmenu extends Vue {
 
   private onMouseleave(event: MouseEvent) {
     const el = event.target as HTMLElement;
-    el.style.color = this.theme.font;
-    el.style.backgroundColor = this.theme.contextmenu;
+    el.style.color = "";
+    el.style.backgroundColor = "";
   }
 }
 </script>
