@@ -99,7 +99,11 @@ export default new Vuex.Store<State>({
   },
   mutations: {
     init(state: State) {
+      const width = state.container.width;
+      const height = state.container.height;
       state.container = init();
+      state.container.width = width;
+      state.container.height = height;
       state.tabDraggable = null;
       state.viewFocus = null;
       state.tabPreview = null;

@@ -37,7 +37,12 @@ async function findFileByPath(path: string): Promise<string> {
   return value;
 }
 
+function delay(timeout = 1000) {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+}
+
 async function findTreeBy(): Promise<Tree> {
+  await delay(300);
   return {
     name: "vuerd-core",
     open: true,
