@@ -16,6 +16,7 @@ import { log, setParent, uuid } from "@/ts/util";
 import Key from "@/models/Key";
 import pluginManagement from "@/plugin/PluginManagement";
 import eventBus, { Bus } from "@/ts/EventBus";
+import viewStore, { Commit as viewCommit } from "@/store/view";
 
 export function folderMove(state: State) {
   log.debug("folderController folderMove");
@@ -146,6 +147,13 @@ export function folderInit(state: State) {
   remote
     .findTreeBy()
     .then((rootTree: TreeModel) => {
+      viewStore.commit(viewCommit.init);
+      state.selects = [];
+      state.folder = null;
+      state.currentTree = null;
+      state.renameTree = null;
+      state.oldRename = null;
+
       const root = modelToTree(rootTree);
       setParent(root, root.children);
       orderByNameASC(root);

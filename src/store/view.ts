@@ -68,6 +68,7 @@ export interface TabView extends Tab {
 }
 
 export const enum Commit {
+  init = "init",
   tabClose = "tabClose",
   tabActive = "tabActive",
   tabActiveAll = "tabActiveAll",
@@ -97,6 +98,13 @@ export default new Vuex.Store<State>({
     tabGroups: (state: State): View[] => tabGroups(state.container)
   },
   mutations: {
+    init(state: State) {
+      state.container = init;
+      state.tabDraggable = null;
+      state.viewFocus = null;
+      state.tabPreview = null;
+      state.explorerFocus = false;
+    },
     tabClose,
     tabActive,
     tabActiveAll,

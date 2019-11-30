@@ -1,6 +1,6 @@
 {
   "name": "vuerd-core",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "Editor Common UI",
   "main": "dist/vuerd-core.common.js",
   "typings": "src/types/index.d.ts",
