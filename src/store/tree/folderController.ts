@@ -17,6 +17,7 @@ import Key from "@/models/Key";
 import pluginManagement from "@/plugin/PluginManagement";
 import eventBus, { Bus } from "@/ts/EventBus";
 import viewStore, { Commit as viewCommit } from "@/store/view";
+import init from "@/data/tree";
 
 export function folderMove(state: State) {
   log.debug("folderController folderMove");
@@ -148,6 +149,7 @@ export function folderInit(state: State) {
     .findTreeBy()
     .then((rootTree: TreeModel) => {
       viewStore.commit(viewCommit.init);
+      state.container = init();
       state.selects = [];
       state.folder = null;
       state.currentTree = null;

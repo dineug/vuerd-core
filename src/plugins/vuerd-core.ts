@@ -110,59 +110,14 @@ async function move(treeMove: TreeMove): Promise<void> {
 const titleBarContextmenu: TitleBarContextmenu[] = [
   {
     name: "File",
-    execute(): void {
-      alert("test");
-    }
-  },
-  {
-    name: "test2",
-    execute(): void {
-      alert("test2");
-    }
-  },
-  {
-    name: "test3",
     children: [
       {
-        name: "test4",
+        name: "Restart",
         execute(): void {
-          alert("test4");
-        }
-      },
-      {
-        name: "test5",
-        execute(): void {
-          alert("test5");
-        }
-      },
-      {
-        name: "test6",
-        execute(): void {
-          alert("test6");
-        }
-      },
-      {
-        name: "test7",
-        children: [
-          {
-            name: "test4",
-            execute(): void {
-              alert("test4");
-            }
-          },
-          {
-            name: "test5",
-            execute(): void {
-              alert("test5");
-            }
-          },
-          {
-            name: "test6",
-            execute(): void {
-              alert("test6");
-            }
+          if (componentInstance.app) {
+            componentInstance.app.onLoad();
           }
-        ]
+        }
       }
     ]
   }
@@ -183,5 +138,9 @@ VuerdCore.use({
     });
   }
 });
+
+export const componentInstance: any = {
+  app: null
+};
 
 Vue.use(VuerdCore);

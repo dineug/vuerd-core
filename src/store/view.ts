@@ -88,7 +88,7 @@ export const enum Commit {
 
 export default new Vuex.Store<State>({
   state: {
-    container: init,
+    container: init(),
     tabDraggable: null,
     viewFocus: null,
     tabPreview: null,
@@ -99,7 +99,7 @@ export default new Vuex.Store<State>({
   },
   mutations: {
     init(state: State) {
-      state.container = init;
+      state.container = init();
       state.tabDraggable = null;
       state.viewFocus = null;
       state.tabPreview = null;

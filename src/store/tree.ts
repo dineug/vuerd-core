@@ -72,7 +72,7 @@ export const enum Commit {
 
 export default new Vuex.Store<State>({
   state: {
-    container: init,
+    container: init(),
     selects: [],
     folder: null,
     currentTree: null,

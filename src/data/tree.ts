@@ -1,12 +1,14 @@
 import { Tree } from "@/store/tree";
 import { uuid } from "@/ts/util";
 
-const init: Tree = {
-  id: uuid(),
-  name: "",
-  open: true,
-  parent: null,
-  children: [],
-  edit: false
-};
+function init(): Tree {
+  return {
+    id: uuid(),
+    name: "",
+    open: true,
+    parent: null,
+    children: [],
+    edit: false
+  };
+}
 export default init;
