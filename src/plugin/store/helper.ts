@@ -67,7 +67,7 @@ function createRegExp(list: Array<string | RegExp>): RegExp[] {
     }
   });
   if (exts.length !== 0) {
-    regExps.push(new RegExp(`\\.(${exts.join("\\")})$`, "i"));
+    regExps.push(new RegExp(`\\.(${exts.join("|")})$`, "i"));
   }
   return regExps;
 }
