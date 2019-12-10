@@ -286,6 +286,17 @@ export function deleteByTree(tree: Tree) {
   }
 }
 
+export function orderAllByNameASC(root: Tree) {
+  if (root.children) {
+    orderByNameASC(root);
+    root.children.forEach((tree: Tree) => {
+      if (tree.children) {
+        orderByNameASC(tree);
+      }
+    });
+  }
+}
+
 export function orderByNameASC(folder: Tree) {
   if (folder.children) {
     const folders: Tree[] = [];

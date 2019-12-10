@@ -8,7 +8,7 @@ export interface ToastBar {
 export default class ToastBarImpl implements ToastBar {
   public id: string = uuid();
   public message: string;
-  public millisecond: number = 3000;
+  public millisecond: number = 4500;
 
   constructor(toastBar: ToastBar) {
     this.message = toastBar.message;

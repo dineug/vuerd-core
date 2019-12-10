@@ -5,6 +5,7 @@ import {
   move,
   movePaths,
   orderByNameASC,
+  orderAllByNameASC,
   childrenArray,
   deleteByTree,
   treeToSelect,
@@ -158,7 +159,7 @@ export function folderInit(state: State) {
 
       const root = modelToTree(rootTree);
       setParent(root, root.children);
-      orderByNameASC(root);
+      orderAllByNameASC(root);
       root.parent = state.container;
       state.container.children = [root];
     })
