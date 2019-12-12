@@ -40,6 +40,7 @@ import Sash from "../Sash.vue";
 import ViewView from "./ViewView.vue";
 
 @Component({
+  name: "ViewContainer",
   components: {
     Sash,
     ViewView

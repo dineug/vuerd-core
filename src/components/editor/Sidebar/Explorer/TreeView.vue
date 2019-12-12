@@ -81,6 +81,7 @@ const PADDING_LEFT = 53 + SIZE_SCROLLBAR;
 const PADDING_DEPTH = 10;
 
 @Component({
+  name: "TreeView",
   components: {
     MDIcon,
     Icon

@@ -34,6 +34,7 @@ import MDIcon from "./MDIcon.vue";
 const MENU_HEIGHT = 39.17;
 
 @Component({
+  name: "Contextmenu",
   components: {
     MDIcon
   }
