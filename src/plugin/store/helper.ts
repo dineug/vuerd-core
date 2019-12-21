@@ -231,13 +231,19 @@ function addUndoRedo(
   newValue: string,
   oldValue: string
 ) {
-  if (editor.option && editor.option.undoManager && newValue !== oldValue) {
+  if (
+    editor.option &&
+    editor.option.undoManager &&
+    newValue !== oldValue &&
+    oldValue.trim() !== ""
+  ) {
     UndoRedoManager.add(tabView.id, {
       undo: () => {
         editors.forEach(target => {
           if (target.tab.id === tabView.id) {
             target.parent.$data.value = oldValue;
             target.tab.value = oldValue;
+            target.tab.edit = true;
           }
         });
       },
@@ -246,6 +252,7 @@ function addUndoRedo(
           if (target.tab.id === tabView.id) {
             target.parent.$data.value = newValue;
             target.tab.value = newValue;
+            target.tab.edit = true;
           }
         });
       }
@@ -265,7 +272,7 @@ function editorDataSync(
     if (target.tab.id === tabView.id) {
       target.parent.$data.value = newValue;
       target.tab.value = newValue;
-      target.tab.edit = true;
+      target.tab.edit = newValue !== oldValue;
     }
   });
 }
