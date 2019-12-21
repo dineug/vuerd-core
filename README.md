@@ -2,7 +2,7 @@
 
 > Editor Common UI
 
-[![npm version](https://img.shields.io/npm/v/vuerd-core.svg)](https://www.npmjs.com/package/vuerd-core) [![Build Status](https://travis-ci.com/vuerd/vuerd-core.svg?branch=master)](https://travis-ci.com/vuerd/vuerd-core) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f394d942408b44fe92e6ec457bc77ca5)](https://www.codacy.com/gh/vuerd/vuerd-core?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=vuerd/vuerd-core&amp;utm_campaign=Badge_Grade)
+[![npm version](https://img.shields.io/npm/v/vuerd-core.svg)](https://www.npmjs.com/package/vuerd-core) [![Build Status](https://travis-ci.com/vuerd/vuerd-core.svg?branch=master)](https://travis-ci.com/vuerd/vuerd-core)
 
 ![vuerd-core](https://user-images.githubusercontent.com/45829489/69156939-8c146b80-0b27-11ea-99ed-6f1b8ce3c3ae.gif)
 
@@ -33,6 +33,7 @@ Vue.use(VuerdCore);
 | --- | --- | --- | --- |
 | [vuerd-plugin-erd](https://github.com/vuerd/vuerd-plugin-erd) | [![npm version](https://img.shields.io/npm/v/vuerd-plugin-erd.svg)](https://www.npmjs.com/package/vuerd-plugin-erd) | [![Build Status](https://travis-ci.com/vuerd/vuerd-plugin-erd.svg?branch=master)](https://travis-ci.com/vuerd/vuerd-plugin-erd) | ERD Editor |
 | [vuerd-plugin-tui.editor](https://github.com/vuerd/vuerd-plugin-tui.editor) | [![npm version](https://img.shields.io/npm/v/vuerd-plugin-tui.editor.svg)](https://www.npmjs.com/package/vuerd-plugin-tui.editor) | [![Build Status](https://travis-ci.com/vuerd/vuerd-plugin-tui.editor.svg?branch=master)](https://travis-ci.com/vuerd/vuerd-plugin-tui.editor) | Markdown WYSIWYG Editor |
+| [vuerd-plugin-summernote](https://github.com/vuerd/vuerd-plugin-summernote) | [![npm version](https://img.shields.io/npm/v/vuerd-plugin-summernote.svg)](https://www.npmjs.com/package/vuerd-plugin-summernote) | [![Build Status](https://travis-ci.com/vuerd/vuerd-plugin-summernote.svg?branch=master)](https://travis-ci.com/vuerd/vuerd-plugin-summernote) | WYSIWYG Editor |
 
 ## Development Status Prototype
 ### TODO
