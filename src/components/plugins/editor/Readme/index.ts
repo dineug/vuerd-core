@@ -6,7 +6,11 @@ import { Command } from "@/types";
 marked.setOptions({
   highlight: function(code: string, lang: string) {
     try {
-      return hljs.highlight(lang, code).value;
+      if (lang !== "") {
+        return hljs.highlight(lang, code).value;
+      } else {
+        return hljs.highlightAuto(code).value;
+      }
     } catch (e) {
       return hljs.highlightAuto(code).value;
     }

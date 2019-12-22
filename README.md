@@ -34,6 +34,7 @@ Vue.use(VuerdCore);
 | [vuerd-plugin-erd](https://github.com/vuerd/vuerd-plugin-erd) | [![npm version](https://img.shields.io/npm/v/vuerd-plugin-erd.svg)](https://www.npmjs.com/package/vuerd-plugin-erd) | [![Build Status](https://travis-ci.com/vuerd/vuerd-plugin-erd.svg?branch=master)](https://travis-ci.com/vuerd/vuerd-plugin-erd) | ERD Editor |
 | [vuerd-plugin-tui.editor](https://github.com/vuerd/vuerd-plugin-tui.editor) | [![npm version](https://img.shields.io/npm/v/vuerd-plugin-tui.editor.svg)](https://www.npmjs.com/package/vuerd-plugin-tui.editor) | [![Build Status](https://travis-ci.com/vuerd/vuerd-plugin-tui.editor.svg?branch=master)](https://travis-ci.com/vuerd/vuerd-plugin-tui.editor) | Markdown WYSIWYG Editor |
 | [vuerd-plugin-summernote](https://github.com/vuerd/vuerd-plugin-summernote) | [![npm version](https://img.shields.io/npm/v/vuerd-plugin-summernote.svg)](https://www.npmjs.com/package/vuerd-plugin-summernote) | [![Build Status](https://travis-ci.com/vuerd/vuerd-plugin-summernote.svg?branch=master)](https://travis-ci.com/vuerd/vuerd-plugin-summernote) | WYSIWYG Editor |
+| [vuerd-plugin-quill](https://github.com/vuerd/vuerd-plugin-quill) | [![npm version](https://img.shields.io/npm/v/vuerd-plugin-quill.svg)](https://www.npmjs.com/package/vuerd-plugin-quill) | [![Build Status](https://travis-ci.com/vuerd/vuerd-plugin-quill.svg?branch=master)](https://travis-ci.com/vuerd/vuerd-plugin-quill) | WYSIWYG Editor |
 
 ## Development Status Prototype
 ### TODO
