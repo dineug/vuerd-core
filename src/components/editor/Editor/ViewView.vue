@@ -1,5 +1,5 @@
 <template lang="pug">
-  .split-view-main(@click="onFocusView")
+  .split-view-main(@click="onFocusView" @mousedown="onMousedown")
     ViewTab(
       :view="view"
       @dragstart="onDragstartTab"
@@ -125,6 +125,11 @@ export default class ViewView extends Vue {
   private onFocusView() {
     log.debug("ViewView onFocusView");
     viewStore.commit(Commit.viewFocusStart, this.view);
+  }
+
+  private onMousedown() {
+    log.debug("ViewView onMousedown");
+    viewStore.commit(Commit.tabAddPreviewEnd);
   }
 
   private onActive(tab?: Tab) {
