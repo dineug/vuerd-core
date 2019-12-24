@@ -1,6 +1,7 @@
 import _Vue, { Component } from "vue";
 
 export interface Editor {
+  name: string;
   component: Component;
   scope: Array<string | RegExp>;
   exclude?: Array<string | RegExp>;

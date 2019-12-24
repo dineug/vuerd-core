@@ -21,7 +21,7 @@
         v-for="editor of editors"
         :key="editor.id"
         @click="onEditor(editor)"
-      ) {{editor.component.name}}
+      ) {{editor.name}}
 </template>
 
 <script lang="ts">

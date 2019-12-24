@@ -20,6 +20,7 @@ marked.setOptions({
 export default {
   install(command: Command) {
     command.editorAdd({
+      name: "README",
       component: Readme,
       scope: ["README"]
     });
