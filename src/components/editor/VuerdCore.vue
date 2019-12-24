@@ -123,7 +123,7 @@ export default class VuerdCore extends Vue {
 
   @Watch("remoteName")
   private watchRemoteName(value: string) {
-    pluginManagement.remoteLoad(value);
+    pluginManagement.remoteLoad(value, this);
   }
 
   // ==================== Event Handler ===================
@@ -287,7 +287,7 @@ export default class VuerdCore extends Vue {
 
     pluginManagement.themeLoad(this.themeName);
     pluginManagement.iconLoad(this.iconName);
-    pluginManagement.remoteLoad(this.remoteName);
+    pluginManagement.remoteLoad(this.remoteName, this);
 
     this.subKeydown = this.keydown$.subscribe(this.onKeydown);
   }

@@ -1,7 +1,6 @@
 import { Store } from "vuex";
 import pluginManagement from "./PluginManagement";
 import { createStore, Commit, State } from "./store";
-import { log } from "@/ts/util";
 import { Command, Editor, Theme, Icon, Remote } from "@/types";
 
 export default class CommandImpl implements Command {
@@ -13,11 +12,6 @@ export default class CommandImpl implements Command {
   }
 
   public editorAdd(editor: Editor): Command {
-    if (!pluginManagement.isEditor(editor.component)) {
-      log.warn(
-        `Command editorAdd: component name '${editor.component.name}' duplication`
-      );
-    }
     this.store.commit(Commit.editorAdd, editor);
     return this;
   }

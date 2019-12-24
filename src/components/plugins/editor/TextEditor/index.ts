@@ -5,8 +5,7 @@ export default {
   install(command: Command) {
     command.editorAdd({
       component: TextEditor,
-      scope: ["*"],
-      exclude: [/\.(jpe?g|png|gif|ico|mp4|webm|ogg)$/i]
+      scope: ["*"]
     });
   }
 };

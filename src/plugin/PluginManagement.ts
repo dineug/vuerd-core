@@ -1,4 +1,4 @@
-import { Component } from "vue";
+import Vue, { Component } from "vue";
 import { Store } from "vuex";
 import { Commit, State } from "./store";
 import { View, Tab } from "@/store/view";
@@ -121,20 +121,24 @@ class PluginManagement {
     this.editorResize();
   }
 
-  public remoteLoad(remoteName: string) {
+  public remoteLoad(remoteName: string, vm: Vue) {
     log.debug("PluginManagement remoteLoad");
     const remotes = this.remotes;
     if (remotes.length === 0) {
       log.warn(
         "not found remote plugin \ndocument: https://vuerd.github.io/vuerd-docs/?path=/story/plugin-command--remote"
       );
-      eventBus.$emit(Bus.ToastBar.start, {
-        message: `
+
+      vm.$nextTick(() => {
+        eventBus.$emit(Bus.ToastBar.start, {
+          message: `
         <p>not found remote plugin</p>
         <a style="color: ${this.theme.color.font};" href="https://vuerd.github.io/vuerd-docs/?path=/story/plugin-command--remote" target="_blank">document</a>
         `,
-        millisecond: 0
+          millisecond: 0
+        });
       });
+
       this.currentRemote = {
         name: "example",
         async findTreeBy(): Promise<Tree> {

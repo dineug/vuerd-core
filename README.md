@@ -27,6 +27,30 @@ Vue.use(VuerdCore);
 ```html
 <VuerdCore/>
 ```
+## CDN Quick Start
+```html
+<!DOCTYPE html>
+<html>
+<head>
+	<title>vuerd-core demo</title>
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/vuerd-core/dist/vuerd-core.css">
+</head>
+<body>
+	<div id="app">
+		<vuerd-core />
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vuerd-core/dist/vuerd-core.umd.min.js"></script>
+	<script>
+		const VuerdCore = window['vuerd-core'].default
+		Vue.use(VuerdCore)
+		new Vue({
+		  el: '#app'
+		})
+	</script>
+</body>
+</html>
+```
 
 ## Plugin
 | Project | Version | Status | Description
