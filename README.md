@@ -25,7 +25,7 @@ import 'vuerd-core/dist/vuerd-core.css';
 Vue.use(VuerdCore);
 ```
 ```html
-<VuerdCore/>
+<vuerd-core />
 ```
 ## CDN Quick Start
 ```html
