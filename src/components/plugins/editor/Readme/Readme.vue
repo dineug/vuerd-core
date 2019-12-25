@@ -24,7 +24,7 @@ export default class Readme extends Vue {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import "~highlight.js/styles/monokai-sublime.css";
 @import "~github-markdown-css";
 
