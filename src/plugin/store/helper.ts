@@ -235,6 +235,7 @@ function addUndoRedo(
     editor.option &&
     editor.option.undoManager &&
     newValue !== oldValue &&
+    oldValue !== undefined &&
     oldValue.trim() !== ""
   ) {
     UndoRedoManager.add(tabView.id, {
