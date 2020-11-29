@@ -19,7 +19,7 @@
     "@tweenjs/tween.js": "^18.4.2",
     "core-js": "^3.4.8",
     "github-markdown-css": "^3.0.1",
-    "highlight.js": "^9.16.2",
+    "highlight.js": "^10.1.2",
     "marked": "^0.7.0",
     "rxjs": "^6.5.3",
     "undo-manager": "^1.0.5",
